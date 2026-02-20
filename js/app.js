@@ -80,6 +80,24 @@
     return escapeHtml(String(value));
   }
 
+  // ── Rendering: Nested Array (inside an object table cell) ─────────────────
+
+  function renderNestedArray(arr) {
+    if (arr.length === 0) {
+      return '<span class="val-empty">[ empty array ]</span>';
+    }
+    const items = arr.map(function (item) {
+      if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+        return '<div class="nested-array-item">' + renderObjectTable(item, true) + '</div>';
+      }
+      if (Array.isArray(item)) {
+        return '<div class="nested-array-item">' + renderNestedArray(item) + '</div>';
+      }
+      return '<div class="nested-array-item">' + formatPrimitive(item) + '</div>';
+    }).join('');
+    return '<div class="nested-array">' + items + '</div>';
+  }
+
   // ── Rendering: Object Table ────────────────────────────────────────────────
 
   function renderObjectTable(obj, compact) {
@@ -99,7 +117,7 @@
           // Array of primitives — show inline
           valueHtml = `<span class="val-array-inline">[${value.map(formatPrimitive).join(', ')}]</span>`;
         } else {
-          valueHtml = `<span class="val-meta">[ Array — ${value.length} item${value.length !== 1 ? 's' : ''} ]</span>`;
+          valueHtml = renderNestedArray(value);
         }
       } else {
         // Nested object

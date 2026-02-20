@@ -206,16 +206,11 @@ body {
 /* ── Tab Bar ────────────────────────────────────────────────────────────── */
 .tab-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 0;
   border-bottom: 2px solid var(--border);
   margin-bottom: 1.75rem;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
 }
-
-.tab-bar::-webkit-scrollbar { height: 3px; }
-.tab-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .tab-btn {
   position: relative;
@@ -409,8 +404,21 @@ body {
 /* ── Array Grid ─────────────────────────────────────────────────────────── */
 .array-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+/* ── Nested Array (inside object table cell) ────────────────────────────── */
+.nested-array {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.nested-array-item + .nested-array-item {
+  border-top: 1px dashed var(--border);
+  padding-top: 0.5rem;
 }
 
 .array-card {
