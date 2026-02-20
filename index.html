@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Viewer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <header class="app-header">
+      <div class="header-inner">
+        <h1 class="app-title">
+          <svg class="title-icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          JSON Viewer
+        </h1>
+        <div id="legend" class="legend" aria-label="Highlight legend"></div>
+      </div>
+    </header>
+
+    <main class="app-main">
+
+      <!-- Error state -->
+      <div id="error-state" class="state-container hidden" role="alert">
+        <div class="state-icon is-error" aria-hidden="true">!</div>
+        <h2>Failed to Parse Data</h2>
+        <p id="error-message" class="state-message"></p>
+      </div>
+
+      <!-- Empty / no-data state -->
+      <div id="empty-state" class="state-container hidden">
+        <div class="state-icon" aria-hidden="true">{ }</div>
+        <h2>No Data Provided</h2>
+        <p class="state-message">
+          Pass JSON data via the <code>data</code> URL parameter.
+        </p>
+        <div class="usage-box">
+          <p>URL-encoded JSON:</p>
+          <code>?data=%7B%22key%22%3A%22value%22%7D</code>
+          <p>Base64-encoded JSON:</p>
+          <code>?data=eyJrZXkiOiJ2YWx1ZSJ9</code>
+        </div>
+      </div>
+
+      <!-- Viewer -->
+      <div id="viewer" class="hidden">
+        <nav class="tab-bar" id="tab-bar" role="tablist" aria-label="Data sections"></nav>
+        <div id="tab-panels"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
