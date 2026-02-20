@@ -176,7 +176,12 @@
 
   function renderSection(value) {
     if (Array.isArray(value)) return renderArray(value);
-    if (value !== null && typeof value === 'object') return renderObjectTable(value);
+    if (value !== null && typeof value === 'object') {
+      if (Object.keys(value).length === 0) {
+        return '<p class="empty-msg">This section is empty.</p>';
+      }
+      return renderObjectTable(value);
+    }
     return `<div class="obj-viewer"><div class="obj-row"><div class="obj-value">${formatPrimitive(value)}</div></div></div>`;
   }
 
