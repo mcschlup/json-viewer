@@ -57,6 +57,35 @@
     };
   }
 
+  // ── Field Mappings ─────────────────────────────────────────────────────────
+
+  function getFieldMapping(key) {
+    return CONFIG.fieldMappings.find(m => m.key === key) || null;
+  }
+
+  function initFieldTooltips() {
+    const tip = document.createElement('div');
+    tip.className = 'field-tooltip hidden';
+    document.body.appendChild(tip);
+
+    document.addEventListener('mouseover', e => {
+      const keyEl = e.target.closest('.obj-key[data-tooltip]');
+      if (!keyEl) { tip.classList.add('hidden'); return; }
+      tip.textContent = keyEl.getAttribute('data-tooltip');
+      tip.classList.remove('hidden');
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (tip.classList.contains('hidden')) return;
+      let left = e.clientX + 14;
+      let top  = e.clientY - 10;
+      if (left + tip.offsetWidth  > window.innerWidth  - 8) left = e.clientX - tip.offsetWidth  - 14;
+      if (top  + tip.offsetHeight > window.innerHeight - 8) top  = e.clientY - tip.offsetHeight - 10;
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    });
+  }
+
   // ── Highlight Logic ────────────────────────────────────────────────────────
 
   function getHighlight(key, value) {
@@ -139,6 +168,10 @@
     const rows = Object.entries(obj).map(([key, value]) => {
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
+      const mapping = getFieldMapping(key);
+      const displayKey  = mapping ? escapeHtml(mapping.name) : escapeHtml(key);
+      const tooltipAttr = (mapping && mapping.description)
+        ? ` data-tooltip="${escapeHtml(mapping.description)}"` : '';
 
       let valueHtml;
       if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
@@ -161,7 +194,7 @@
 
       return `
         <div class="${rowClass} ${hlClass}">
-          <div class="obj-key">${escapeHtml(key)}</div>
+          <div class="obj-key"${tooltipAttr}>${displayKey}</div>
           <div class="obj-value">${valueHtml}</div>
         </div>`;
     }).join('');
@@ -490,6 +523,7 @@
     createTabs(data);
     initTimeline();
     initDrillDown();
+    initFieldTooltips();
     showState('viewer');
   }
 

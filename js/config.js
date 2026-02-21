@@ -56,6 +56,45 @@ const CONFIG = {
     }
   ],
 
+  // Field mappings: replace the raw key with a human-readable name and add a description
+  // shown as a tooltip when hovering over the field label.
+  // Each entry: { key, name, description }
+  //   key         – exact field key to match
+  //   name        – display name that replaces the raw key in the UI
+  //   description – tooltip text shown on hover (optional)
+  fieldMappings: [
+    {
+      key: 'anomaly_time',
+      name: 'Time',
+      description: 'Timestamp when the anomaly was detected.'
+    },
+    {
+      key: 'anomaly_id',
+      name: 'Anomaly ID',
+      description: 'Unique identifier for this anomaly event.'
+    },
+    {
+      key: 'anomaly_name',
+      name: 'Name',
+      description: 'Title of the detected anomaly.'
+    },
+    {
+      key: 'anomaly_product_name',
+      name: 'Product',
+      description: 'Security product that raised this anomaly.'
+    },
+    {
+      key: 'anomaly_severity_level',
+      name: 'Severity',
+      description: 'Severity level as assessed by the detection engine (critical / high / medium / low / informational).'
+    },
+    {
+      key: 'anomaly_analysis_status',
+      name: 'Status',
+      description: 'Current analysis status: open = under investigation, closed = resolved.'
+    }
+  ],
+
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)
   valueHighlightRules: [
     {

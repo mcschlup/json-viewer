@@ -508,6 +508,30 @@ body {
 .obj-row.hl-blue .obj-key, .obj-row.hl-blue .obj-value { color: #0c4a6e; }
 .obj-row.hl-blue .field-badge { background: #0284c7; }
 
+/* ── Field mapping tooltip ──────────────────────────────────────────────── */
+.obj-key[data-tooltip] {
+  cursor: help;
+  text-decoration: underline dotted var(--text-muted);
+  text-underline-offset: 3px;
+}
+
+.field-tooltip {
+  position: fixed;
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 280px;
+  white-space: normal;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+}
+
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {
   display: flex;
