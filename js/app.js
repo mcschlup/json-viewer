@@ -69,7 +69,7 @@
     document.body.appendChild(tip);
 
     document.addEventListener('mouseover', e => {
-      const keyEl = e.target.closest('.obj-key[data-tooltip]');
+      const keyEl = e.target.closest('.field-info-icon[data-tooltip]');
       if (!keyEl) { tip.classList.add('hidden'); return; }
       tip.textContent = keyEl.getAttribute('data-tooltip');
       tip.classList.remove('hidden');
@@ -169,9 +169,13 @@
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
       const mapping = getFieldMapping(key);
-      const displayKey  = mapping ? escapeHtml(mapping.name) : escapeHtml(key);
-      const tooltipAttr = (mapping && mapping.description)
-        ? ` data-tooltip="${escapeHtml(mapping.description)}"` : '';
+      const displayKey = mapping ? escapeHtml(mapping.name) : escapeHtml(key);
+      const infoIcon   = (mapping && mapping.description)
+        ? `<span class="field-info-icon" data-tooltip="${escapeHtml(mapping.description)}">` +
+          `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">` +
+          `<circle cx="8" cy="8" r="6.5"/><line x1="8" y1="7.5" x2="8" y2="11"/><circle cx="8" cy="5" r="0.75" fill="currentColor" stroke="none"/>` +
+          `</svg></span>`
+        : '';
 
       let valueHtml;
       if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
@@ -194,7 +198,7 @@
 
       return `
         <div class="${rowClass} ${hlClass}">
-          <div class="obj-key"${tooltipAttr}>${displayKey}</div>
+          <div class="obj-key">${displayKey}${infoIcon}</div>
           <div class="obj-value">${valueHtml}</div>
         </div>`;
     }).join('');

@@ -509,10 +509,28 @@ body {
 .obj-row.hl-blue .field-badge { background: #0284c7; }
 
 /* ── Field mapping tooltip ──────────────────────────────────────────────── */
-.obj-key[data-tooltip] {
+.field-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding-left: 0.35rem;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  opacity: 0.45;
   cursor: help;
-  text-decoration: underline dotted var(--text-muted);
-  text-underline-offset: 3px;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.field-info-icon:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+
+.field-info-icon svg {
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
 }
 
 .field-tooltip {
