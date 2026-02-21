@@ -508,6 +508,55 @@ body {
 .obj-row.hl-blue .obj-key, .obj-row.hl-blue .obj-value { color: #0c4a6e; }
 .obj-row.hl-blue .field-badge { background: #0284c7; }
 
+/* ── Drill-down URL fields ──────────────────────────────────────────────── */
+.drill-down-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.drill-down-text {
+  word-break: break-all;
+}
+
+.drill-down-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.drill-down-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.drill-down-btn:hover {
+  background: var(--primary-lt);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.drill-down-btn svg {
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.drill-down-btn.copied {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
 /* ── Anomaly Timeline ───────────────────────────────────────────────────── */
 .timeline-wrap {
   position: relative;

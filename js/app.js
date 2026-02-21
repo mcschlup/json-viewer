@@ -98,6 +98,40 @@
     return '<div class="nested-array">' + items + '</div>';
   }
 
+  // ── Rendering: Drill-down URL fields ──────────────────────────────────────
+
+  const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+  const ICON_OPEN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+
+  function formatDrillDown(value) {
+    const match = String(value).match(/https?:\/\/[^\s"'<>]+/);
+    if (!match) return formatPrimitive(value);
+    const url = match[0];
+    const escapedUrl = escapeHtml(url);
+    return `<div class="drill-down-wrap">
+        <span class="drill-down-text">${escapeHtml(String(value))}</span>
+        <span class="drill-down-actions">
+          <button class="drill-down-btn drill-down-copy" data-url="${escapedUrl}" title="Copy URL">${ICON_COPY}</button>
+          <button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="Open in new tab">${ICON_OPEN}</button>
+        </span>
+      </div>`;
+  }
+
+  function initDrillDown() {
+    document.addEventListener('click', e => {
+      const copyBtn = e.target.closest('.drill-down-copy');
+      if (copyBtn) {
+        navigator.clipboard.writeText(copyBtn.dataset.url).then(() => {
+          copyBtn.classList.add('copied');
+          setTimeout(() => copyBtn.classList.remove('copied'), 1500);
+        }).catch(() => {});
+        return;
+      }
+      const openBtn = e.target.closest('.drill-down-open');
+      if (openBtn) window.open(openBtn.dataset.url, '_blank', 'noopener,noreferrer');
+    });
+  }
+
   // ── Rendering: Object Table ────────────────────────────────────────────────
 
   function renderObjectTable(obj, compact) {
@@ -107,7 +141,9 @@
       const hlClass = hl ? hl.cssClass : '';
 
       let valueHtml;
-      if (value === null || typeof value !== 'object') {
+      if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
+        valueHtml = formatDrillDown(value);
+      } else if (value === null || typeof value !== 'object') {
         valueHtml = formatPrimitive(value);
       } else if (Array.isArray(value)) {
         if (value.length === 0) {
@@ -453,6 +489,7 @@
 
     createTabs(data);
     initTimeline();
+    initDrillDown();
     showState('viewer');
   }
 
