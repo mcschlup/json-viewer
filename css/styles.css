@@ -482,6 +482,124 @@ body {
   text-align: center;
 }
 
+/* ── Anomaly Timeline ───────────────────────────────────────────────────── */
+.timeline-wrap {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem 0.625rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow);
+}
+
+.timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.1rem;
+  flex-wrap: wrap;
+}
+
+.timeline-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.timeline-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.timeline-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.tl-leg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.tl-leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tl-leg-line {
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  flex-shrink: 0;
+  background: var(--text-muted);
+}
+
+.tl-leg-line--dashed {
+  background: repeating-linear-gradient(
+    to right,
+    var(--text-muted) 0,
+    var(--text-muted) 4px,
+    transparent 4px,
+    transparent 7px
+  );
+}
+
+.tl-leg-sep {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.tl-marker {
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+
+.tl-marker:hover {
+  opacity: 0.7;
+}
+
+.tl-tooltip {
+  position: absolute;
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+  line-height: 1.65;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+}
+
+.tl-tip-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tl-tip-lbl {
+  font-weight: 600;
+  opacity: 0.55;
+  min-width: 52px;
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 680px) {
   .app-main { padding: 1rem; }

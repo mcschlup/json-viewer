@@ -185,6 +185,151 @@
     return `<div class="obj-viewer"><div class="obj-row"><div class="obj-value">${formatPrimitive(value)}</div></div></div>`;
   }
 
+  // ── Anomaly Timeline ───────────────────────────────────────────────────────
+
+  const SEVERITY_COLORS = {
+    critical:      { fill: '#fecaca', stroke: '#ef4444' },
+    high:          { fill: '#fed7aa', stroke: '#f97316' },
+    medium:        { fill: '#fef08a', stroke: '#ca8a04' },
+    low:           { fill: '#bbf7d0', stroke: '#16a34a' },
+    informational: { fill: '#bae6fd', stroke: '#0284c7' }
+  };
+
+  function renderTimeline(arr) {
+    const items = arr.filter(item => item && typeof item === 'object' && item.anomaly_time);
+    if (items.length === 0) return '';
+
+    const MS_DAY = 86_400_000;
+    const DAYS = 15;
+    const validTimes = items
+      .map(item => new Date(item.anomaly_time).getTime())
+      .filter(t => !isNaN(t));
+    if (validTimes.length === 0) return '';
+
+    const startTime = Math.min(...validTimes);
+    const endTime   = startTime + DAYS * MS_DAY;
+
+    // SVG layout
+    const W = 800, H = 112, padL = 45, padR = 20;
+    const axisY = 72, circR = 6, circY = 14;
+    const plotW = W - padL - padR;
+
+    function tx(t) {
+      return padL + ((t - startTime) / (DAYS * MS_DAY)) * plotW;
+    }
+
+    let svgBody = '';
+
+    // Axis line
+    svgBody += `<line x1="${padL}" y1="${axisY}" x2="${W - padR}" y2="${axisY}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+
+    // Day ticks and labels (label every 5 days)
+    for (let d = 0; d <= DAYS; d++) {
+      const x     = tx(startTime + d * MS_DAY);
+      const major = d % 5 === 0;
+      svgBody += `<line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + (major ? 8 : 5)}" stroke="#94a3b8" stroke-width="${major ? 1.5 : 1}"/>`;
+      if (major) {
+        const date  = new Date(startTime + d * MS_DAY);
+        const label = `${date.getMonth() + 1}/${date.getDate()}`;
+        svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
+      }
+    }
+
+    // "Now" marker (subtle, if today falls within the window)
+    const nowTime = Date.now();
+    if (nowTime >= startTime && nowTime <= endTime) {
+      const nx = tx(nowTime);
+      svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
+      svgBody += `<text x="${nx + 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600">NOW</text>`;
+    }
+
+    // Anomaly markers
+    items.forEach(item => {
+      const t = new Date(item.anomaly_time).getTime();
+      if (isNaN(t) || t < startTime || t > endTime) return;
+
+      const x      = tx(t);
+      const sev    = (item.anomaly_severity_level || '').toLowerCase();
+      const status = (item.anomaly_analysis_status || '').toLowerCase();
+      const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+
+      // Solid line for "open", dashed for "closed"
+      const dashAttr = status === 'closed' ? ' stroke-dasharray="5,4"' : '';
+
+      const escapedTime   = escapeHtml(item.anomaly_time || '');
+      const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
+      const escapedStatus = escapeHtml(item.anomaly_analysis_status || '');
+      const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}"`;
+
+      // Vertical line from below circle down to axis
+      svgBody += `<line x1="${x}" y1="${circY + circR + 1}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+
+      // Circle at top: filled for "open", hollow (white fill) for "closed"
+      const circleFill = status === 'closed' ? 'white' : colors.fill;
+      svgBody += `<circle cx="${x}" cy="${circY}" r="${circR}" fill="${circleFill}" stroke="${colors.stroke}" stroke-width="2" class="tl-marker" ${tipAttrs}/>`;
+    });
+
+    const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline — 15-day range">${svgBody}</svg>`;
+
+    // Legend — severity colours
+    const sevLegend = Object.entries(SEVERITY_COLORS).map(([name, c]) =>
+      `<span class="tl-leg-item"><span class="tl-leg-dot" style="background:${c.stroke}"></span>${escapeHtml(name)}</span>`
+    ).join('');
+
+    // Legend — status shapes
+    const statusLegend =
+      `<span class="tl-leg-sep"></span>` +
+      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>open</span>` +
+      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>closed</span>`;
+
+    return `
+      <div class="timeline-wrap">
+        <div class="timeline-head">
+          <span class="timeline-title">15-Day Anomaly Timeline</span>
+          <div class="timeline-legend">${sevLegend}${statusLegend}</div>
+        </div>
+        ${svgEl}
+        <div class="tl-tooltip hidden" id="tl-tooltip"></div>
+      </div>`;
+  }
+
+  function initTimeline() {
+    const tooltip = document.getElementById('tl-tooltip');
+    if (!tooltip) return;
+    const wrap = tooltip.closest('.timeline-wrap');
+    if (!wrap) return;
+    const svg = wrap.querySelector('.timeline-svg');
+    if (!svg) return;
+
+    svg.addEventListener('mousemove', e => {
+      const marker = e.target.closest ? e.target.closest('.tl-marker') : null;
+      if (!marker) { tooltip.classList.add('hidden'); return; }
+
+      const time     = marker.getAttribute('data-time') || '';
+      const severity = marker.getAttribute('data-severity') || '';
+      const status   = marker.getAttribute('data-status') || '';
+      const display  = time ? new Date(time).toLocaleString() : '—';
+
+      tooltip.innerHTML =
+        `<div class="tl-tip-row"><span class="tl-tip-lbl">Time</span>${escapeHtml(display)}</div>` +
+        `<div class="tl-tip-row"><span class="tl-tip-lbl">Severity</span>${escapeHtml(severity) || '—'}</div>` +
+        `<div class="tl-tip-row"><span class="tl-tip-lbl">Status</span>${escapeHtml(status) || '—'}</div>`;
+
+      tooltip.classList.remove('hidden');
+      const wrapRect = wrap.getBoundingClientRect();
+      let left = e.clientX - wrapRect.left + 14;
+      const top  = e.clientY - wrapRect.top  - 10;
+      // Flip left if tooltip would overflow right edge
+      if (left + tooltip.offsetWidth > wrap.offsetWidth - 8) {
+        left = e.clientX - wrapRect.left - tooltip.offsetWidth - 14;
+      }
+      tooltip.style.left = left + 'px';
+      tooltip.style.top  = top  + 'px';
+    });
+
+    svg.addEventListener('mouseleave', () => tooltip.classList.add('hidden'));
+  }
+
   // ── Tab count badge ────────────────────────────────────────────────────────
 
   function sectionCount(value) {
@@ -232,7 +377,10 @@
       panel.id = `panel-${index}`;
       panel.setAttribute('role', 'tabpanel');
       panel.dataset.tab = key;
-      panel.innerHTML = renderSection(value);
+      const timelineHtml = (key === 'anomaly_overview' && Array.isArray(value))
+        ? renderTimeline(value)
+        : '';
+      panel.innerHTML = timelineHtml + renderSection(value);
       tabPanels.appendChild(panel);
     });
   }
@@ -278,6 +426,7 @@
 
     renderLegend();
     createTabs(data);
+    initTimeline();
     showState('viewer');
   }
 
