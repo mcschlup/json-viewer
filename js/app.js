@@ -187,6 +187,38 @@
 
   // ── Anomaly Timeline ───────────────────────────────────────────────────────
 
+  const TZ_OFFSETS = {
+    'UTC':0,'GMT':0,
+    'CET':60,'CEST':120,'EET':120,'EEST':180,'WET':0,'WEST':60,
+    'EST':-300,'EDT':-240,'CST':-360,'CDT':-300,
+    'MST':-420,'MDT':-360,'PST':-480,'PDT':-420,
+    'IST':330,'JST':540,'AEST':600,'AEDT':660
+  };
+
+  // Handles ISO strings and "YYYY-MM-DD HH:MM:SS TZ" with named timezone abbreviations
+  function parseAnomalyTime(str) {
+    if (!str) return NaN;
+    let t = new Date(str).getTime();
+    if (!isNaN(t)) return t;
+    const m = str.match(/^(\d{4}-\d{2}-\d{2})[\sT](\d{2}:\d{2}:\d{2})\s*([A-Z]{1,5})?$/);
+    if (m) {
+      const base    = m[1] + 'T' + m[2];
+      const tzName  = (m[3] || '').toUpperCase();
+      const offMin  = TZ_OFFSETS[tzName];
+      if (offMin !== undefined) {
+        const sign = offMin >= 0 ? '+' : '-';
+        const abs  = Math.abs(offMin);
+        const hh   = String(Math.floor(abs / 60)).padStart(2, '0');
+        const mm   = String(abs % 60).padStart(2, '0');
+        t = new Date(`${base}${sign}${hh}:${mm}`).getTime();
+        if (!isNaN(t)) return t;
+      }
+      t = new Date(base).getTime(); // fallback: treat as local
+      if (!isNaN(t)) return t;
+    }
+    return NaN;
+  }
+
   const SEVERITY_COLORS = {
     critical:      { fill: '#fecaca', stroke: '#ef4444' },
     high:          { fill: '#fed7aa', stroke: '#f97316' },
@@ -202,7 +234,7 @@
     const MS_DAY = 86_400_000;
     const DAYS = 15;
     const validTimes = items
-      .map(item => new Date(item.anomaly_time).getTime())
+      .map(item => parseAnomalyTime(item.anomaly_time))
       .filter(t => !isNaN(t));
     if (validTimes.length === 0) return '';
 
@@ -211,7 +243,7 @@
 
     // SVG layout
     const W = 800, H = 112, padL = 45, padR = 20;
-    const axisY = 72, circR = 6, circY = 14;
+    const axisY = 72, circR = 7, circY = 14; // circR=7 to fit card number inside
     const plotW = W - padL - padR;
 
     function tx(t) {
@@ -243,9 +275,10 @@
       svgBody += `<text x="${nx + 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600">NOW</text>`;
     }
 
-    // Anomaly markers
-    items.forEach(item => {
-      const t = new Date(item.anomaly_time).getTime();
+    // Anomaly markers — iterate original array so idx matches card numbers (# 1, # 2 …)
+    arr.forEach((item, idx) => {
+      if (!item || typeof item !== 'object') return;
+      const t = parseAnomalyTime(item.anomaly_time);
       if (isNaN(t) || t < startTime || t > endTime) return;
 
       const x      = tx(t);
@@ -267,6 +300,9 @@
       // Circle at top: filled for "open", hollow (white fill) for "closed"
       const circleFill = status === 'closed' ? 'white' : colors.fill;
       svgBody += `<circle cx="${x}" cy="${circY}" r="${circR}" fill="${circleFill}" stroke="${colors.stroke}" stroke-width="2" class="tl-marker" ${tipAttrs}/>`;
+
+      // Card number centered inside the circle
+      svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="7" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" pointer-events="none">${idx + 1}</text>`;
     });
 
     const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline — 15-day range">${svgBody}</svg>`;
