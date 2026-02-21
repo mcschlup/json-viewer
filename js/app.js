@@ -60,18 +60,10 @@
   // ── Highlight Logic ────────────────────────────────────────────────────────
 
   function getHighlight(key, value) {
-    // Most specific: key + value combination
     if (value !== null && value !== undefined && typeof value !== 'object') {
       for (const rule of CONFIG.keyValueHighlightRules) {
         if (rule.testKey(key) && rule.testValue(value)) return rule;
       }
-    }
-    // Key-only rules
-    for (const rule of CONFIG.keyHighlightRules) {
-      if (rule.test(key)) return rule;
-    }
-    // Value-only rules (fallback)
-    if (value !== null && value !== undefined && typeof value !== 'object') {
       for (const rule of CONFIG.valueHighlightRules) {
         if (rule.test(value)) return rule;
       }
@@ -113,7 +105,6 @@
     const rows = Object.entries(obj).map(([key, value]) => {
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
-      const badge = hl ? `<span class="field-badge">${escapeHtml(hl.label)}</span>` : '';
 
       let valueHtml;
       if (value === null || typeof value !== 'object') {
@@ -134,7 +125,7 @@
 
       return `
         <div class="${rowClass} ${hlClass}">
-          <div class="obj-key">${badge}${escapeHtml(key)}</div>
+          <div class="obj-key">${escapeHtml(key)}</div>
           <div class="obj-value">${valueHtml}</div>
         </div>`;
     }).join('');
@@ -431,16 +422,6 @@
     });
   }
 
-  // ── Legend ─────────────────────────────────────────────────────────────────
-
-  function renderLegend() {
-    const legend = document.getElementById('legend');
-    legend.innerHTML = CONFIG.keyHighlightRules.map(rule => `
-      <span class="legend-item">
-        <span class="legend-dot" style="background:${rule.color}"></span>${escapeHtml(rule.label)}
-      </span>`).join('');
-  }
-
   // ── Entry Point ────────────────────────────────────────────────────────────
 
   function showState(id) {
@@ -470,7 +451,6 @@
       return;
     }
 
-    renderLegend();
     createTabs(data);
     initTimeline();
     showState('viewer');
