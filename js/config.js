@@ -36,6 +36,11 @@ const CONFIG = {
     },
     {
       testKey:   (key)   => key === 'user_is_risky_person',
+      testValue: (value) => String(value).toLowerCase() === 'executive',
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'user_is_risky_person',
       testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value).toLowerCase()),
       cssClass: 'hl-red'
   //  },
