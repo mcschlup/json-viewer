@@ -482,6 +482,32 @@ body {
   text-align: center;
 }
 
+/* ── Highlight: generic colour classes (for keyValueHighlightRules) ─────── */
+.obj-row.hl-red   { background: #fff0f0; border-left-color: #ef4444; }
+.obj-row.hl-red:hover { filter: brightness(0.975); background: #fff0f0; }
+.obj-row.hl-red .obj-key, .obj-row.hl-red .obj-value { color: #7f1d1d; }
+.obj-row.hl-red .field-badge { background: #ef4444; }
+
+.obj-row.hl-orange   { background: #fff7ed; border-left-color: #f97316; }
+.obj-row.hl-orange:hover { filter: brightness(0.975); background: #fff7ed; }
+.obj-row.hl-orange .obj-key, .obj-row.hl-orange .obj-value { color: #7c2d12; }
+.obj-row.hl-orange .field-badge { background: #f97316; }
+
+.obj-row.hl-yellow   { background: #fefce8; border-left-color: #ca8a04; }
+.obj-row.hl-yellow:hover { filter: brightness(0.975); background: #fefce8; }
+.obj-row.hl-yellow .obj-key, .obj-row.hl-yellow .obj-value { color: #713f12; }
+.obj-row.hl-yellow .field-badge { background: #ca8a04; }
+
+.obj-row.hl-green   { background: #f0fdf4; border-left-color: #16a34a; }
+.obj-row.hl-green:hover { filter: brightness(0.975); background: #f0fdf4; }
+.obj-row.hl-green .obj-key, .obj-row.hl-green .obj-value { color: #14532d; }
+.obj-row.hl-green .field-badge { background: #16a34a; }
+
+.obj-row.hl-blue   { background: #eff6ff; border-left-color: #0284c7; }
+.obj-row.hl-blue:hover { filter: brightness(0.975); background: #eff6ff; }
+.obj-row.hl-blue .obj-key, .obj-row.hl-blue .obj-value { color: #0c4a6e; }
+.obj-row.hl-blue .field-badge { background: #0284c7; }
+
 /* ── Anomaly Timeline ───────────────────────────────────────────────────── */
 .timeline-wrap {
   position: relative;

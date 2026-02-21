@@ -5,6 +5,62 @@ const CONFIG = {
   // URL parameter name containing the JSON data
   urlParam: 'data',
 
+  // Highlight rules based on a specific KEY + VALUE combination (checked first, most specific)
+  // testKey(key) and testValue(value) must both return true for the rule to apply.
+  // Use the generic CSS classes hl-red / hl-orange / hl-yellow / hl-green / hl-blue,
+  // or any of the built-in classes (hl-id, hl-name, hl-time, hl-info).
+  keyValueHighlightRules: [
+    {
+      testKey:   (key)   => key === 'anomaly_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'critical',
+      cssClass: 'hl-red',
+      label: 'Critical',
+      color: '#ef4444'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'high',
+      cssClass: 'hl-orange',
+      label: 'High',
+      color: '#f97316'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'medium',
+      cssClass: 'hl-yellow',
+      label: 'Medium',
+      color: '#ca8a04'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'low',
+      cssClass: 'hl-green',
+      label: 'Low',
+      color: '#16a34a'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'informational',
+      cssClass: 'hl-blue',
+      label: 'Informational',
+      color: '#0284c7'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_analysis_status',
+      testValue: (value) => String(value).toLowerCase() === 'open',
+      cssClass: 'hl-orange',
+      label: 'Open',
+      color: '#f97316'
+    },
+    {
+      testKey:   (key)   => key === 'anomaly_analysis_status',
+      testValue: (value) => String(value).toLowerCase() === 'closed',
+      cssClass: 'hl-green',
+      label: 'Closed',
+      color: '#16a34a'
+    }
+  ],
+
   // Highlight rules based on field KEY name patterns (checked in order, first match wins)
   keyHighlightRules: [
     {

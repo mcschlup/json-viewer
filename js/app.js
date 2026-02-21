@@ -60,9 +60,17 @@
   // ── Highlight Logic ────────────────────────────────────────────────────────
 
   function getHighlight(key, value) {
+    // Most specific: key + value combination
+    if (value !== null && value !== undefined && typeof value !== 'object') {
+      for (const rule of CONFIG.keyValueHighlightRules) {
+        if (rule.testKey(key) && rule.testValue(value)) return rule;
+      }
+    }
+    // Key-only rules
     for (const rule of CONFIG.keyHighlightRules) {
       if (rule.test(key)) return rule;
     }
+    // Value-only rules (fallback)
     if (value !== null && value !== undefined && typeof value !== 'object') {
       for (const rule of CONFIG.valueHighlightRules) {
         if (rule.test(value)) return rule;
