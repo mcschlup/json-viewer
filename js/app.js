@@ -344,7 +344,7 @@
       const time     = marker.getAttribute('data-time') || '';
       const severity = marker.getAttribute('data-severity') || '';
       const status   = marker.getAttribute('data-status') || '';
-      const display  = time ? new Date(parseAnomalyTime(time)).toLocaleString() : '—';
+      const display  = time || '—';
 
       tooltip.innerHTML =
         `<div class="tl-tip-row"><span class="tl-tip-lbl">Time</span>${escapeHtml(display)}</div>` +
