@@ -292,7 +292,8 @@
       const escapedTime   = escapeHtml(item.anomaly_time || '');
       const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
       const escapedStatus = escapeHtml(item.anomaly_analysis_status || '');
-      const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}"`;
+      const escapedName   = escapeHtml(item.anomaly_name || '');
+      const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
       // Vertical line from below circle down to axis
       svgBody += `<line x1="${x}" y1="${circY + circR + 1}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
@@ -344,10 +345,11 @@
       const time     = marker.getAttribute('data-time') || '';
       const severity = marker.getAttribute('data-severity') || '';
       const status   = marker.getAttribute('data-status') || '';
-      const display  = time || '—';
+      const name     = marker.getAttribute('data-name') || '';
 
       tooltip.innerHTML =
-        `<div class="tl-tip-row"><span class="tl-tip-lbl">Time</span>${escapeHtml(display)}</div>` +
+        (name ? `<div class="tl-tip-row"><span class="tl-tip-lbl">Name</span>${escapeHtml(name)}</div>` : '') +
+        `<div class="tl-tip-row"><span class="tl-tip-lbl">Time</span>${escapeHtml(time) || '—'}</div>` +
         `<div class="tl-tip-row"><span class="tl-tip-lbl">Severity</span>${escapeHtml(severity) || '—'}</div>` +
         `<div class="tl-tip-row"><span class="tl-tip-lbl">Status</span>${escapeHtml(status) || '—'}</div>`;
 
