@@ -35,14 +35,19 @@ const CONFIG = {
       cssClass: 'hl-blue'
     },
     {
-      testKey:   (key)   => key === 'anomaly_analysis_status',
-      testValue: (value) => String(value).toLowerCase() === 'open',
-      cssClass: 'hl-orange'
-    },
-    {
-      testKey:   (key)   => key === 'anomaly_analysis_status',
-      testValue: (value) => String(value).toLowerCase() === 'closed',
-      cssClass: 'hl-green'
+      testKey:   (key)   => key === 'user_is_risky_person',
+      testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value).toLowerCase()),
+      cssClass: 'hl-red'
+  //  },
+  //  {
+  //    testKey:   (key)   => key === 'anomaly_analysis_status',
+  //    testValue: (value) => String(value).toLowerCase() === 'open',
+  //    cssClass: 'hl-orange'
+  //  },
+  //  {
+  //    testKey:   (key)   => key === 'anomaly_analysis_status',
+  //    testValue: (value) => String(value).toLowerCase() === 'closed',
+  //    cssClass: 'hl-green'
     }
   ],
 
@@ -51,10 +56,10 @@ const CONFIG = {
     {
       test: (value) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(String(value)),
       cssClass: 'hl-time'
-    },
-    {
-      test: (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value)),
-      cssClass: 'hl-id'
+  //  },
+  //  {
+  //    test: (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value)),
+  //    cssClass: 'hl-id'
     }
   ]
 };
