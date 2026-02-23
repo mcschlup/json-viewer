@@ -477,7 +477,9 @@
 
       const count = sectionCount(value);
       const countHtml = count !== null ? `<span class="tab-count">${count}</span>` : '';
-      btn.innerHTML = `${escapeHtml(key)}${countHtml}`;
+      const tabMapping = getFieldMapping(key);
+      const tabLabel = tabMapping ? escapeHtml(tabMapping.name) : escapeHtml(key);
+      btn.innerHTML = `${tabLabel}${countHtml}`;
       btn.addEventListener('click', () => switchTab(key));
       tabBar.appendChild(btn);
 
