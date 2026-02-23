@@ -508,6 +508,93 @@ body {
 .obj-row.hl-blue .obj-key, .obj-row.hl-blue .obj-value { color: #0c4a6e; }
 .obj-row.hl-blue .field-badge { background: #0284c7; }
 
+/* ── Title link (PHP backend) ───────────────────────────────────────────── */
+.app-title-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* ── Paste form (PHP backend) ───────────────────────────────────────────── */
+.paste-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.paste-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: var(--shadow-md);
+}
+
+.paste-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.paste-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.875rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.paste-textarea {
+  display: block;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.paste-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.paste-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.paste-submit {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.75rem;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.paste-submit:hover {
+  opacity: 0.88;
+}
+
 /* ── Field mapping tooltip ──────────────────────────────────────────────── */
 .field-info-icon {
   display: inline-flex;

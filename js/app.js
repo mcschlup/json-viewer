@@ -29,7 +29,22 @@
 
   // ── Data Loading ───────────────────────────────────────────────────────────
 
-  function loadData() {
+  async function loadData() {
+    // Backend mode: fetch JSON from server by session ID
+    if (window.__DATA_URL) {
+      try {
+        const resp = await fetch(window.__DATA_URL);
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          return { data: null, error: body.error || `Server returned HTTP ${resp.status}.` };
+        }
+        return { data: await resp.json(), error: null };
+      } catch (e) {
+        return { data: null, error: 'Could not load data from server: ' + e.message };
+      }
+    }
+
+    // Fallback: read from URL parameter (index.html mode)
     const raw = getParam(CONFIG.urlParam);
     if (!raw) return { data: null, error: null };
 
@@ -505,8 +520,8 @@
     });
   }
 
-  function init() {
-    const { data, error } = loadData();
+  async function init() {
+    const { data, error } = await loadData();
 
     if (error) {
       document.getElementById('error-message').innerHTML = error;
