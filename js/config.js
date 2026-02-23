@@ -64,6 +64,61 @@ const CONFIG = {
   //   description – tooltip text shown on hover (optional)
   fieldMappings: [
     {
+      key: 'risk_notable_title',
+      name: 'Risk Notable',
+      description: 'Title of this specific risk notable - contains the affected entity and a list of products that detected the correlated entities.'
+    },
+    {
+      key: 'risk_notable_id',
+      name: 'Risk Notable ID',
+      description: 'Unique ID for this specific risk notable.'
+    },
+    {
+      key: 'risk_notable_severity_level',
+      name: 'Risk Notable Severity',
+      description: 'Severity level of this specific risk notable.'
+    },
+    {
+      key: 'entity',
+      name: 'Prioritized Entity',
+      description: 'The entity of this risk notable - may be either an asset (server, client, cloud account) or an identity (user, app registration). This is the "main character" of this risk notable.'
+    },
+    {
+      key: 'entity_type',
+      name: 'Entity Type',
+      description: 'Type of the entity. Possible values: asset or identity.'
+    },
+    {
+      key: 'entity_subtype',
+      name: 'Entity Subtype',
+      description: 'Subtype of the entity.'
+    },
+    {
+      key: 'entity_risk_score',
+      name: 'Entity Risk Score',
+      description: 'The total risk score of this specific entity. This is the sum of the correlated anomalies\' individual score values multiplied by the different risk factors (Risk vulnerability factor, Risk impact factor and Risk GRC tool factor).'
+    },
+    {
+      key: 'entity_market_unit',
+      name: 'Entity Market Unit',
+      description: 'Associated market unit of that specific entity.'
+    },
+    {
+      key: 'all_market_units_in_anomalies',
+      name: 'All Market Units',
+      description: 'List of all market units that are somehow involved (i.e. all market units found in the correlated anomalies).'
+    },
+    {
+      key: 'anomaly_first_time',
+      name: 'Timestamp of oldest Anomaly',
+      description: 'Timestamp of the first correlated anomaly.'
+    },
+    {
+      key: 'anomaly_last_time',
+      name: 'Timestamp of newest Anomaly',
+      description: 'Timestamp of the last correlated anomaly.'
+    },
+    {
       key: 'anomaly_time',
       name: 'Time',
       description: 'Timestamp when the anomaly was detected.'
