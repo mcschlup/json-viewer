@@ -119,6 +119,11 @@ const CONFIG = {
       description: 'Timestamp of the last correlated anomaly.'
     },
     {
+      key: 'anomaly_overview',
+      name: 'Anomaly Overview',
+      description: 'Anomaly Overview'
+    },
+    {
       key: 'anomaly_time',
       name: 'Time',
       description: 'Timestamp when the anomaly was detected.'
@@ -147,6 +152,36 @@ const CONFIG = {
       key: 'anomaly_analysis_status',
       name: 'Status',
       description: 'Current analysis status: open = under investigation, closed = resolved.'
+    },
+    {
+      key: 'anomaly_overview',
+      name: 'Anomaly Overview',
+      description: 'Anomaly Overview'
+    },
+    {
+      key: 'open_relevant_anomaly_details',
+      name: 'Relevant Anomaly Details (Open)',
+      description: 'Relevant Anomaly Details (Open)'
+    },
+    {
+      key: 'open_contextual_anomaly_details',
+      name: 'Contextual Anomaly Details (Open)',
+      description: 'Contextual Anomaly Details (Open)'
+    },
+    {
+      key: 'closed_relevant_anomaly_details',
+      name: 'Relevant Anomaly Details (Closed)',
+      description: 'Relevant Anomaly Details (Closed)'
+    },
+    {
+      key: 'closed_contextual_anomaly_details',
+      name: 'Contextual Anomaly Details (Closed)',
+      description: 'Contextual Anomaly Details (Closed)'
+    },
+    {
+      key: 'related_entities_to_correlated_anomalies_details',
+      name: 'Related Entities',
+      description: 'Related Entities'
     }
   ],
 
