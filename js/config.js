@@ -131,32 +131,172 @@ const CONFIG = {
     {
       key: 'anomaly_id',
       name: 'Anomaly ID',
-      description: 'Unique identifier for this anomaly event.'
+      description: 'Unique identifier for this anomaly event (x_detection_id attribute in the threat_hunting index).'
     },
     {
       key: 'anomaly_name',
-      name: 'Name',
-      description: 'Title of the detected anomaly.'
+      name: 'Anomaly Name',
+      description: 'Title of the detected anomaly (search_name attribute in the threat_hunting index).'
     },
     {
       key: 'anomaly_product_name',
-      name: 'Product',
+      name: 'Detection Product Name',
       description: 'Security product that raised this anomaly.'
     },
     {
       key: 'anomaly_severity_level',
-      name: 'Severity',
-      description: 'Severity level as assessed by the detection engine (critical / high / medium / low / informational).'
+      name: 'Anomaly Severity',
+      description: 'Severity level of the anomaly as assessed by the detection engine (used to define the base severity score).'
     },
     {
       key: 'anomaly_analysis_status',
-      name: 'Status',
-      description: 'Current analysis status: open = under investigation, closed = resolved.'
+      name: 'Analysis Status',
+      description: 'Current analysis status (open or closed). The status defines, if an anomaly is still taken into account for the risk score calculation of the risk notable.'
     },
     {
-      key: 'anomaly_overview',
-      name: 'Anomaly Overview',
-      description: 'Anomaly Overview'
+      key: 'identity_user',
+      name: 'User Details',
+      description: 'User Details'
+    },
+    {
+      key: 'identity_app_registration',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'asset_host',
+      name: 'Host Details',
+      description: 'Host Details'
+    },
+    {
+      key: 'asset_host_details',
+      name: 'Details',
+      description: 'Details'
+    },
+    {
+      key: 'host_id',
+      name: 'Host ID',
+      description: 'Host ID'
+    },
+    {
+      key: 'host_name',
+      name: 'Host Name',
+      description: 'Host Name'
+    },
+    {
+      key: 'host_owner_id',
+      name: 'User ID of Host Owner',
+      description: 'User ID of Host Owner'
+    },
+    {
+      key: 'host_owner_name',
+      name: 'Name of Host Owner',
+      description: 'Name of Host Owner'
+    },
+    {
+      key: 'host_status',
+      name: 'Host Status in Defender',
+      description: 'Host Name'
+    },
+    {
+      key: 'host_application_names_associated_with_asset_list',
+      name: 'List of Applications',
+      description: 'List of Applications'
+    },
+    {
+      key: 'host_highest_application_name',
+      name: 'Application Name',
+      description: 'Application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'host_highest_application_confidentiality',
+      name: 'Application Confidentiality',
+      description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'host_highest_application_integrity',
+      name: 'Application Integrity',
+      description: 'Integrity of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'host_highest_application_availability',
+      name: 'Application Availability',
+      description: 'Availability of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'host_highest_business_criticality',
+      name: 'Application Business Criticality',
+      description: 'Business Criticality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'host_additional_info',
+      name: 'Additional Details',
+      description: 'If available, shows more host details (e.g. for known IPs/IP ranges, known proxy or firewall devices, etc.)' 
+    },
+    {
+      key: 'risk_vulnerability_factor_details',
+      name: 'Vulnerability Details',
+      description: 'Vulnerability Details'
+    },
+    {
+      key: 'asset_software_vulnerability',
+      name: 'Software Vulnerabilities',
+      description: 'Information related to vulnerabilities concerning the current prioritized entity (if it is an asset / host)'
+    },
+    {
+      key: 'number_of_critical_vulnerabilities',
+      name: '# of Critical Vulnerabilities',
+      description: 'Number of Critical Vulnerabilities assigned to the current prioritized entity'
+    },
+    {
+      key: 'total_number_of_exploitable_vulnerabilities',
+      name: '# of Exploitable Vulnerabilities',
+      description: 'Number of Exploitable Vulnerabilities assigned to the current prioritized entity'
+    },
+    {
+      key: 'total_number_of_high_epss_vulnerabilities',
+      name: '# of Vulnerabilities with high EPSS',
+      description: 'Number of Vulnerabilities with high EPSS score assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_critical_vulnerabilities_list',
+      name: 'List of Critical Vulnerabilities',
+      description: 'List of Critical Vulnerabilities assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_exploitable_vulnerabilities_list',
+      name: 'List of Exploitable Vulnerabilities',
+      description: 'List of Exploitable Vulnerabilities assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_high_epss_vulnerabilities_list',
+      name: 'List of Vulnerabilities with high EPSS',
+      description: 'List of Vulnerabilities with high EPSS score assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_insecure_configuration',
+      name: 'Insecure Configuration',
+      description: 'Information related to insecure configurations concerning the current prioritized entity (if it is an asset / host)'
+    },
+    {
+      key: 'total_number_of_insecure_configurations',
+      name: '# of Insecure Configurations',
+      description: 'Number of Insecure Configurations assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_internet_exposure',
+      name: 'Internet Exposure',
+      description: 'Information related to Internet exposure concerning the current prioritized entity (if it is an asset / host)'
+    },
+    {
+      key: 'asset_is_internet_exposed',
+      name: 'Asset is Internet exposed',
+      description: 'Set to "yes" if asset is known to be potentially exposed to the internet (e.g. has public IP, is in a VPC with Internet gateway, etc.)'
+    },
+    {
+      key: 'asset_cloud_account',
+      name: 'Cloud Account Details',
+      description: 'Cloud Account Details'
     },
     {
       key: 'open_relevant_anomaly_details',
