@@ -325,8 +325,8 @@
       .filter(t => !isNaN(t));
     if (validTimes.length === 0) return '';
 
-    const startTime = Math.min(...validTimes);
-    const endTime   = startTime + DAYS * MS_DAY;
+    const endTime   = Date.now();
+    const startTime = endTime - DAYS * MS_DAY;
 
     // SVG layout
     const W = 800, H = 112, padL = 45, padR = 20;
@@ -349,18 +349,17 @@
       svgBody += `<line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + (major ? 8 : 5)}" stroke="#94a3b8" stroke-width="${major ? 1.5 : 1}"/>`;
       if (major) {
         const date  = new Date(startTime + d * MS_DAY);
-        const label = `${date.getMonth() + 1}/${date.getDate()}`;
+        const label = date.getFullYear() + '-' +
+          String(date.getMonth() + 1).padStart(2, '0') + '-' +
+          String(date.getDate()).padStart(2, '0');
         svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
       }
     }
 
-    // "Now" marker (subtle, if today falls within the window)
-    const nowTime = Date.now();
-    if (nowTime >= startTime && nowTime <= endTime) {
-      const nx = tx(nowTime);
-      svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
-      svgBody += `<text x="${nx + 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600">NOW</text>`;
-    }
+    // "Now" marker — always at the right edge
+    const nx = tx(endTime);
+    svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
+    svgBody += `<text x="${nx - 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600" text-anchor="end">NOW</text>`;
 
     // Anomaly markers — iterate original array so idx matches card numbers (# 1, # 2 …)
     arr.forEach((item, idx) => {
