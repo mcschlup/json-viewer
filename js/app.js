@@ -120,7 +120,7 @@
   function formatPrimitive(value) {
     if (value === null) return '<span class="val-null">null</span>';
     if (value === true || value === false) return `<span class="val-bool">${value}</span>`;
-    if (typeof value === 'number') return `<span class="val-number">${value}</span>`;
+    if (typeof value === 'number') return escapeHtml(String(value));
     return escapeHtml(String(value));
   }
 
