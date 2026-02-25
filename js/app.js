@@ -319,14 +319,19 @@
     if (items.length === 0) return '';
 
     const MS_DAY = 86_400_000;
-    const DAYS = 15;
     const validTimes = items
       .map(item => parseAnomalyTime(item.anomaly_time))
       .filter(t => !isNaN(t));
     if (validTimes.length === 0) return '';
 
-    const endTime   = Date.now();
-    const startTime = endTime - DAYS * MS_DAY;
+    const nowTime   = Date.now();
+    const minTime   = Math.min(...validTimes);
+    const maxTime   = Math.max(...validTimes);
+    // Extend right edge to now only when the last anomaly is within the last 15 days
+    const showNow   = maxTime >= nowTime - 15 * MS_DAY;
+    const startTime = minTime;
+    const endTime   = showNow ? nowTime : maxTime;
+    const rangeMs   = Math.max(endTime - startTime, MS_DAY); // guard against zero range
 
     // SVG layout
     const W = 800, H = 112, padL = 45, padR = 20;
@@ -334,7 +339,7 @@
     const plotW = W - padL - padR;
 
     function tx(t) {
-      return padL + ((t - startTime) / (DAYS * MS_DAY)) * plotW;
+      return padL + ((t - startTime) / rangeMs) * plotW;
     }
 
     let svgBody = '';
@@ -342,24 +347,27 @@
     // Axis line
     svgBody += `<line x1="${padL}" y1="${axisY}" x2="${W - padR}" y2="${axisY}" stroke="#cbd5e1" stroke-width="1.5"/>`;
 
-    // Day ticks and labels (label every 5 days)
-    for (let d = 0; d <= DAYS; d++) {
-      const x     = tx(startTime + d * MS_DAY);
-      const major = d % 5 === 0;
-      svgBody += `<line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + (major ? 8 : 5)}" stroke="#94a3b8" stroke-width="${major ? 1.5 : 1}"/>`;
-      if (major) {
-        const date  = new Date(startTime + d * MS_DAY);
-        const label = date.getFullYear() + '-' +
-          String(date.getMonth() + 1).padStart(2, '0') + '-' +
-          String(date.getDate()).padStart(2, '0');
-        svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
-      }
+    // Day ticks and labels — choose a step that yields ~4–6 labels
+    const totalDays = rangeMs / MS_DAY;
+    const step = [1, 2, 3, 5, 7, 10, 14, 21, 30].find(s => totalDays / s <= 6) || 30;
+    for (let d = 0; d * MS_DAY <= rangeMs + MS_DAY; d += step) {
+      const t = startTime + d * MS_DAY;
+      if (t > endTime) break;
+      const x    = tx(t);
+      const date = new Date(t);
+      const label = date.getFullYear() + '-' +
+        String(date.getMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getDate()).padStart(2, '0');
+      svgBody += `<line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + 8}" stroke="#94a3b8" stroke-width="1.5"/>`;
+      svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
     }
 
-    // "Now" marker — always at the right edge
-    const nx = tx(endTime);
-    svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
-    svgBody += `<text x="${nx - 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600" text-anchor="end">NOW</text>`;
+    // "Now" marker — only when recent anomalies are present
+    if (showNow) {
+      const nx = tx(endTime);
+      svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
+      svgBody += `<text x="${nx - 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600" text-anchor="end">NOW</text>`;
+    }
 
     // Anomaly markers — iterate original array so idx matches card numbers (# 1, # 2 …)
     arr.forEach((item, idx) => {
@@ -392,7 +400,7 @@
       svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="7" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" pointer-events="none">${idx + 1}</text>`;
     });
 
-    const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline — 15-day range">${svgBody}</svg>`;
+    const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline">${svgBody}</svg>`;
 
     // Legend — severity colours
     const sevLegend = Object.entries(SEVERITY_COLORS).map(([name, c]) =>
@@ -408,7 +416,7 @@
     return `
       <div class="timeline-wrap">
         <div class="timeline-head">
-          <span class="timeline-title">15-Day Anomaly Timeline</span>
+          <span class="timeline-title">Anomaly Timeline</span>
           <div class="timeline-legend">${sevLegend}${statusLegend}</div>
         </div>
         ${svgEl}
