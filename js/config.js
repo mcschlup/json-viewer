@@ -43,6 +43,11 @@ const CONFIG = {
       testKey:   (key)   => key === 'user_is_risky_person',
       testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value)),
       cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'identity_is_risky_person',
+      testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value)),
+      cssClass: 'hl-red'
   //  },
   //  {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
@@ -63,6 +68,9 @@ const CONFIG = {
   //   name        – display name that replaces the raw key in the UI
   //   description – tooltip text shown on hover (optional)
   fieldMappings: [
+    //-------------------------------------------------------------------------------------------------------
+    // Generic section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'risk_notable_title',
       name: 'Risk Notable',
@@ -118,6 +126,9 @@ const CONFIG = {
       name: 'Timestamp of newest Anomaly',
       description: 'Timestamp of the last correlated anomaly.'
     },
+    //-------------------------------------------------------------------------------------------------------
+    // Anomaly Overview section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'anomaly_overview',
       name: 'Anomaly Overview',
@@ -153,6 +164,9 @@ const CONFIG = {
       name: 'Analysis Status',
       description: 'Current analysis status (open or closed). The status defines, if an anomaly is still taken into account for the risk score calculation of the risk notable.'
     },
+    //-------------------------------------------------------------------------------------------------------
+    // User Details section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'identity_user',
       name: 'User Details',
@@ -215,7 +229,7 @@ const CONFIG = {
     },
     {
       key: 'user_email_address',
-      name: 'E-Mail address',
+      name: 'E-Mail Address',
       description: 'The user\'s e-mail address'
     },
     {
@@ -231,18 +245,70 @@ const CONFIG = {
     {
       key: 'user_associated_devices',
       name: 'Associated Devices',
+      description: 'List of Devices associated with the user'
+    },
+    {
+      key: 'user_last_loggedon_devices',
+      name: 'Last Logged-on Devices',
       description: 'List of Devices that the user has authenticated against during the last 14 days'
+    },
+    {
+      key: 'user_email_external',
+      name: 'External E-Mail Address',
+      description: 'External e-mail address (company e-mail address of an external employee)'
+    },
+    {
+      key: 'user_employee_type',
+      name: 'Employee Type',
+      description: 'Meta Directory flag representing the type of the user (e.g. Internal, External, Technical Account, Test Account, etc.)'
     },
     {
       key: 'user_market_unit',
       name: 'Market Unit',
       description: 'Market unit the user is assigned to / is working in'
     },
+    // risk_vulnerability_factor_details already defined in host details section
+    {
+      key: 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days',
+      name: 'Authentication against risky assets',
+      description: 'Current prioritized entity has authenticated against an asset that is known to have software vulnerabilities and/or insecure configurations'
+    },
+    {
+      key: 'identity_authentication_against_vulnerable_asset_last_200_days_asset_list',
+      name: 'List of risky assets',
+      description: 'List of assets with known software vulnerabilities and/or insecure configurations that the current prioritized entity has authenticated against during the last 200 days'
+    },
+    {
+      key: 'risk_impact_factor_details',
+      name: 'Risk Impact',
+      description: 'Risk Impact'
+    },
+    {
+      key: 'identity_is_risky_person',
+      name: 'Risky Person',
+      description: 'Current prioritized entity is rated as risky person. If applicable, set to any combination of "Executive", "Domain Admin" and/or "Leaving Employee"'
+    },
+    {
+      key: 'identity_authentication_against_critical_application_last_200_days_application_list',
+      name: 'Authentication against Critical Application',
+      description: 'List of applications rated critical running on assets that the current prioritized entity has authenticated against during the last 200 days'
+    },
+    {
+      key: 'identity_authentication_against_cia_application_last_200_days_application_list',
+      name: 'Authentication against High CIA Score Application',
+      description: 'List of applications with high CIA score running on assets that the current prioritized entity has authenticated against during the last 200 days'
+    },
+    //-------------------------------------------------------------------------------------------------------
+    // App Reg Details section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'identity_app_registration',
       name: 'App Registration Details',
       description: 'App Registration Details'
     },
+    //-------------------------------------------------------------------------------------------------------
+    // Host Details section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'asset_host',
       name: 'Host Details',
@@ -315,8 +381,8 @@ const CONFIG = {
     },
     {
       key: 'risk_vulnerability_factor_details',
-      name: 'Host Vulnerability Details',
-      description: 'Host Vulnerability Details'
+      name: 'Vulnerability Details',
+      description: 'Vulnerability Details'
     },
     {
       key: 'asset_software_vulnerability',
@@ -373,11 +439,23 @@ const CONFIG = {
       name: 'Asset is Internet exposed',
       description: 'Set to "yes" if asset is known to be potentially exposed to the internet (e.g. has public IP, is in a VPC with Internet gateway, etc.)'
     },
+    // risk_impact_factor_details already defined in host details section
+    {
+      key: 'asset_cloud_accountxxxxx',
+      name: 'Cloud Account Details',
+      description: 'Cloud Account Details'
+    },
+    //-------------------------------------------------------------------------------------------------------
+    // Cloud Account Details section
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'asset_cloud_account',
       name: 'Cloud Account Details',
       description: 'Cloud Account Details'
     },
+    //-------------------------------------------------------------------------------------------------------
+    // Anomaly Details sections
+    //-------------------------------------------------------------------------------------------------------
     {
       key: 'open_relevant_anomaly_details',
       name: 'Relevant Anomaly Details (Open)',
@@ -399,9 +477,67 @@ const CONFIG = {
       description: 'Contextual Anomaly Details (Closed)'
     },
     {
+      key: 'anomaly_drill_down',
+      name: 'Product/Details Drill Down',
+      description: 'Link to the detecting product showing more details related to the anomaly. Shows raw events in Splunk for custom use cases.'
+    },
+    {
+      key: 'anomaly_response_instruction_drill_down',
+      name: 'Response Instructions',
+      description: 'Link to response instructions for that specific anomaly.'
+    },
+    {
+      key: 'anomaly_market_unit',
+      name: 'Market Unit',
+      description: 'Market Unit(s) somehow involved in this anomaly.'
+    },
+    {
+      key: 'anomaly_source_identity',
+      name: 'Source Identity(s)',
+      description: 'All identities identified as source (actor) in this anomaly.'
+    },
+    {
+      key: 'anomaly_source_asset',
+      name: 'Source Assets(s)',
+      description: 'All assets identified as source (actor) in this anomaly.'
+    },
+    {
+      key: 'anomaly_destination_identity',
+      name: 'Destination Identity(s)',
+      description: 'All identities identified as destination (target) in this anomaly.'
+    },
+    {
+      key: 'anomaly_destination_asset',
+      name: 'Destination Asset(s)',
+      description: 'All assets identified as destination (target) in this anomaly.'
+    },
+    {
+      key: 'anomaly_additional_info',
+      name: 'Additional Information',
+      description: 'Additional information related to this anomaly.'
+    },
+    //-------------------------------------------------------------------------------------------------------
+    // Related Entities section
+    //-------------------------------------------------------------------------------------------------------
+    {
       key: 'related_entities_to_correlated_anomalies_details',
       name: 'Related Entities',
       description: 'Related Entities'
+    },
+    {
+      key: 'related_entity',
+      name: 'Entity Name',
+      description: 'Entity Name'
+    },
+    {
+      key: 'related_entity_type',
+      name: 'Entity Type',
+      description: 'Entity Type'
+    },
+    {
+      key: 'related_entity_score',
+      name: 'Entity Risk Score',
+      description: 'Entity Risk Score'
     }
   ],
 
