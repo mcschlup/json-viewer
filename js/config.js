@@ -159,6 +159,86 @@ const CONFIG = {
       description: 'User Details'
     },
     {
+      key: 'identity_user_details',
+      name: 'User Details',
+      description: 'User Details'
+    },
+    {
+      key: 'user_id',
+      name: 'User ID',
+      description: 'User ID of the current prioritized entity'
+    },
+    {
+      key: 'user_name',
+      name: 'User Name',
+      description: 'Full name of the current prioritized entity'
+    },
+    {
+      key: 'user_is_risky_person',
+      name: 'User is Risky Person',
+      description: 'Current prioritized entity is rated as risky person. If applicable, set to any combination of "Executive", "Domain Admin" and/or "Leaving Employee"'
+    },
+    {
+      key: 'user_manager_id',
+      name: 'Manager User ID',
+      description: 'User ID of the user\'s manager'
+    },
+    {
+      key: 'user_manager_name',
+      name: 'Manager Name',
+      description: 'Full name of the user\'s manager'
+    },
+    {
+      key: 'user_team_name',
+      name: 'Team Name',
+      description: 'Name of the team the user is working with'
+    },
+    {
+      key: 'user_location',
+      name: 'Location',
+      description: 'Place of work of the user (city, office building)'
+    },
+    {
+      key: 'user_office',
+      name: 'Office',
+      description: 'Office details for the current user'
+    },
+    {
+      key: 'user_phone_number',
+      name: 'Phone Number',
+      description: 'The user\'s phone number'
+    },
+    {
+      key: 'user_mobile_number',
+      name: 'Mobile Phone Number',
+      description: 'The user\'s mobile phone number'
+    },
+    {
+      key: 'user_email_address',
+      name: 'E-Mail address',
+      description: 'The user\'s e-mail address'
+    },
+    {
+      key: 'user_calendar_drill_down',
+      name: 'Calendar',
+      description: 'Drill down link to the user\'s calendar in peoplesearch'
+    },
+    {
+      key: 'user_last_password_reset_time',
+      name: 'Password Reset Time',
+      description: 'Time when the user\'s password has last been reset (source of this data is updated only once per hour)'
+    },
+    {
+      key: 'user_associated_devices',
+      name: 'Associated Devices',
+      description: 'List of Devices that the user has authenticated against during the last 14 days'
+    },
+    {
+      key: 'user_market_unit',
+      name: 'Market Unit',
+      description: 'Market unit the user is assigned to / is working in'
+    },
+    {
       key: 'identity_app_registration',
       name: 'App Registration Details',
       description: 'App Registration Details'
