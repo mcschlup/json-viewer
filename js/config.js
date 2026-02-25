@@ -170,8 +170,8 @@ const CONFIG = {
     },
     {
       key: 'asset_host_details',
-      name: 'Details',
-      description: 'Details'
+      name: 'Host Details',
+      description: 'Host Details'
     },
     {
       key: 'host_id',
@@ -235,8 +235,8 @@ const CONFIG = {
     },
     {
       key: 'risk_vulnerability_factor_details',
-      name: 'Vulnerability Details',
-      description: 'Vulnerability Details'
+      name: 'Host Vulnerability Details',
+      description: 'Host Vulnerability Details'
     },
     {
       key: 'asset_software_vulnerability',

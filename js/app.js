@@ -519,6 +519,34 @@
     });
   }
 
+  // ── Floatable Tab Bar ──────────────────────────────────────────────────────
+
+  function initScrollyTabs() {
+    const tabBar = document.getElementById('tab-bar');
+    if (!tabBar) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'tab-bar-sticky';
+    tabBar.parentNode.insertBefore(wrap, tabBar);
+    wrap.appendChild(tabBar);
+
+    const naturalHeight = wrap.scrollHeight;
+    wrap.style.maxHeight = naturalHeight + 'px';
+
+    let lastY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const goingDown = y > lastY;
+      lastY = y;
+      if (goingDown && y > naturalHeight) {
+        wrap.style.maxHeight = '0';
+      } else if (!goingDown) {
+        wrap.style.maxHeight = naturalHeight + 'px';
+      }
+    }, { passive: true });
+  }
+
   // ── Entry Point ────────────────────────────────────────────────────────────
 
   function showState(id) {
@@ -553,6 +581,7 @@
     initDrillDown();
     initFieldTooltips();
     showState('viewer');
+    initScrollyTabs();
   }
 
   document.addEventListener('DOMContentLoaded', init);
