@@ -613,8 +613,18 @@ const CONFIG = {
       name: 'Operations Responsible Name',
       description: 'Name of the Operations Responsible of the Application assigned to this account/subscription'
     },
-    {
+    { // keep for some time - can be removed then
       key: 'aplication_owner_id',
+      name: 'Application Owner ID',
+      description: 'User ID of the Application Owner of the application assigned to this account/subscription'
+    },
+    { // keep for some time - can be removed then
+      key: 'aplication_owner_name',
+      name: 'Application Owner Name',
+      description: 'Name of the Application Owner of the application assigned to this account/subscription'
+    },
+    {
+      key: 'application_owner_id',
       name: 'Application Owner ID',
       description: 'User ID of the Application Owner of the application assigned to this account/subscription'
     },
