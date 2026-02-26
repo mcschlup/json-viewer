@@ -556,52 +556,52 @@ const CONFIG = {
     {
       key: 'support_group_name',
       name: 'Service Support Group',
-      description: 'Support Group from Service Offering in CMDB (if available)'
+      description: 'Support Group of the Application assigned to this account/subscription'
     },
     {
       key: 'service_owner_id',
       name: 'Service Owner User ID',
-      description: 'User ID of the Service Owner according to CMDB'
+      description: 'User ID of the Service Owner of the Application assigned to this account/subscription'
     },
     {
       key: 'service_owner_name',
       name: 'Service Owner Name',
-      description: 'Name of the Service Owner according to CMDB'
+      description: 'Name of the Service Owner of the Application assigned to this account/subscription'
     },
     {
       key: 'service_responsible_id',
       name: 'Service Responsible User ID',
-      description: 'User ID of the Service Responsible according to CMDB'
+      description: 'User ID of the Service Responsible of the Application assigned to this account/subscription'
     },
     {
       key: 'service_responsible_name',
       name: 'Service Responsible Name',
-      description: 'Name of the Service Responsible according to CMDB'
+      description: 'Name of the Service Responsible of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'so_support_group_name',
       name: 'Service Support Group',
-      description: 'Support Group from Service Offering in CMDB (if available)'
+      description: 'Support Group of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'so_service_owner_id',
       name: 'Service Owner User ID',
-      description: 'User ID of the Service Owner according to CMDB'
+      description: 'User ID of the Service Owner of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'so_service_owner_name',
       name: 'Service Owner Name',
-      description: 'Name of the Service Owner according to CMDB'
+      description: 'Name of the Service Owner of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'so_service_responsible_id',
       name: 'Service Responsible User ID',
-      description: 'User ID of the Service Responsible according to CMDB'
+      description: 'User ID of the Service Responsible of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'so_service_responsible_name',
       name: 'Service Responsible Name',
-      description: 'Name of the Service Responsible according to CMDB'
+      description: 'Name of the Service Responsible of the Application assigned to this account/subscription'
     },
     { // keep for some time - can be removed then
       key: 'application_operations_responsible_id',
