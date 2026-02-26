@@ -314,47 +314,42 @@ const CONFIG = {
     {
       key: 'app_registration_id',
       name: 'App Registration Application ID',
-      description: 'App Registration Details'
-    },
-    {
-      key: 'app_registration_upn',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      description: 'Entra ID App Registration Application (Client) ID'
     },
     {
       key: 'app_registration_name',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'App Registration Display Name',
+      description: 'Entra ID App Registration Display Name'
     },
     {
       key: 'app_registration_criticality',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'Risky App Registration',
+      description: 'Current prioritized entity is rated as risky App Registration. If applicable, set to any combination of "Terraform" and/or "Entra ID"'
     },
     {
       key: 'app_registration_manager_id',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'Manager User ID',
+      description: 'User ID of the app registration\'s manager'
     },
     {
       key: 'app_registration_manager_name',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'Manager Name',
+      description: 'Full name of the app registration\'s manager'
     },
     {
       key: 'app_registration_application_name',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'Application Name',
+      description: 'Name of the associated Application'
     },
     {
       key: 'app_registration_entraid_oid',
-      name: 'App Registration Details',
-      description: 'App Registration Details'
+      name: 'App Registration Object ID',
+      description: 'Entra ID App Registration Object ID'
     },
     {
       key: 'app_registration_market_unit',
       name: 'App Registration Market Unit',
-      description: 'App Registration Details'
+      description: 'Entra ID associated market unit'
     },
     //-------------------------------------------------------------------------------------------------------
     // Host Details section
