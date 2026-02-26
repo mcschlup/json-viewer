@@ -267,7 +267,7 @@ const CONFIG = {
       name: 'Market Unit',
       description: 'Market unit the user is assigned to / is working in'
     },
-    // risk_vulnerability_factor_details already defined in host details section
+    // key "risk_vulnerability_factor_details" already defined in host details section
     {
       key: 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days',
       name: 'Authentication against risky assets',
@@ -304,6 +304,56 @@ const CONFIG = {
     {
       key: 'identity_app_registration',
       name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'identity_app_registration_details',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_id',
+      name: 'App Registration Application ID',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_upn',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_name',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_criticality',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_manager_id',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_manager_name',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_application_name',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_entraid_oid',
+      name: 'App Registration Details',
+      description: 'App Registration Details'
+    },
+    {
+      key: 'app_registration_market_unit',
+      name: 'App Registration Market Unit',
       description: 'App Registration Details'
     },
     //-------------------------------------------------------------------------------------------------------
@@ -439,11 +489,36 @@ const CONFIG = {
       name: 'Asset is Internet exposed',
       description: 'Set to "yes" if asset is known to be potentially exposed to the internet (e.g. has public IP, is in a VPC with Internet gateway, etc.)'
     },
-    // risk_impact_factor_details already defined in host details section
+    // key "risk_impact_factor_details" already defined in identity user details section
     {
-      key: 'asset_cloud_accountxxxxx',
-      name: 'Cloud Account Details',
-      description: 'Cloud Account Details'
+      key: 'asset_highest_application_name',
+      name: 'Application Name',
+      description: 'Application assigned to this asset with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'asset_highest_application_confidentiality',
+      name: 'Application Confidentiality',
+      description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'asset_highest_application_integrity',
+      name: 'Application Integrity',
+      description: 'Integrity of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'asset_highest_application_availability',
+      name: 'Application Availability',
+      description: 'Availability of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'asset_highest_business_criticality',
+      name: 'Application Business Criticality',
+      description: 'Business Criticality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    {
+      key: 'asset_risky_person_authentication_against_asset_last_200_days_identity_list',
+      name: 'Risky Persons authenticated against Asset',
+      description: 'List of Risky Persons that authenticated against the current prioritized entity (if it is an asset / host) during the last 200 days'
     },
     //-------------------------------------------------------------------------------------------------------
     // Cloud Account Details section
@@ -452,6 +527,126 @@ const CONFIG = {
       key: 'asset_cloud_account',
       name: 'Cloud Account Details',
       description: 'Cloud Account Details'
+    },
+    {
+      key: 'asset_cloud_account_details',
+      name: 'Cloud Account Details',
+      description: 'Cloud Account Details'
+    },
+    {
+      key: 'cloud_id',
+      name: 'Account/Subscription ID',
+      description: 'Account ID (AWS) or Subscription ID (Azure)'
+    },
+    {
+      key: 'cloud_name',
+      name: 'Account/Subscription Name',
+      description: 'Name of the account / subscription'
+    },
+    {
+      key: 'cloud_provider',
+      name: 'Provider',
+      description: 'Cloud Account Provider, currently either AWS or Azure'
+    },
+    {
+      key: 'cloud_stage',
+      name: 'Stage',
+      description: 'Stage of the account / subscription'
+    },
+    {
+      key: 'support_group_name',
+      name: 'Service Support Group',
+      description: 'Support Group from Service Offering in CMDB (if available)'
+    },
+    {
+      key: 'service_owner_id',
+      name: 'Service Owner User ID',
+      description: 'User ID of the Service Owner according to CMDB'
+    },
+    {
+      key: 'service_owner_name',
+      name: 'Service Owner Name',
+      description: 'Name of the Service Owner according to CMDB'
+    },
+    {
+      key: 'service_responsible_id',
+      name: 'Service Responsible User ID',
+      description: 'User ID of the Service Responsible according to CMDB'
+    },
+    {
+      key: 'service_responsible_name',
+      name: 'Service Responsible Name',
+      description: 'Name of the Service Responsible according to CMDB'
+    },
+    { // keep for some time - can be removed then
+      key: 'so_support_group_name',
+      name: 'Service Support Group',
+      description: 'Support Group from Service Offering in CMDB (if available)'
+    },
+    { // keep for some time - can be removed then
+      key: 'so_service_owner_id',
+      name: 'Service Owner User ID',
+      description: 'User ID of the Service Owner according to CMDB'
+    },
+    { // keep for some time - can be removed then
+      key: 'so_service_owner_name',
+      name: 'Service Owner Name',
+      description: 'Name of the Service Owner according to CMDB'
+    },
+    { // keep for some time - can be removed then
+      key: 'so_service_responsible_id',
+      name: 'Service Responsible User ID',
+      description: 'User ID of the Service Responsible according to CMDB'
+    },
+    { // keep for some time - can be removed then
+      key: 'so_service_responsible_name',
+      name: 'Service Responsible Name',
+      description: 'Name of the Service Responsible according to CMDB'
+    },
+    { // keep for some time - can be removed then
+      key: 'application_operations_responsible_id',
+      name: 'Operations Responsible User ID',
+      description: 'User ID of the Operations Responsible of the Application assigned to this account/subscription'
+    },
+    { // keep for some time - can be removed then
+      key: 'application_operations_responsible_name',
+      name: 'Operations Responsible Name',
+      description: 'Name of the Operations Responsible of the Application assigned to this account/subscription'
+    },
+    {
+      key: 'aplication_owner_id',
+      name: 'Application Owner ID',
+      description: 'User ID of the Application Owner of the application assigned to this account/subscription'
+    },
+    {
+      key: 'application_owner_name',
+      name: 'Application Owner Name',
+      description: 'Name of the Application Owner of the application assigned to this account/subscription'
+    },
+    {
+      key: 'application_name',
+      name: 'Application Name',
+      description: 'Name of the Application assigned to this account/subscription'
+    },
+    {
+      key: 'application_confidentiality',
+      name: 'Application Confidentiality',
+      description: 'Confidentiality of the Application assigned to this account/subscription'
+    },
+    {
+      key: 'application_integrity',
+      name: 'Application Integrity',
+      description: 'Integrity of the Application assigned to this account/subscription'
+    },
+    {
+      key: 'application_availability',
+      name: 'Application Availability',
+      description: 'Availability of the Application assigned to this account/subscription'
+    },
+    {
+      key: 'business_criticality',
+      name: 'Application Business Criticality',
+      description: 'Business Criticality of the Application assigned to this account/subscription'
     },
     //-------------------------------------------------------------------------------------------------------
     // Anomaly Details sections
@@ -515,6 +710,31 @@ const CONFIG = {
       key: 'anomaly_additional_info',
       name: 'Additional Information',
       description: 'Additional information related to this anomaly.'
+    },
+    {
+      key: 'anomaly_severity_score',
+      name: 'Severity Score',
+      description: 'The anomaly\'s severity (which is based on the severity level)'
+    },
+    {
+      key: 'use_case_fidelity_factor',
+      name: 'Use Case Fidelity Factor',
+      description: 'Factor to weight in the fidelity of the use case (that created this anomaly).'
+    },
+    {
+      key: 'time_decay_factor',
+      name: 'Time Decay Factor',
+      description: 'Factor used to slightly lower the importance of anomalies over time.'
+    },
+    {
+      key: 'closure_decay_factor',
+      name: 'Closure Decay Factor',
+      description: 'Factor used to exclude closed anomalies from counting in risk notable score (i.e. set to 0 when anomaly is closed).'
+    },
+    {
+      key: 'risk_threat_factor_by_anomaly',
+      name: 'Anomaly Threat Score',
+      description: 'Anomaly Threat Score that counts into the overall risk notable score.'
     },
     //-------------------------------------------------------------------------------------------------------
     // Related Entities section
