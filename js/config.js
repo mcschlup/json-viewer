@@ -787,6 +787,25 @@ const CONFIG = {
     //     { baseUrl: 'https://peoplesearch.example.com/?q=',    description: 'Open in PeopleSearch' }
     //   ]
     // },
+    {
+      key: 'entity',
+      actions: [
+        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' },
+        { baseUrl: 'https://wiki.helvetia.group/dosearchsite.action?queryString=',    description: 'Search in Wiki' }
+      ]
+    },
+    {
+      key: 'user_email_address',
+      actions: [
+        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' }
+      ]
+    },
+    {
+      key: 'user_email_external',
+      actions: [
+        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' }
+      ]
+    }
   ],
 
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)
