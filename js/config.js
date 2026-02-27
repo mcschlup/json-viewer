@@ -48,6 +48,11 @@ const CONFIG = {
       testKey:   (key)   => key === 'identity_is_risky_person',
       testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value)),
       cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_is_internet_exposed',
+      testValue: (value) => /(yes)/.test(String(value)),
+      cssClass: 'hl-red'
   //  },
   //  {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
