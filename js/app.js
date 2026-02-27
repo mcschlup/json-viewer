@@ -479,16 +479,41 @@
     const tabPanels = document.getElementById('tab-panels');
     const entries = Object.entries(data);
 
-    entries.forEach(([key, value], index) => {
+    // Sections that never show a count badge
+    const NO_COUNT_SECTIONS = new Set([
+      'generic', 'identity_user', 'identity_app_registration',
+      'asset_host', 'asset_cloud_account'
+    ]);
+
+    // Determine which entity-specific sections to show based on generic section
+    const generic = data.generic && typeof data.generic === 'object' ? data.generic : {};
+    const entityType    = (generic.entity_type    || '').toLowerCase();
+    const entitySubtype = (generic.entity_subtype || '').toLowerCase();
+
+    const hiddenSections = new Set();
+    if (!(entityType === 'identity' && entitySubtype === 'user'))   hiddenSections.add('identity_user');
+    if (!(entityType === 'identity' && entitySubtype === 'appreg')) hiddenSections.add('identity_app_registration');
+    if (!(entityType === 'asset'    && entitySubtype === 'host'))   hiddenSections.add('asset_host');
+    if (!(entityType === 'asset'    && entitySubtype === 'cloud'))  hiddenSections.add('asset_cloud_account');
+
+    let panelIndex = 0;
+    let firstVisible = true;
+    entries.forEach(([key, value]) => {
+      if (hiddenSections.has(key)) return;
+
+      const idx = panelIndex++;
+      const isFirst = firstVisible;
+      firstVisible = false;
+
       // Button
       const btn = document.createElement('button');
-      btn.className = 'tab-btn' + (index === 0 ? ' active' : '');
+      btn.className = 'tab-btn' + (isFirst ? ' active' : '');
       btn.setAttribute('role', 'tab');
-      btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-      btn.setAttribute('aria-controls', `panel-${index}`);
+      btn.setAttribute('aria-selected', isFirst ? 'true' : 'false');
+      btn.setAttribute('aria-controls', `panel-${idx}`);
       btn.dataset.tab = key;
 
-      const count = sectionCount(value);
+      const count = NO_COUNT_SECTIONS.has(key) ? null : sectionCount(value);
       const countHtml = count !== null ? `<span class="tab-count">${count}</span>` : '';
       const tabMapping = getFieldMapping(key);
       const tabLabel = tabMapping ? escapeHtml(tabMapping.name) : escapeHtml(key);
@@ -498,8 +523,8 @@
 
       // Panel
       const panel = document.createElement('div');
-      panel.className = 'tab-panel' + (index === 0 ? ' active' : '');
-      panel.id = `panel-${index}`;
+      panel.className = 'tab-panel' + (isFirst ? ' active' : '');
+      panel.id = `panel-${idx}`;
       panel.setAttribute('role', 'tabpanel');
       panel.dataset.tab = key;
       const timelineHtml = (key === 'anomaly_overview' && Array.isArray(value))
