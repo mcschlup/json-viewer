@@ -78,6 +78,12 @@
     return CONFIG.fieldMappings.find(m => m.key === key) || null;
   }
 
+  function getFieldDrillDowns(key) {
+    if (!CONFIG.fieldDrillDowns) return null;
+    const entry = CONFIG.fieldDrillDowns.find(e => e.key === key);
+    return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
+  }
+
   function initFieldTooltips() {
     const tip = document.createElement('div');
     tip.className = 'field-tooltip hidden';
@@ -161,6 +167,23 @@
       </div>`;
   }
 
+  function formatFieldDrillDowns(value, actions) {
+    const escapedValue = escapeHtml(String(value));
+    const buttons = actions.map(entry => {
+      const escapedDesc = escapeHtml(entry.description || '');
+      if (entry.baseUrl === 'copyvalue') {
+        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
+      } else {
+        const escapedUrl = escapeHtml(entry.baseUrl + String(value));
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${ICON_OPEN}</button>`;
+      }
+    }).join('');
+    return `<div class="drill-down-wrap">
+        <span class="drill-down-text">${escapedValue}</span>
+        <span class="drill-down-actions">${buttons}</span>
+      </div>`;
+  }
+
   function initDrillDown() {
     document.addEventListener('click', e => {
       const copyBtn = e.target.closest('.drill-down-copy');
@@ -193,7 +216,11 @@
         : '';
 
       let valueHtml;
-      if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
+      const fieldDrillDownActions = (value !== null && typeof value !== 'object')
+        ? getFieldDrillDowns(key) : null;
+      if (fieldDrillDownActions) {
+        valueHtml = formatFieldDrillDowns(value, fieldDrillDownActions);
+      } else if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
         valueHtml = formatDrillDown(value);
       } else if (value === null || typeof value !== 'object') {
         valueHtml = formatPrimitive(value);

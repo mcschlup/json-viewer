@@ -771,6 +771,24 @@ const CONFIG = {
     }
   ],
 
+  // Field drill-downs: for a specific field key, add one or more action buttons next to the value.
+  // Each entry: { key, actions }
+  //   key     – exact field key to match
+  //   actions – array of { baseUrl, description }
+  //               baseUrl     : URL prefix to which the field value is appended to form the final URL
+  //                             use 'copyvalue' to show a copy-icon that copies the raw field value
+  //               description : tooltip text shown on hover over the button
+  fieldDrillDowns: [
+    // Example:
+    // {
+    //   key: 'user_id',
+    //   actions: [
+    //     { baseUrl: 'copyvalue',                                description: 'Copy User ID' },
+    //     { baseUrl: 'https://peoplesearch.example.com/?q=',    description: 'Open in PeopleSearch' }
+    //   ]
+    // },
+  ],
+
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)
   valueHighlightRules: [
     {
