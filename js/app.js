@@ -324,14 +324,11 @@
       .filter(t => !isNaN(t));
     if (validTimes.length === 0) return '';
 
-    const nowTime   = Date.now();
     const minTime   = Math.min(...validTimes);
     const maxTime   = Math.max(...validTimes);
-    // Extend right edge to now only when the last anomaly is within the last 15 days
-    const showNow   = maxTime >= nowTime - 15 * MS_DAY;
     const startTime = minTime;
-    const endTime   = showNow ? nowTime : maxTime;
-    const rangeMs   = Math.max(endTime - startTime, MS_DAY); // guard against zero range
+    const endTime   = maxTime;
+    const rangeMs   = Math.max(endTime - startTime, 3 * MS_DAY); // minimum 3-day range
 
     // SVG layout
     const W = 800, H = 112, padL = 45, padR = 20;
@@ -360,13 +357,6 @@
         String(date.getDate()).padStart(2, '0');
       svgBody += `<line x1="${x}" y1="${axisY}" x2="${x}" y2="${axisY + 8}" stroke="#94a3b8" stroke-width="1.5"/>`;
       svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
-    }
-
-    // "Now" marker — only when recent anomalies are present
-    if (showNow) {
-      const nx = tx(endTime);
-      svgBody += `<line x1="${nx}" y1="${circY - circR}" x2="${nx}" y2="${axisY}" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>`;
-      svgBody += `<text x="${nx - 3}" y="${circY - circR - 2}" font-size="8" fill="#6366f1" opacity="0.7" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="600" text-anchor="end">NOW</text>`;
     }
 
     // Anomaly markers — iterate original array so idx matches card numbers (# 1, # 2 …)
