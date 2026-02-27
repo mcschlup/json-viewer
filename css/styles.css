@@ -649,17 +649,22 @@ body {
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 0.4rem;
 }
 
 .drill-down-text {
+  flex: 1;
   word-break: break-all;
+  min-width: 0;
 }
 
 .drill-down-actions {
   display: flex;
   gap: 0.35rem;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
 .drill-down-btn {
