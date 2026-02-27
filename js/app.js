@@ -332,12 +332,21 @@
     const rangeMs   = endTime - startTime;
 
     // SVG layout
-    const W = 800, H = 112, padL = 45, padR = 20;
-    const axisY = 72, circR = 7, circY = 14; // circR=7 to fit card number inside
+    const W = 800, H = 132, padL = 45, padR = 20;
+    const axisY = 62, circR = 7;
+    const circYAbove = 14;   // circle centre for above-axis markers (open)
+    const circYBelow = 112;  // circle centre for below-axis markers (all others)
     const plotW = W - padL - padR;
 
     function tx(t) {
       return padL + ((t - startTime) / rangeMs) * plotW;
+    }
+
+    // Status classification helpers
+    function statusIsAbove(s) { return s === 'open'; }
+    function statusIsDashed(s) {
+      return ['escalated_fp', 'closed_benign', 'closed_fp',
+              'closed_suppressed', 'closed'].includes(s);
     }
 
     let svgBody = '';
@@ -371,8 +380,11 @@
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
 
-      // Solid line for "open", dashed for "closed"
-      const dashAttr = status === 'closed' ? ' stroke-dasharray="5,4"' : '';
+      const above      = statusIsAbove(status);
+      const dashed     = statusIsDashed(status);
+      const dashAttr   = dashed ? ' stroke-dasharray="5,4"' : '';
+      const circleFill = dashed ? 'white' : colors.fill;
+      const circY      = above ? circYAbove : circYBelow;
 
       const escapedTime   = escapeHtml(item.anomaly_time || '');
       const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
@@ -380,11 +392,15 @@
       const escapedName   = escapeHtml(item.anomaly_name || '');
       const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
-      // Vertical line from below circle down to axis
-      svgBody += `<line x1="${x}" y1="${circY + circR + 1}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+      if (above) {
+        // Line from bottom of circle up to axis
+        svgBody += `<line x1="${x}" y1="${circY + circR + 1}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+      } else {
+        // Line from axis down to top of circle
+        svgBody += `<line x1="${x}" y1="${axisY + 1}" x2="${x}" y2="${circY - circR - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+      }
 
-      // Circle at top: filled for "open", hollow (white fill) for "closed"
-      const circleFill = status === 'closed' ? 'white' : colors.fill;
+      // Circle
       svgBody += `<circle cx="${x}" cy="${circY}" r="${circR}" fill="${circleFill}" stroke="${colors.stroke}" stroke-width="2" class="tl-marker" ${tipAttrs}/>`;
 
       // Card number centered inside the circle
@@ -398,11 +414,14 @@
       `<span class="tl-leg-item"><span class="tl-leg-dot" style="background:${c.stroke}"></span>${escapeHtml(name)}</span>`
     ).join('');
 
-    // Legend — status shapes
+    // Legend — status shapes and position
     const statusLegend =
       `<span class="tl-leg-sep"></span>` +
-      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>open</span>` +
-      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>closed</span>`;
+      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>scoring relevant</span>` +
+      `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>not scoring relevant</span>` +
+      `<span class="tl-leg-sep"></span>` +
+      `<span class="tl-leg-item">&#9650;&nbsp;needs analysis</span>` +
+      `<span class="tl-leg-item">&#9660;&nbsp;no analysis needed</span>`;
 
     return `
       <div class="timeline-wrap">
