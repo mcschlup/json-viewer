@@ -318,7 +318,7 @@
     const items = arr.filter(item => item && typeof item === 'object' && item.anomaly_time);
     if (items.length === 0) return '';
 
-    const MS_DAY = 86_400_000;
+    const MS_DAY = 86400000;
     const validTimes = items
       .map(item => parseAnomalyTime(item.anomaly_time))
       .filter(t => !isNaN(t));
@@ -326,9 +326,10 @@
 
     const minTime   = Math.min(...validTimes);
     const maxTime   = Math.max(...validTimes);
-    const startTime = minTime;
+    // Most recent event always on right; extend left for minimum 5-day range if needed
     const endTime   = maxTime;
-    const rangeMs   = Math.max(endTime - startTime, 3 * MS_DAY); // minimum 3-day range
+    const startTime = Math.min(minTime, maxTime - 5 * MS_DAY);
+    const rangeMs   = endTime - startTime;
 
     // SVG layout
     const W = 800, H = 112, padL = 45, padR = 20;
