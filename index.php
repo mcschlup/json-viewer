@@ -127,6 +127,7 @@ if (isset($_GET['view'])) {
 
 <?php if ($view_id): ?>
   <script src="js/config.js"></script>
+  <script src="js/config-local.js"></script>
   <script src="js/app.js"></script>
 <?php endif; ?>
 </body>

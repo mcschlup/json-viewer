@@ -778,35 +778,8 @@ const CONFIG = {
   //               baseUrl     : URL prefix to which the field value is appended to form the final URL
   //                             use 'copyvalue' to show a copy-icon that copies the raw field value
   //               description : tooltip text shown on hover over the button
-  fieldDrillDowns: [
-    // Example:
-    // {
-    //   key: 'user_id',
-    //   actions: [
-    //     { baseUrl: 'copyvalue',                                description: 'Copy User ID' },
-    //     { baseUrl: 'https://peoplesearch.example.com/?q=',    description: 'Open in PeopleSearch' }
-    //   ]
-    // },
-    {
-      key: 'entity',
-      actions: [
-        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' },
-        { baseUrl: 'https://wiki.helvetia.group/dosearchsite.action?queryString=',    description: 'Search in Wiki' }
-      ]
-    },
-    {
-      key: 'user_email_address',
-      actions: [
-        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' }
-      ]
-    },
-    {
-      key: 'user_email_external',
-      actions: [
-        { baseUrl: 'copyvalue',                                                       description: 'Copy Value' }
-      ]
-    }
-  ],
+  // Default empty — override in js/config-local.js (not tracked in git)
+  fieldDrillDowns: [],
 
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)
   valueHighlightRules: [
