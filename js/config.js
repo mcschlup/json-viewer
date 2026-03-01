@@ -764,8 +764,8 @@ const CONFIG = {
       name: 'Entity Type',
       description: 'Entity Type'
     },
-    {
-      key: 'related_entity_score',
+{
+key: 'related_entity_score',
       name: 'Entity Risk Score',
       description: 'Entity Risk Score'
     }
@@ -802,6 +802,12 @@ const CONFIG = {
     //     { from: 'closed_suppressed',to: 'Closed (Suppressed)' }
     //   ]
     // },
+    {
+      key: 'asset_exploitable_vulnerabilities_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    }
   ],
 
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)

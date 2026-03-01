@@ -84,13 +84,15 @@
     return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
   }
 
+  // Returns a finished HTML string if replacements apply, or null if not.
+  // The source value is HTML-escaped first; `to` strings may contain raw HTML (e.g. <br>).
   function applyValueReplacements(key, value) {
-    if (!CONFIG.valueReplacements) return value;
+    if (value === null || !CONFIG.valueReplacements) return null;
     const entry = CONFIG.valueReplacements.find(e => e.key === key);
-    if (!entry || !entry.replacements) return value;
-    let result = String(value);
+    if (!entry || !entry.replacements) return null;
+    let result = escapeHtml(String(value));
     entry.replacements.forEach(({ from, to }) => {
-      result = result.split(from).join(to);
+      result = result.split(escapeHtml(from)).join(to);
     });
     return result;
   }
@@ -234,7 +236,8 @@
       } else if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
         valueHtml = formatDrillDown(value);
       } else if (value === null || typeof value !== 'object') {
-        valueHtml = formatPrimitive(applyValueReplacements(key, value));
+        const replaced = applyValueReplacements(key, value);
+        valueHtml = replaced !== null ? replaced : formatPrimitive(value);
       } else if (Array.isArray(value)) {
         if (value.length === 0) {
           valueHtml = '<span class="val-empty">[ empty array ]</span>';
