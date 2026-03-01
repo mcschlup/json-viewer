@@ -803,7 +803,25 @@ key: 'related_entity_score',
     //   ]
     // },
     {
+      key: 'host_status',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'asset_critical_vulnerabilities_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
       key: 'asset_exploitable_vulnerabilities_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'asset_high_epss_vulnerabilities_list',
       replacements: [
         { from: '|', to: '<br>' }
       ]
