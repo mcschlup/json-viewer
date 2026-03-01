@@ -781,6 +781,29 @@ const CONFIG = {
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
 
+  // String replacements applied to field values before display, matched by exact field key.
+  // Each entry: { key, replacements }
+  //   key          – exact field key to match
+  //   replacements – array of { from, to }
+  //                    from : string to search for (all occurrences are replaced)
+  //                    to   : string to replace with
+  valueReplacements: [
+    // Example:
+    // {
+    //   key: 'anomaly_analysis_status',
+    //   replacements: [
+    //     { from: 'open',             to: 'Open' },
+    //     { from: 'closed',           to: 'Closed' },
+    //     { from: 'escalated_open',   to: 'Escalated (Open)' },
+    //     { from: 'escalated_tp',     to: 'Escalated (True Positive)' },
+    //     { from: 'escalated_fp',     to: 'Escalated (False Positive)' },
+    //     { from: 'closed_benign',    to: 'Closed (Benign)' },
+    //     { from: 'closed_fp',        to: 'Closed (False Positive)' },
+    //     { from: 'closed_suppressed',to: 'Closed (Suppressed)' }
+    //   ]
+    // },
+  ],
+
   // Highlight rules based on field VALUE patterns (fallback when no key+value rule matches)
   valueHighlightRules: [
     {

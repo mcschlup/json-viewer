@@ -84,6 +84,17 @@
     return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
   }
 
+  function applyValueReplacements(key, value) {
+    if (!CONFIG.valueReplacements) return value;
+    const entry = CONFIG.valueReplacements.find(e => e.key === key);
+    if (!entry || !entry.replacements) return value;
+    let result = String(value);
+    entry.replacements.forEach(({ from, to }) => {
+      result = result.split(from).join(to);
+    });
+    return result;
+  }
+
   function initFieldTooltips() {
     const tip = document.createElement('div');
     tip.className = 'field-tooltip hidden';
@@ -223,7 +234,7 @@
       } else if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
         valueHtml = formatDrillDown(value);
       } else if (value === null || typeof value !== 'object') {
-        valueHtml = formatPrimitive(value);
+        valueHtml = formatPrimitive(applyValueReplacements(key, value));
       } else if (Array.isArray(value)) {
         if (value.length === 0) {
           valueHtml = '<span class="val-empty">[ empty array ]</span>';
