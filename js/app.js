@@ -461,8 +461,8 @@
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>scoring relevant</span>` +
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>not scoring relevant</span>` +
       `<span class="tl-leg-sep"></span>` +
-      `<span class="tl-leg-item">&#9650;&nbsp;needs analysis</span>` +
-      `<span class="tl-leg-item">&#9660;&nbsp;no analysis needed</span>`;
+      `<span class="tl-leg-item">&#9650;&nbsp;open events</span>` +
+      `<span class="tl-leg-item">&#9660;&nbsp;escalated/closed events</span>`;
 
     return `
       <div class="timeline-wrap">
