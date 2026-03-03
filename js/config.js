@@ -491,26 +491,51 @@ const CONFIG = {
     },
     // key "risk_impact_factor_details" already defined in identity user details section
     {
-      key: 'asset_highest_application_name',
+      key: 'asset_application_name',
       name: 'Application Name',
       description: 'Application assigned to this asset with the highest assigned CIA rating / criticality'
     },
     {
-      key: 'asset_highest_application_confidentiality',
+      key: 'asset_application_confidentiality',
       name: 'Application Confidentiality',
       description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
     },
     {
-      key: 'asset_highest_application_integrity',
+      key: 'asset_application_integrity',
       name: 'Application Integrity',
       description: 'Integrity of the application assigned to this host with the highest assigned CIA rating / criticality'
     },
     {
-      key: 'asset_highest_application_availability',
+      key: 'asset_application_availability',
       name: 'Application Availability',
       description: 'Availability of the application assigned to this host with the highest assigned CIA rating / criticality'
     },
     {
+      key: 'asset_business_criticality',
+      name: 'Application Business Criticality',
+      description: 'Business Criticality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    { // keep for some time - can be removed then
+      key: 'asset_highest_application_name',
+      name: 'Application Name',
+      description: 'Application assigned to this asset with the highest assigned CIA rating / criticality'
+    },
+    { // keep for some time - can be removed then
+      key: 'asset_highest_application_confidentiality',
+      name: 'Application Confidentiality',
+      description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    { // keep for some time - can be removed then
+      key: 'asset_highest_application_integrity',
+      name: 'Application Integrity',
+      description: 'Integrity of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    { // keep for some time - can be removed then
+      key: 'asset_highest_application_availability',
+      name: 'Application Availability',
+      description: 'Availability of the application assigned to this host with the highest assigned CIA rating / criticality'
+    },
+    { // keep for some time - can be removed then
       key: 'asset_highest_business_criticality',
       name: 'Application Business Criticality',
       description: 'Business Criticality of the application assigned to this host with the highest assigned CIA rating / criticality'
