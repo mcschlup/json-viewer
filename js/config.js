@@ -290,18 +290,23 @@ const CONFIG = {
     },
     {
       key: 'identity_is_risky_person',
-      name: 'Risky Person',
-      description: 'Current prioritized entity is rated as risky person. If applicable, set to any combination of "Executive", "Domain Admin" and/or "Leaving Employee"'
+      name: 'Risky Identity',
+      description: 'Current prioritized entity is rated as risky identity.'
     },
-    {
+    { // keep for some time - can be removed then
       key: 'identity_authentication_against_critical_application_last_200_days_application_list',
       name: 'Authentication against Critical Application',
       description: 'List of applications rated critical running on assets that the current prioritized entity has authenticated against during the last 200 days'
     },
-    {
+    { // keep for some time - can be removed then
       key: 'identity_authentication_against_cia_application_last_200_days_application_list',
       name: 'Authentication against High CIA Score Application',
       description: 'List of applications with high CIA score running on assets that the current prioritized entity has authenticated against during the last 200 days'
+    },
+    {
+      key: 'identity_authentication_against_critical_or_cia_application_last_200_days_application_list',
+      name: 'Critical or High CIA Score Application Authenticated against',
+      description: 'List of applications rated critical or with high CIA score running on assets that the current prioritized entity (an Identity) has authenticated against during the last 200 days'
     },
     //-------------------------------------------------------------------------------------------------------
     // App Reg Details section
@@ -392,7 +397,7 @@ const CONFIG = {
     {
       key: 'host_status',
       name: 'Host Status in Defender',
-      description: 'Host Name'
+      description: 'Shows MDE Onboarding and Health Status'
     },
     {
       key: 'host_application_names_associated_with_asset_list',
@@ -579,11 +584,6 @@ const CONFIG = {
       description: 'Stage of the account / subscription'
     },
     {
-      key: 'support_group_name',
-      name: 'Service Support Group',
-      description: 'Support Group of the Application assigned to this account/subscription'
-    },
-    {
       key: 'service_owner_id',
       name: 'Service Owner User ID',
       description: 'User ID of the Service Owner of the Application assigned to this account/subscription'
@@ -638,6 +638,11 @@ const CONFIG = {
       name: 'Operations Responsible Name',
       description: 'Name of the Operations Responsible of the Application assigned to this account/subscription'
     },
+    {
+      key: 'application_support_group_name',
+      name: 'Application Support Group',
+      description: 'Support Group of the Application assigned to this account/subscription'
+    },
     { // keep for some time - can be removed then
       key: 'aplication_owner_id',
       name: 'Application Owner ID',
@@ -645,6 +650,11 @@ const CONFIG = {
     },
     { // keep for some time - can be removed then
       key: 'aplication_owner_name',
+      name: 'Application Owner Name',
+      description: 'Name of the Application Owner of the application assigned to this account/subscription'
+    },
+    { // keep for some time - can be removed then
+      key: 'aplication_owner',
       name: 'Application Owner Name',
       description: 'Name of the Application Owner of the application assigned to this account/subscription'
     },
