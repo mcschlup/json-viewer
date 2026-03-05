@@ -595,6 +595,35 @@
     });
   }
 
+  // ── Version Popup ──────────────────────────────────────────────────────────
+
+  function initVersionPopup(data) {
+    const btn   = document.getElementById('info-btn');
+    const popup = document.getElementById('version-popup');
+    const body  = document.getElementById('version-popup-body');
+    const close = document.getElementById('version-popup-close');
+    if (!btn || !popup) return;
+
+    const version = data && data.version !== undefined ? String(data.version) : '(not available)';
+
+    function openPopup() {
+      body.textContent = version;
+      popup.classList.remove('hidden');
+      close.focus();
+    }
+    function closePopup() {
+      popup.classList.add('hidden');
+      btn.focus();
+    }
+
+    btn.addEventListener('click', openPopup);
+    close.addEventListener('click', closePopup);
+    popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !popup.classList.contains('hidden')) closePopup();
+    });
+  }
+
   // ── Floatable Tab Bar ──────────────────────────────────────────────────────
 
   function initScrollyTabs() {
@@ -656,6 +685,7 @@
     initTimeline();
     initDrillDown();
     initFieldTooltips();
+    initVersionPopup(data);
     showState('viewer');
     initScrollyTabs();
   }
