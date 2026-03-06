@@ -604,12 +604,13 @@
     const close = document.getElementById('version-popup-close');
     if (!btn || !popup) return;
 
-    const jsonVersion = data && data.version !== undefined ? String(data.version) : '(not available)';
+    const jsonVersion = data && data.version !== undefined ? String(data.version) : null;
 
     function openPopup() {
-      body.innerHTML =
-        `<div class="version-popup-row"><span class="version-popup-label">App version</span><span>${escapeHtml(CONFIG.appVersion)}</span></div>` +
-        `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
+      let html = `<div class="version-popup-row"><span class="version-popup-label">App version</span><span>${escapeHtml(CONFIG.appVersion)}</span></div>`;
+      if (jsonVersion !== null)
+        html += `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
+      body.innerHTML = html;
       popup.classList.remove('hidden');
       close.focus();
     }
@@ -667,11 +668,13 @@
 
     if (error) {
       document.getElementById('error-message').innerHTML = error;
+      initVersionPopup(null);
       showState('error-state');
       return;
     }
 
     if (data === null) {
+      initVersionPopup(null);
       showState('empty-state');
       return;
     }
@@ -679,6 +682,7 @@
     if (typeof data !== 'object' || Array.isArray(data)) {
       document.getElementById('error-message').textContent =
         `Expected a top-level JSON object, but got: ${Array.isArray(data) ? 'array' : typeof data}.`;
+      initVersionPopup(null);
       showState('error-state');
       return;
     }
