@@ -604,10 +604,12 @@
     const close = document.getElementById('version-popup-close');
     if (!btn || !popup) return;
 
-    const version = data && data.version !== undefined ? String(data.version) : '(not available)';
+    const jsonVersion = data && data.version !== undefined ? String(data.version) : '(not available)';
 
     function openPopup() {
-      body.textContent = version;
+      body.innerHTML =
+        `<div class="version-popup-row"><span class="version-popup-label">App version</span><span>${escapeHtml(CONFIG.appVersion)}</span></div>` +
+        `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
       popup.classList.remove('hidden');
       close.focus();
     }
