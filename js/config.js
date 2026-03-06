@@ -717,6 +717,11 @@ const CONFIG = {
       description: 'Contextual Anomaly Details (Closed)'
     },
     {
+      key: 'contextual_anomaly_details',
+      name: 'Contextual Anomaly Details',
+      description: 'Contextual Anomaly Details'
+    },
+    {
       key: 'anomaly_drill_down',
       name: 'Product/Details Drill Down',
       description: 'Link to the detecting product showing more details related to the anomaly. Shows raw events in Splunk for custom use cases.'
