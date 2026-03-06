@@ -659,7 +659,8 @@
 
   function showState(id) {
     ['error-state', 'empty-state', 'viewer'].forEach(s => {
-      document.getElementById(s).classList.toggle('hidden', s !== id);
+      const el = document.getElementById(s);
+      if (el) el.classList.toggle('hidden', s !== id);
     });
   }
 
