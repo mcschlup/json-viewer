@@ -792,10 +792,15 @@ body {
   border-color: var(--primary);
 }
 
-.drill-down-btn svg {
+.drill-down-btn svg,
+.drill-down-btn .drill-down-img {
   width: 14px;
   height: 14px;
   pointer-events: none;
+}
+
+.drill-down-btn .drill-down-img {
+  object-fit: contain;
 }
 
 .drill-down-btn.copied {

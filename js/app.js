@@ -188,7 +188,10 @@
         return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
       } else {
         const escapedUrl = escapeHtml(entry.baseUrl + String(value));
-        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${ICON_OPEN}</button>`;
+        const icon = entry.icon
+          ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
+          : ICON_OPEN;
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${icon}</button>`;
       }
     }).join('');
     return `<div class="drill-down-wrap">
