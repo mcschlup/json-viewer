@@ -60,7 +60,7 @@ if (isset($_GET['view'])) {
         <h1 class="app-title">
           <a href="index.php" class="app-title-link">
             <img src="img/icon.png" class="title-icon" alt="">
-            JSON Viewer
+            CRSI JSON Viewer
           </a>
         </h1>
         <div class="header-right">
