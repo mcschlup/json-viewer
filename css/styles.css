@@ -912,13 +912,15 @@ body {
   line-height: 1.65;
   pointer-events: none;
   z-index: 20;
-  white-space: nowrap;
+  max-width: 320px;
+  white-space: normal;
   box-shadow: var(--shadow-md);
 }
 
 .tl-tip-row {
   display: flex;
   gap: 0.5rem;
+  word-break: break-word;
 }
 
 .tl-tip-lbl {

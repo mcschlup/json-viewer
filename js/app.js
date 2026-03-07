@@ -413,22 +413,32 @@
       svgBody += `<text x="${x}" y="${axisY + 20}" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="-apple-system,BlinkMacSystemFont,sans-serif">${label}</text>`;
     }
 
-    // Anomaly markers — iterate original array so idx matches card numbers (# 1, # 2 …)
+    // Anomaly markers — collect with initial x positions, then enforce minimum spacing
+    const MIN_MARKER_SPACING = 14;
+    const markers = [];
     arr.forEach((item, idx) => {
       if (!item || typeof item !== 'object') return;
       const t = parseAnomalyTime(item.anomaly_time);
       if (isNaN(t) || t < startTime || t > endTime) return;
+      markers.push({ item, idx, x: tx(t) });
+    });
 
-      const x      = tx(t);
+    // Sort by position, then nudge overlapping markers apart (preserves order, sacrifices exact time)
+    markers.sort((a, b) => a.x - b.x);
+    for (let i = 1; i < markers.length; i++) {
+      if (markers[i].x - markers[i - 1].x < MIN_MARKER_SPACING)
+        markers[i].x = markers[i - 1].x + MIN_MARKER_SPACING;
+    }
+
+    markers.forEach(({ item, idx, x }) => {
       const sev    = (item.anomaly_severity_level || '').toLowerCase();
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
 
-      const above      = statusIsAbove(status);
-      const dashed     = statusIsDashed(status);
-      const dashAttr   = dashed ? ' stroke-dasharray="5,4"' : '';
-      const circleFill = dashed ? 'white' : colors.fill;
-      const circY      = above ? circYAbove : circYBelow;
+      const above    = statusIsAbove(status);
+      const dashed   = statusIsDashed(status);
+      const dashAttr = dashed ? ' stroke-dasharray="5,4"' : '';
+      const circY    = above ? circYAbove : circYBelow;
 
       const escapedTime   = escapeHtml(item.anomaly_time || '');
       const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
@@ -436,19 +446,16 @@
       const escapedName   = escapeHtml(item.anomaly_name || '');
       const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
+      // Stem line
       if (above) {
-        // Line from bottom of circle up to axis
-        svgBody += `<line x1="${x}" y1="${circY + circR + 1}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        svgBody += `<line x1="${x}" y1="${circY + 6}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       } else {
-        // Line from axis down to top of circle
-        svgBody += `<line x1="${x}" y1="${axisY + 1}" x2="${x}" y2="${circY - circR - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        svgBody += `<line x1="${x}" y1="${axisY + 1}" x2="${x}" y2="${circY - 6}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       }
 
-      // Circle
-      svgBody += `<circle cx="${x}" cy="${circY}" r="${circR}" fill="${circleFill}" stroke="${colors.stroke}" stroke-width="2" class="tl-marker" ${tipAttrs}/>`;
-
-      // Card number centered inside the circle
-      svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="7" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" pointer-events="none">${idx + 1}</text>`;
+      // Number without circle — invisible rect for hover area, then the label
+      svgBody += `<rect x="${x - 7}" y="${circY - 7}" width="14" height="14" fill="transparent" class="tl-marker" ${tipAttrs}/>`;
+      svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" class="tl-marker" ${tipAttrs} pointer-events="none">${idx + 1}</text>`;
     });
 
     const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline">${svgBody}</svg>`;
