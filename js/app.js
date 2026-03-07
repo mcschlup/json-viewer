@@ -420,7 +420,7 @@
       if (!item || typeof item !== 'object') return;
       const t = parseAnomalyTime(item.anomaly_time);
       if (isNaN(t) || t < startTime || t > endTime) return;
-      markers.push({ item, idx, x: tx(t) });
+      markers.push({ item, idx, x: tx(t), exactX: tx(t) });
     });
 
     // Sort by position, then enforce minimum spacing while keeping all markers within plot bounds
@@ -439,7 +439,7 @@
     // Clamp left boundary
     markers.forEach(m => { m.x = Math.max(m.x, padL); });
 
-    markers.forEach(({ item, idx, x }) => {
+    markers.forEach(({ item, idx, x, exactX }) => {
       const sev    = (item.anomaly_severity_level || '').toLowerCase();
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
@@ -455,11 +455,14 @@
       const escapedName   = escapeHtml(item.anomaly_name || '');
       const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
-      // Stem line
+      // Curved stem: label end at nudged x, axis end at exact time x.
+      // Cubic bezier with vertical tangents at both ends (S-curve).
       if (above) {
-        svgBody += `<line x1="${x}" y1="${circY + 6}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0  = circY + 6, y1 = axisY - 1, midY = (y0 + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} C ${x},${midY} ${exactX},${midY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       } else {
-        svgBody += `<line x1="${x}" y1="${axisY + 1}" x2="${x}" y2="${circY - 6}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0  = circY - 6, y1 = axisY + 1, midY = (y0 + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} C ${x},${midY} ${exactX},${midY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       }
 
       // Number without circle — invisible rect for hover area, then the label
