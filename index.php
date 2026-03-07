@@ -59,17 +59,27 @@ if (isset($_GET['view'])) {
       <div class="header-inner">
         <h1 class="app-title">
           <a href="index.php" class="app-title-link">
-            <svg class="title-icon" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 aria-hidden="true">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-            JSON Viewer
+            <img src="img/icon.png" class="title-icon" alt="">
+            CRSI JSON Viewer
           </a>
         </h1>
+        <div class="header-right">
+          <button class="info-btn" id="info-btn" title="Version Info" aria-label="Show Version Info">i</button>
+          <img src="img/logo.png" class="header-logo" alt="Logo">
+        </div>
       </div>
     </header>
+
+    <!-- Version popup -->
+    <div id="version-popup" class="version-popup hidden" role="dialog" aria-modal="true" aria-labelledby="version-popup-title">
+      <div class="version-popup-box">
+        <div class="version-popup-header">
+          <span id="version-popup-title">Version Info</span>
+          <button class="version-popup-close" id="version-popup-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="version-popup-body" id="version-popup-body"></div>
+      </div>
+    </div>
 
     <main class="app-main">
 
@@ -125,10 +135,8 @@ if (isset($_GET['view'])) {
     </main>
   </div>
 
-<?php if ($view_id): ?>
   <script src="js/config.js"></script>
   <script src="js/config-local.js"></script>
   <script src="js/app.js"></script>
-<?php endif; ?>
 </body>
 </html>

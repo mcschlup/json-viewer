@@ -2,6 +2,9 @@
 // Configuration for the JSON Viewer application
 
 const CONFIG = {
+  // Application version
+  appVersion: '2026030601',
+
   // URL parameter name containing the JSON data
   urlParam: 'data',
 
@@ -814,10 +817,13 @@ key: 'related_entity_score',
   // Field drill-downs: for a specific field key, add one or more action buttons next to the value.
   // Each entry: { key, actions }
   //   key     – exact field key to match
-  //   actions – array of { baseUrl, description }
+  //   actions – array of { baseUrl, description, icon }
   //               baseUrl     : URL prefix to which the field value is appended to form the final URL
   //                             use 'copyvalue' to show a copy-icon that copies the raw field value
   //               description : tooltip text shown on hover over the button
+  //               icon        : (optional) filename of an image in the img/ folder used as button icon
+  //                             only applies to non-copyvalue entries (copyvalue always uses the built-in copy icon)
+  //                             if omitted or empty, the built-in external-link icon is used as default
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
 

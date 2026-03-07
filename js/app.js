@@ -188,7 +188,10 @@
         return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
       } else {
         const escapedUrl = escapeHtml(entry.baseUrl + String(value));
-        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${ICON_OPEN}</button>`;
+        const icon = entry.icon
+          ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
+          : ICON_OPEN;
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${icon}</button>`;
       }
     }).join('');
     return `<div class="drill-down-wrap">
@@ -595,6 +598,38 @@
     });
   }
 
+  // ── Version Popup ──────────────────────────────────────────────────────────
+
+  function initVersionPopup(data) {
+    const btn   = document.getElementById('info-btn');
+    const popup = document.getElementById('version-popup');
+    const body  = document.getElementById('version-popup-body');
+    const close = document.getElementById('version-popup-close');
+    if (!btn || !popup) return;
+
+    const jsonVersion = data && data.version !== undefined ? String(data.version) : null;
+
+    function openPopup() {
+      let html = `<div class="version-popup-row"><span class="version-popup-label">App version</span><span>${escapeHtml(CONFIG.appVersion)}</span></div>`;
+      if (jsonVersion !== null)
+        html += `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
+      body.innerHTML = html;
+      popup.classList.remove('hidden');
+      close.focus();
+    }
+    function closePopup() {
+      popup.classList.add('hidden');
+      btn.focus();
+    }
+
+    btn.addEventListener('click', openPopup);
+    close.addEventListener('click', closePopup);
+    popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !popup.classList.contains('hidden')) closePopup();
+    });
+  }
+
   // ── Floatable Tab Bar ──────────────────────────────────────────────────────
 
   function initScrollyTabs() {
@@ -627,7 +662,8 @@
 
   function showState(id) {
     ['error-state', 'empty-state', 'viewer'].forEach(s => {
-      document.getElementById(s).classList.toggle('hidden', s !== id);
+      const el = document.getElementById(s);
+      if (el) el.classList.toggle('hidden', s !== id);
     });
   }
 
@@ -636,11 +672,13 @@
 
     if (error) {
       document.getElementById('error-message').innerHTML = error;
+      initVersionPopup(null);
       showState('error-state');
       return;
     }
 
     if (data === null) {
+      initVersionPopup(null);
       showState('empty-state');
       return;
     }
@@ -648,6 +686,7 @@
     if (typeof data !== 'object' || Array.isArray(data)) {
       document.getElementById('error-message').textContent =
         `Expected a top-level JSON object, but got: ${Array.isArray(data) ? 'array' : typeof data}.`;
+      initVersionPopup(null);
       showState('error-state');
       return;
     }
@@ -656,6 +695,7 @@
     initTimeline();
     initDrillDown();
     initFieldTooltips();
+    initVersionPopup(data);
     showState('viewer');
     initScrollyTabs();
   }
