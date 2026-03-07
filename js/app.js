@@ -423,12 +423,21 @@
       markers.push({ item, idx, x: tx(t) });
     });
 
-    // Sort by position, then nudge overlapping markers apart (preserves order, sacrifices exact time)
+    // Sort by position, then enforce minimum spacing while keeping all markers within plot bounds
     markers.sort((a, b) => a.x - b.x);
+    // Forward pass: push right if too close
     for (let i = 1; i < markers.length; i++) {
       if (markers[i].x - markers[i - 1].x < MIN_MARKER_SPACING)
         markers[i].x = markers[i - 1].x + MIN_MARKER_SPACING;
     }
+    // Backward pass: pull left if pushed past right boundary
+    for (let i = markers.length - 1; i >= 0; i--) {
+      markers[i].x = Math.min(markers[i].x, W - padR);
+      if (i > 0 && markers[i].x - markers[i - 1].x < MIN_MARKER_SPACING)
+        markers[i - 1].x = markers[i].x - MIN_MARKER_SPACING;
+    }
+    // Clamp left boundary
+    markers.forEach(m => { m.x = Math.max(m.x, padL); });
 
     markers.forEach(({ item, idx, x }) => {
       const sev    = (item.anomaly_severity_level || '').toLowerCase();
