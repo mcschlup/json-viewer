@@ -455,14 +455,15 @@
       const escapedName   = escapeHtml(item.anomaly_name || '');
       const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
-      // Curved stem: label end at nudged x, axis end at exact time x.
-      // Cubic bezier with vertical tangents at both ends (S-curve).
+      // Stem: straight vertical for first half, then cubic bezier to exact time x on axis.
+      // Control points share the same Y (midpoint of second half) → vertical tangents at
+      // the bend and at the axis, so the curve only occupies the lower/upper half.
       if (above) {
-        const y0  = circY + 6, y1 = axisY - 1, midY = (y0 + y1) / 2;
-        svgBody += `<path d="M ${x},${y0} C ${x},${midY} ${exactX},${midY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0 = circY + 6, y1 = axisY - 1, midY = (y0 + y1) / 2, cpY = (midY + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} L ${x},${midY} C ${x},${cpY} ${exactX},${cpY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       } else {
-        const y0  = circY - 6, y1 = axisY + 1, midY = (y0 + y1) / 2;
-        svgBody += `<path d="M ${x},${y0} C ${x},${midY} ${exactX},${midY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0 = circY - 6, y1 = axisY + 1, midY = (y0 + y1) / 2, cpY = (midY + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} L ${x},${midY} C ${x},${cpY} ${exactX},${cpY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       }
 
       // Number without circle — invisible rect for hover area, then the label
