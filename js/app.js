@@ -562,11 +562,24 @@
     const tabPanels = document.getElementById('tab-panels');
     const entries = Object.entries(data);
 
+    // Sections skipped entirely (no tab, no panel)
+    const SKIP_SECTIONS = new Set(['version']);
+
     // Sections that never show a count badge
     const NO_COUNT_SECTIONS = new Set([
       'generic', 'identity_user', 'identity_app_registration',
       'asset_host', 'asset_cloud_account'
     ]);
+
+    // Subtitle notes shown below timeline / above section content
+    const SECTION_SUBTITLES = {
+      'anomaly_overview':               'anomalies sorted by time (latest first)',
+      'open_relevant_anomaly_details':  'anomalies sorted by severity level (most severe first)',
+      'open_contextual_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'closed_relevant_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'closed_contextual_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'contextual_anomaly_details':     'anomalies sorted by severity level (most severe first)',
+    };
 
     // Determine which entity-specific sections to show based on generic section
     const generic = data.generic && typeof data.generic === 'object' ? data.generic : {};
@@ -582,7 +595,7 @@
     let panelIndex = 0;
     let firstVisible = true;
     entries.forEach(([key, value]) => {
-      if (hiddenSections.has(key)) return;
+      if (hiddenSections.has(key) || SKIP_SECTIONS.has(key)) return;
 
       const idx = panelIndex++;
       const isFirst = firstVisible;
@@ -613,7 +626,10 @@
       const timelineHtml = (key === 'anomaly_overview' && Array.isArray(value))
         ? renderTimeline(value)
         : '';
-      panel.innerHTML = timelineHtml + renderSection(value);
+      const subtitleNote = SECTION_SUBTITLES[key]
+        ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
+        : '';
+      panel.innerHTML = timelineHtml + subtitleNote + renderSection(value);
       tabPanels.appendChild(panel);
     });
   }

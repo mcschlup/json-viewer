@@ -809,6 +809,14 @@ body {
   border-color: #16a34a;
 }
 
+/* ── Section subtitle note ──────────────────────────────────────────────── */
+.section-subtitle {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 0.4rem 0 0.75rem;
+}
+
 /* ── Anomaly Timeline ───────────────────────────────────────────────────── */
 .timeline-wrap {
   position: relative;
