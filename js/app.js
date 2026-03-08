@@ -17,6 +17,14 @@
     return new URLSearchParams(window.location.search).get(name);
   }
 
+  function isValueEmpty(value) {
+    if (value === null || value === undefined) return true;
+    if (typeof value === 'string') return value.trim() === '';
+    if (Array.isArray(value)) return value.length === 0;
+    if (typeof value === 'object') return Object.keys(value).length === 0;
+    return false;
+  }
+
   function tryParseJSON(str) {
     try { return { ok: true, value: JSON.parse(str) }; }
     catch (e) { return { ok: false, error: e.message }; }
@@ -220,6 +228,7 @@
   function renderObjectTable(obj, compact) {
     const rowClass = compact ? 'obj-row obj-row--compact' : 'obj-row';
     const rows = Object.entries(obj).map(([key, value]) => {
+      if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
       const mapping = getFieldMapping(key);

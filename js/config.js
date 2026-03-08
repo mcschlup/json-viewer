@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026030801',
+  appVersion: '2026030802',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -826,6 +826,11 @@ key: 'related_entity_score',
   //                             if omitted or empty, the built-in external-link icon is used as default
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
+
+  // Fields to hide when their value is empty (null, empty/whitespace string, empty array, empty object).
+  // Add exact field key strings to this array.
+  // Example: hideIfEmpty: ['user_mobile_number', 'host_additional_info'],
+  hideIfEmpty: [],
 
   // String replacements applied to field values before display, matched by exact field key.
   // Each entry: { key, replacements }
