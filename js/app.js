@@ -462,7 +462,7 @@
       const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
       const escapedStatus = escapeHtml(item.anomaly_analysis_status || '');
       const escapedName   = escapeHtml(item.anomaly_name || '');
-      const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
+      const tipAttrs = `data-index="${idx + 1}" data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
       // Stem: straight vertical for first half, then cubic bezier to exact time x on axis.
       // Control points share the same Y (midpoint of second half) → vertical tangents at
@@ -519,12 +519,14 @@
       const marker = e.target.closest ? e.target.closest('.tl-marker') : null;
       if (!marker) { tooltip.classList.add('hidden'); return; }
 
+      const index    = marker.getAttribute('data-index') || '';
       const time     = marker.getAttribute('data-time') || '';
       const severity = marker.getAttribute('data-severity') || '';
       const status   = marker.getAttribute('data-status') || '';
       const name     = marker.getAttribute('data-name') || '';
 
       tooltip.innerHTML =
+        `<div class="tl-tip-row"><span class="tl-tip-lbl">#</span>${escapeHtml(index)}</div>` +
         (name ? `<div class="tl-tip-row"><span class="tl-tip-lbl">Name</span>${escapeHtml(name)}</div>` : '') +
         `<div class="tl-tip-row"><span class="tl-tip-lbl">Time</span>${escapeHtml(time) || '—'}</div>` +
         `<div class="tl-tip-row"><span class="tl-tip-lbl">Severity</span>${escapeHtml(severity) || '—'}</div>` +
