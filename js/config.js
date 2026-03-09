@@ -871,6 +871,12 @@ key: 'related_entity_score',
       replacements: [
         { from: '|', to: '<br>' }
       ]
+    },
+    {
+      key: 'asset_risky_person_authentication_against_asset_last_200_days_identity_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
     }
   ],
 
