@@ -433,7 +433,7 @@
     });
 
     // Sort by position, then enforce minimum spacing while keeping all markers within plot bounds
-    markers.sort((a, b) => a.x - b.x);
+    markers.sort((a, b) => a.x - b.x || a.idx - b.idx);
     // Forward pass: push right if too close
     for (let i = 1; i < markers.length; i++) {
       if (markers[i].x - markers[i - 1].x < MIN_MARKER_SPACING)
