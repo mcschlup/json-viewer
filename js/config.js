@@ -882,6 +882,12 @@ key: 'related_entity_score',
       replacements: [
         { from: '|', to: '<br>' }
       ]
+    },
+    {
+      key: 'user_associated_devices',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
     }
   ],
 
