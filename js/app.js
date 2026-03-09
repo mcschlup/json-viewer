@@ -17,6 +17,14 @@
     return new URLSearchParams(window.location.search).get(name);
   }
 
+  function isValueEmpty(value) {
+    if (value === null || value === undefined) return true;
+    if (typeof value === 'string') return value.trim() === '';
+    if (Array.isArray(value)) return value.length === 0;
+    if (typeof value === 'object') return Object.keys(value).length === 0;
+    return false;
+  }
+
   function tryParseJSON(str) {
     try { return { ok: true, value: JSON.parse(str) }; }
     catch (e) { return { ok: false, error: e.message }; }
@@ -220,6 +228,7 @@
   function renderObjectTable(obj, compact) {
     const rowClass = compact ? 'obj-row obj-row--compact' : 'obj-row';
     const rows = Object.entries(obj).map(([key, value]) => {
+      if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
       const mapping = getFieldMapping(key);
@@ -420,7 +429,7 @@
       if (!item || typeof item !== 'object') return;
       const t = parseAnomalyTime(item.anomaly_time);
       if (isNaN(t) || t < startTime || t > endTime) return;
-      markers.push({ item, idx, x: tx(t) });
+      markers.push({ item, idx, x: tx(t), exactX: tx(t) });
     });
 
     // Sort by position, then enforce minimum spacing while keeping all markers within plot bounds
@@ -439,7 +448,7 @@
     // Clamp left boundary
     markers.forEach(m => { m.x = Math.max(m.x, padL); });
 
-    markers.forEach(({ item, idx, x }) => {
+    markers.forEach(({ item, idx, x, exactX }) => {
       const sev    = (item.anomaly_severity_level || '').toLowerCase();
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
@@ -455,11 +464,15 @@
       const escapedName   = escapeHtml(item.anomaly_name || '');
       const tipAttrs = `data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
-      // Stem line
+      // Stem: straight vertical for first half, then cubic bezier to exact time x on axis.
+      // Control points share the same Y (midpoint of second half) → vertical tangents at
+      // the bend and at the axis, so the curve only occupies the lower/upper half.
       if (above) {
-        svgBody += `<line x1="${x}" y1="${circY + 6}" x2="${x}" y2="${axisY - 1}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0 = circY + 6, y1 = axisY - 1, midY = (y0 + y1) / 2, cpY = (midY + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} L ${x},${midY} C ${x},${cpY} ${exactX},${cpY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       } else {
-        svgBody += `<line x1="${x}" y1="${axisY + 1}" x2="${x}" y2="${circY - 6}" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
+        const y0 = circY - 6, y1 = axisY + 1, midY = (y0 + y1) / 2, cpY = (midY + y1) / 2;
+        svgBody += `<path d="M ${x},${y0} L ${x},${midY} C ${x},${cpY} ${exactX},${cpY} ${exactX},${y1}" fill="none" stroke="${colors.stroke}" stroke-width="2.5"${dashAttr} class="tl-marker" ${tipAttrs}/>`;
       }
 
       // Number without circle — invisible rect for hover area, then the label
@@ -558,11 +571,24 @@
     const tabPanels = document.getElementById('tab-panels');
     const entries = Object.entries(data);
 
+    // Sections skipped entirely (no tab, no panel)
+    const SKIP_SECTIONS = new Set(['version']);
+
     // Sections that never show a count badge
     const NO_COUNT_SECTIONS = new Set([
       'generic', 'identity_user', 'identity_app_registration',
       'asset_host', 'asset_cloud_account'
     ]);
+
+    // Subtitle notes shown below timeline / above section content
+    const SECTION_SUBTITLES = {
+      'anomaly_overview':               'anomalies sorted by time (latest first)',
+      'open_relevant_anomaly_details':  'anomalies sorted by severity level (most severe first)',
+      'open_contextual_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'closed_relevant_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'closed_contextual_anomaly_details':'anomalies sorted by severity level (most severe first)',
+      'contextual_anomaly_details':     'anomalies sorted by severity level (most severe first)',
+    };
 
     // Determine which entity-specific sections to show based on generic section
     const generic = data.generic && typeof data.generic === 'object' ? data.generic : {};
@@ -578,7 +604,7 @@
     let panelIndex = 0;
     let firstVisible = true;
     entries.forEach(([key, value]) => {
-      if (hiddenSections.has(key)) return;
+      if (hiddenSections.has(key) || SKIP_SECTIONS.has(key)) return;
 
       const idx = panelIndex++;
       const isFirst = firstVisible;
@@ -609,7 +635,10 @@
       const timelineHtml = (key === 'anomaly_overview' && Array.isArray(value))
         ? renderTimeline(value)
         : '';
-      panel.innerHTML = timelineHtml + renderSection(value);
+      const subtitleNote = SECTION_SUBTITLES[key]
+        ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
+        : '';
+      panel.innerHTML = timelineHtml + subtitleNote + renderSection(value);
       tabPanels.appendChild(panel);
     });
   }
