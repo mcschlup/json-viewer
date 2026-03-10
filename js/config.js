@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026030901',
+  appVersion: '2026031001',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -177,7 +177,7 @@ const CONFIG = {
     //-------------------------------------------------------------------------------------------------------
     {
       key: 'identity_user',
-      name: 'User Details',
+      name: 'Prioritized Entity (User)',
       description: 'User Details'
     },
     {
@@ -316,7 +316,7 @@ const CONFIG = {
     //-------------------------------------------------------------------------------------------------------
     {
       key: 'identity_app_registration',
-      name: 'App Registration Details',
+      name: 'Prioritized Entity (App Registration)',
       description: 'App Registration Details'
     },
     {
@@ -369,7 +369,7 @@ const CONFIG = {
     //-------------------------------------------------------------------------------------------------------
     {
       key: 'asset_host',
-      name: 'Host Details',
+      name: 'Prioritized Entity (Host)',
       description: 'Host Details'
     },
     {
@@ -558,7 +558,7 @@ const CONFIG = {
     //-------------------------------------------------------------------------------------------------------
     {
       key: 'asset_cloud_account',
-      name: 'Cloud Account Details',
+      name: 'Prioritized Entity (Cloud Account)',
       description: 'Cloud Account Details'
     },
     {
