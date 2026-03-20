@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026032002',
+  appVersion: '2026032003',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -893,12 +893,12 @@ const CONFIG = {
     {
       key: 'risk_grc_tool_factor',
       name: 'GRC Tool Risk Factor',
-      description: 'Risk factor based on availability of GRC Risk entries related to the current prioritized entity - currently not implemented yet'
+      description: 'Risk factor based on availability of GRC Risk entries related to the current prioritized entity - currently not implemented yet (therefore always set to 1)'
     },
     {
       key: 'risk_grc_tool_factor_broken_by_submodule',
       name: 'GRC Tool Risk Factor Breakdown',
-      description: 'GRC Tool Risk Factor Breakdown'
+      description: 'GRC Tool Risk Factor Breakdown - currently not implemented yet'
     }
   ],
 
