@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026032001',
+  appVersion: '2026032002',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -889,6 +889,16 @@ const CONFIG = {
       key: 'identity_authentication_against_critical_or_cia_application_last_200_days_factor',
       name: 'Authentications against risky assets Factor',
       description: 'Risk factor based on authentications against critical assets - elevated from 1 to 1.5 if current prioritized entity has authenticated against an asset with CIA classification "Secret,High,High" or business criticality higher than businessOperational'
+    },
+    {
+      key: 'risk_grc_tool_factor',
+      name: 'GRC Tool Risk Factor',
+      description: 'Risk factor based on availability of GRC Risk entries related to the current prioritized entity - currently not implemented yet'
+    },
+    {
+      key: 'risk_grc_tool_factor_broken_by_submodule',
+      name: 'GRC Tool Risk Factor Breakdown',
+      description: 'GRC Tool Risk Factor Breakdown'
     }
   ],
 
