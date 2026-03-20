@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026031001',
+  appVersion: '2026032001',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -587,6 +587,11 @@ const CONFIG = {
       description: 'Stage of the account / subscription'
     },
     {
+      key: 'cloud_owner_name',
+      name: 'Account/Subscription Owner',
+      description: 'Owner of the account / subscription'
+    },
+    {
       key: 'service_owner_id',
       name: 'Service Owner User ID',
       description: 'User ID of the Service Owner of the Application assigned to this account/subscription'
@@ -807,10 +812,83 @@ const CONFIG = {
       name: 'Entity Type',
       description: 'Entity Type'
     },
-{
-key: 'related_entity_score',
+    {
+      key: 'related_entity_score',
       name: 'Entity Risk Score',
       description: 'Entity Risk Score'
+    },
+    //-------------------------------------------------------------------------------------------------------
+    // Risk Factor Details section
+    //-------------------------------------------------------------------------------------------------------
+    {
+      key: 'risk_factor_details',
+      name: 'Risk Factor Details',
+      description: 'Detailed break down of all risk factors used to calculate the entity risk score'
+    },
+    {
+      key: 'risk_threat_factor',
+      name: 'Risk Threat Factor',
+      description: 'Overall sum of all individual anomaly threat scores'
+    },
+    {
+      key: 'risk_vulnerability_factor',
+      name: 'Risk Vulnerability Factor',
+      description: 'Risk factor related to software vulnerabilities - based on all subfactors defined below (each multiplied). Value capped at 1.5'
+    },
+    {
+      key: 'risk_vulnerability_factor_broken_by_submodule',
+      name: 'Risk Vulnerability Factor Breakdown',
+      description: 'Risk Vulnerability Factor Breakdown'
+    },
+    {
+      key: 'asset_software_vulnerability_factor',
+      name: 'Software Vulnerability Factor',
+      description: 'Risk factor based on software vulnerabilities found on asset - elevated from 1 to 1.5 if 5+ critical vulnerabilities, 1+ exploitable vulnerability or 1+ vulnerability with high EPSS score'
+    },
+    {
+      key: 'asset_insecure_configuration_factor',
+      name: 'Insecure Configuration Factor',
+      description: 'Risk factor based on insecure configurations found on asset - elevated from 1 through 1.5 depending on number of insecure configurations (>=5 = 1.1, >=10 = 1.2, >=15 = 1.3, >=20 = 1.4, >=25 = 1.5)'
+    },
+    {
+      key: 'asset_internet_exposure_factor',
+      name: 'Internet Exposure Factor',
+      description: 'Risk factor based on internet exposure of the asset - elevated from 1 to 1.5 if asset is found to be exposed to the internet'
+    },
+    {
+      key: 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days_factor',
+      name: 'Authentications against risky assets Factor',
+      description: 'Risk factor based on authentications against risky assets - elevated from 1 to 1.5 if current prioritized entity has authenticated against an asset that is known to have software vulnerabilities and/or insecure configurations'
+    },
+    {
+      key: 'risk_impact_factor',
+      name: 'Risk Impact Factor',
+      description: 'Risk factor related to current prioritized entity - based on all subfactors defined below (each multiplied). Value capped at 1.5'
+    },
+    {
+      key: 'risk_impact_factor_broken_by_submodule',
+      name: 'Risk Impact Factor Breakdown',
+      description: 'Risk Impact Factor Breakdown'
+    },
+    {
+      key: 'asset_cia_and_business_criticality_factor',
+      name: 'CIA/Business criticality Factor',
+      description: 'Risk factor based on CIA/Business criticality classification of the asset - elevated from 1 through 1.5 if CIA is "Secret,High,High" or business criticality is higher than businessOperational'
+    },
+    {
+      key: 'asset_risky_person_authentication_against_asset_last_200_days_factor',
+      name: 'Authentications of risky identities Factor',
+      description: 'Risk factor based on authentications of risky identities - elevated from 1 to 1.5 if a risky identity has authenticated against the current prioritized entity'
+    },
+    {
+      key: 'identity_risky_person_factor',
+      name: 'Risky Identity Factor',
+      description: 'Risk factor based on risky identities - elevated from 1 to 1.5 if identity is an Executive, a Domain Admin or a Leaving Person'
+    },
+    {
+      key: 'identity_authentication_against_critical_or_cia_application_last_200_days_factor',
+      name: 'Authentications against risky assets Factor',
+      description: 'Risk factor based on authentications against critical assets - elevated from 1 to 1.5 if current prioritized entity has authenticated against an asset with CIA classification "Secret,High,High" or business criticality higher than businessOperational'
     }
   ],
 
