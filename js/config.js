@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026032003',
+  appVersion: '2026032301',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -37,11 +37,21 @@ const CONFIG = {
       testValue: (value) => String(value).toLowerCase() === 'informational',
       cssClass: 'hl-blue'
     },
-  //  {
-  //    testKey:   (key)   => key === 'user_is_risky_person',
-  //    testValue: (value) => String(value).toLowerCase() === 'executive',
-  //    cssClass: 'hl-red'
-  //  },
+    {
+      testKey:   (key)   => key === 'risk_notable_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'critical',
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'risk_notable_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'high',
+      cssClass: 'hl-orange'
+    },
+    {
+      testKey:   (key)   => key === 'risk_notable_severity_level',
+      testValue: (value) => String(value).toLowerCase() === 'medium',
+      cssClass: 'hl-yellow'
+    },
     {
       testKey:   (key)   => key === 'user_is_risky_person',
       testValue: (value) => /(Executive|Leaving Employee|Domain Admin)/.test(String(value)),
@@ -55,6 +65,21 @@ const CONFIG = {
     {
       testKey:   (key)   => key === 'asset_is_internet_exposed',
       testValue: (value) => /(yes)/.test(String(value)),
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'number_of_critical_vulnerabilities',
+      testValue: (value) => value >= 5,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'total_number_of_exploitable_vulnerabilities',
+      testValue: (value) => value >= 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'total_number_of_high_epss_vulnerabilities',
+      testValue: (value) => value >= 1,
       cssClass: 'hl-red'
   //  },
   //  {
