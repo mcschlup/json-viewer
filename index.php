@@ -1,6 +1,14 @@
 <?php
 session_start();
 
+/* ── CORS headers ────────────────────────────────────────────────────────── */
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
 /* ── API: return JSON by session ID ──────────────────────────────────────── */
 if (isset($_GET['jsonid'])) {
     $id = preg_replace('/[^a-f0-9]/', '', $_GET['jsonid']);
