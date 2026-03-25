@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026032302',
+  appVersion: '2026032501',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -84,7 +84,7 @@ const CONFIG = {
     },
     {
       testKey:   (key)   => key === 'total_number_of_insecure_configurations',
-      testValue: (value) => value >= 1,
+      testValue: (value) => value >= 5,
       cssClass: 'hl-red'
   //  },
   //  {
