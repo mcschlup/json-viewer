@@ -579,7 +579,7 @@
     // Sections that never show a count badge
     const NO_COUNT_SECTIONS = new Set([
       'generic', 'identity_user', 'identity_app_registration',
-      'asset_host', 'asset_cloud_account'
+      'asset_host', 'asset_cloud_account', 'risk_factor_details'
     ]);
 
     // Subtitle notes shown below timeline / above section content
