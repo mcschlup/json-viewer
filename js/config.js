@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026033002',
+  appVersion: '2026033003',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -51,6 +51,11 @@ const CONFIG = {
       testKey:   (key)   => key === 'risk_notable_severity_level',
       testValue: (value) => String(value).toLowerCase() === 'medium',
       cssClass: 'hl-yellow'
+    },
+    {
+      testKey:   (key)   => key === 'entity_risk_score_elevated',
+      testValue: (value) => String(value).toLowerCase() === 'True',
+      cssClass: 'hl-red'
     },
     {
       testKey:   (key)   => key === 'user_is_risky_person',
