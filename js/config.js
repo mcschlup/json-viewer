@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026032501',
+  appVersion: '2026033001',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -318,8 +318,8 @@ const CONFIG = {
     },
     {
       key: 'risk_impact_factor_details',
-      name: 'Risk Impact',
-      description: 'Risk Impact'
+      name: 'Risk Impact Details',
+      description: 'Risk Impact Details'
     },
     {
       key: 'identity_is_risky_person',
@@ -469,8 +469,8 @@ const CONFIG = {
     },
     {
       key: 'risk_vulnerability_factor_details',
-      name: 'Vulnerability Details',
-      description: 'Vulnerability Details'
+      name: 'Risk Vulnerability Details',
+      description: 'Risk Vulnerability Details'
     },
     {
       key: 'asset_software_vulnerability',
@@ -1003,6 +1003,12 @@ const CONFIG = {
     },
     {
       key: 'user_associated_devices',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'all_market_units_in_anomalies',
       replacements: [
         { from: '|', to: '<br>' }
       ]
