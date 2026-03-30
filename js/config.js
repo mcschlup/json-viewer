@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026033001',
+  appVersion: '2026033002',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -86,7 +86,67 @@ const CONFIG = {
       testKey:   (key)   => key === 'total_number_of_insecure_configurations',
       testValue: (value) => value >= 5,
       cssClass: 'hl-red'
-  //  },
+    },
+    {
+      testKey:   (key)   => key === 'risk_vulnerability_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_software_vulnerability_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_insecure_configuration_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-orange'
+    },
+    {
+      testKey:   (key)   => key === 'asset_insecure_configuration_factor',
+      testValue: (value) => value > 1.3,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_internet_exposure_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'risk_impact_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_cia_and_business_criticality_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_risky_person_authentication_against_asset_last_200_days_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'identity_risky_person_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'identity_authentication_against_critical_or_cia_application_last_200_days_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'risk_grc_tool_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
   //  {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
   //    testValue: (value) => String(value).toLowerCase() === 'open',
@@ -96,7 +156,7 @@ const CONFIG = {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
   //    testValue: (value) => String(value).toLowerCase() === 'closed',
   //    cssClass: 'hl-green'
-    }
+  //  }
   ],
 
   // Field mappings: replace the raw key with a human-readable name and add a description
@@ -143,6 +203,11 @@ const CONFIG = {
       key: 'entity_risk_score',
       name: 'Entity Risk Score',
       description: 'The total risk score of this specific entity. This is the sum of the correlated anomalies\' individual score values multiplied by the different risk factors (Risk vulnerability factor, Risk impact factor and Risk GRC tool factor).'
+    },
+    {
+      key: 'entity_risk_score_elevated',
+      name: 'Elevated Risk',
+      description: 'Risk Factors above 1 are a sign of elevated Risk (see also Risk Factor Details)'
     },
     {
       key: 'entity_market_unit',
@@ -857,12 +922,12 @@ const CONFIG = {
     },
     {
       key: 'risk_threat_factor',
-      name: 'Risk Threat Factor',
+      name: 'Threat Risk Score',
       description: 'Overall sum of all individual anomaly threat scores'
     },
     {
       key: 'risk_vulnerability_factor',
-      name: 'Risk Vulnerability Factor',
+      name: 'Vulnerability Risk Factor',
       description: 'Risk factor related to software vulnerabilities - based on all subfactors defined below (each multiplied). Value capped at 1.5'
     },
     {
@@ -892,7 +957,7 @@ const CONFIG = {
     },
     {
       key: 'risk_impact_factor',
-      name: 'Risk Impact Factor',
+      name: 'Impact Risk Factor',
       description: 'Risk factor related to current prioritized entity - based on all subfactors defined below (each multiplied). Value capped at 1.5'
     },
     {
@@ -1011,6 +1076,27 @@ const CONFIG = {
       key: 'all_market_units_in_anomalies',
       replacements: [
         { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'entity_risk_score_elevated',
+      replacements: [
+        { from: '1', to: 'True' },
+        { from: '0', to: 'False' }
+      ]
+    },
+    {
+      key: 'IsSigned',
+      replacements: [
+        { from: '1', to: 'True' },
+        { from: '0', to: 'False' }
+      ]
+    },
+    {
+      key: 'IsTrusted',
+      replacements: [
+        { from: '1', to: 'True' },
+        { from: '0', to: 'False' }
       ]
     }
   ],
