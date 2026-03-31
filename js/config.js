@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026033101',
+  appVersion: '2026033102',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -211,7 +211,7 @@ const CONFIG = {
     },
     {
       key: 'entity_risk_score_elevated',
-      name: 'Elevated Risk',
+      name: 'Elevated Entity Risk',
       description: 'Risk Factors above 1 are a sign of elevated Risk (see also Risk Factor Details)'
     },
     {

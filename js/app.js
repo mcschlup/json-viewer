@@ -404,9 +404,6 @@
 
     return `
       <div class="timeline-wrap">
-        <div class="timeline-head">
-          <span class="timeline-title">Risk Score Formula</span>
-        </div>
         <svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Risk score formula">${svgBody}</svg>
       </div>`;
   }
