@@ -367,6 +367,50 @@
     informational: { fill: '#bae6fd', stroke: '#0284c7' }
   };
 
+  // ── Risk Score Formula graphic ────────────────────────────────────────────
+
+  function renderRiskScoreFormula(obj) {
+    if (!obj || typeof obj !== 'object') return '';
+
+    const VARS = [
+      { key: 'entity_risk_score',          labels: ['Entity Risk', 'Score'],          x: 90  },
+      { key: 'risk_threat_factor',         labels: ['Threat Risk', 'Score'],           x: 240 },
+      { key: 'risk_vulnerability_factor',  labels: ['Vulnerability', 'Risk Factor'],   x: 400 },
+      { key: 'risk_impact_factor',         labels: ['Impact', 'Risk Factor'],          x: 560 },
+      { key: 'risk_grc_tool_factor',       labels: ['GRC Tool', 'Risk Factor'],        x: 710 },
+    ];
+    const OPS = [
+      { symbol: '=', x: 165 },
+      { symbol: '\u00d7', x: 320 },
+      { symbol: '\u00d7', x: 480 },
+      { symbol: '\u00d7', x: 635 },
+    ];
+
+    const W = 800, H = 95;
+    const font = '-apple-system,BlinkMacSystemFont,sans-serif';
+    let svgBody = '';
+
+    VARS.forEach(({ key, labels, x }) => {
+      const raw = obj[key];
+      const val = raw !== undefined && raw !== null ? escapeHtml(String(raw)) : '\u2013';
+      svgBody += `<text x="${x}" y="16" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="${font}">${escapeHtml(labels[0])}</text>`;
+      svgBody += `<text x="${x}" y="29" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="${font}">${escapeHtml(labels[1])}</text>`;
+      svgBody += `<text x="${x}" y="68" text-anchor="middle" dominant-baseline="middle" font-size="22" font-weight="700" fill="#1e293b" font-family="${font}">${val}</text>`;
+    });
+
+    OPS.forEach(({ symbol, x }) => {
+      svgBody += `<text x="${x}" y="68" text-anchor="middle" dominant-baseline="middle" font-size="20" fill="#94a3b8" font-family="${font}">${symbol}</text>`;
+    });
+
+    return `
+      <div class="timeline-wrap">
+        <div class="timeline-head">
+          <span class="timeline-title">Risk Score Formula</span>
+        </div>
+        <svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Risk score formula">${svgBody}</svg>
+      </div>`;
+  }
+
   function renderTimeline(arr) {
     const items = arr.filter(item => item && typeof item === 'object' && item.anomaly_time);
     if (items.length === 0) return '';
@@ -637,10 +681,13 @@
       const timelineHtml = (key === 'anomaly_overview' && Array.isArray(value))
         ? renderTimeline(value)
         : '';
+      const formulaHtml = (key === 'risk_factor_details' && value !== null && typeof value === 'object' && !Array.isArray(value))
+        ? renderRiskScoreFormula(value)
+        : '';
       const subtitleNote = SECTION_SUBTITLES[key]
         ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
         : '';
-      panel.innerHTML = timelineHtml + subtitleNote + renderSection(value);
+      panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + renderSection(value);
       tabPanels.appendChild(panel);
     });
   }
