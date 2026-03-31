@@ -313,8 +313,6 @@ body {
   top: 58px;
   z-index: 90;
   background: var(--bg);
-  overflow: hidden;
-  transition: max-height 0.28s ease;
   padding-bottom: 1.75rem;
 }
 
