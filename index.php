@@ -1,6 +1,95 @@
 <?php
 session_start();
 
+/* ── CORS headers ────────────────────────────────────────────────────────── */
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
+/* ── Load REST API config ────────────────────────────────────────────────── */
+require_once __DIR__ . '/config.inc.php';
+if (file_exists(__DIR__ . '/config-local.inc.php')) {
+    require_once __DIR__ . '/config-local.inc.php';
+}
+
+/* ── Handle ?rnid=<id>: fetch from REST API, store, redirect ─────────────── */
+if (isset($_GET['rnid'])) {
+    $rnid = trim($_GET['rnid']);
+    if ($rnid === '') {
+        http_response_code(400);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'rnid parameter is empty.']);
+        exit;
+    }
+
+    $url = $api_base_url;
+
+    // send the search query with $rnid in the search post parameter
+    $post_fields = array_merge($api_post_data, ['search' => "| savedsearch crsi_get_risk_notable_data args.rnid=$rnid"]);
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => http_build_query($post_fields),
+        CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
+        CURLOPT_USERPWD        => $api_username . ':' . $api_password,
+        CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+        CURLOPT_TIMEOUT        => 15,
+    ]);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false || $curl_error !== '') {
+        http_response_code(502);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'REST API request failed: ' . $curl_error]);
+        exit;
+    }
+    if ($http_code !== 200) {
+        http_response_code(502);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'REST API returned HTTP ' . $http_code]);
+        exit;
+    }
+
+    $envelope = json_decode($response, true);
+    if (json_last_error() !== JSON_ERROR_NONE
+        || !isset($envelope['result']['json_risk_notable'])
+    ) {
+        http_response_code(502);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'Unexpected REST API response format.']);
+        exit;
+    }
+
+    $raw = $envelope['result']['json_risk_notable'];
+    // $raw is a JSON-encoded string with escaped quotes — decode it once to get
+    // the actual JSON text, then re-encode to normalise whitespace / verify validity.
+    $decoded = json_decode($raw);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        http_response_code(502);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'json_risk_notable value is not valid JSON: ' . json_last_error_msg()]);
+        exit;
+    }
+    $normalised = json_encode($decoded);
+
+    $id = bin2hex(random_bytes(16));
+    if (!isset($_SESSION['json_store'])) {
+        $_SESSION['json_store'] = [];
+    }
+    $_SESSION['json_store'][$id] = $normalised;
+    header('Location: index.php?view=' . $id);
+    exit;
+}
+
 /* ── API: return JSON by session ID ──────────────────────────────────────── */
 if (isset($_GET['jsonid'])) {
     $id = preg_replace('/[^a-f0-9]/', '', $_GET['jsonid']);
