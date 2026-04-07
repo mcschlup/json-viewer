@@ -215,7 +215,7 @@ if (isset($_GET['view'])) {
             <strong>Invalid JSON:</strong> <?= htmlspecialchars($form_error) ?>
           </div>
 <?php endif; ?>
-<?php if (!$is_authenticated): ?>
+<?php if (isset($_GET['rnid']) && !$is_authenticated): ?>
           <div class="paste-error">
             <strong>Authentication required</strong>
           </div>
