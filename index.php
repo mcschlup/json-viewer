@@ -1,5 +1,6 @@
 <?php
-session_start();
+//session_start();
+require_once __DIR__ . '/sessionstart.inc.php';
 
 /* ── CORS headers ────────────────────────────────────────────────────────── */
 header('Access-Control-Allow-Origin: *');
@@ -9,11 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-/* ── Load REST API config ────────────────────────────────────────────────── */
+/* ── Load config ─────────────────────────────────────────────────────────── */
 require_once __DIR__ . '/config.inc.php';
 if (file_exists(__DIR__ . '/config-local.inc.php')) {
     require_once __DIR__ . '/config-local.inc.php';
 }
+
+/* ── Load authentication function ────────────────────────────────────────── */
+require_once __DIR__ . '/authfunction.inc.php';
 
 /* ── Handle ?rnid=<id>: fetch from REST API, store, redirect ─────────────── */
 if (isset($_GET['rnid'])) {
@@ -22,6 +26,13 @@ if (isset($_GET['rnid'])) {
         http_response_code(400);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'rnid parameter is empty.']);
+        exit;
+    }
+    
+    // when doing splunk requests in the background, user needs to authenticate first
+    require_once __DIR__ . '/authcheck.inc.php';
+    if ($auth_required) {
+        header('Location: index.php');
         exit;
     }
 
@@ -153,6 +164,7 @@ if (isset($_GET['view'])) {
           </a>
         </h1>
         <div class="header-right">
+          <?php require_once __DIR__ . '/auth.inc.php'; ?>
           <button class="info-btn" id="info-btn" title="Version Info" aria-label="Show Version Info">i</button>
           <img src="img/logo.png" class="header-logo" alt="Logo">
         </div>
@@ -203,6 +215,11 @@ if (isset($_GET['view'])) {
 <?php if ($form_error): ?>
           <div class="paste-error">
             <strong>Invalid JSON:</strong> <?= htmlspecialchars($form_error) ?>
+          </div>
+<?php endif; ?>
+<?php if ($auth_required): ?>
+          <div class="paste-error">
+            <strong>Authentication required</strong>
           </div>
 <?php endif; ?>
           <form method="post" action="index.php">
