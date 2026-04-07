@@ -40,5 +40,8 @@ if (!isset($_SESSION['authenticated'])) {
     $_SESSION['authenticated'] = false;
 }
 
+// default PHP-scope auth flag (may be overridden by authcheck.inc.php)
+$is_authenticated = false;
+
 // misc stuff
 date_default_timezone_set('Europe/Zurich');
