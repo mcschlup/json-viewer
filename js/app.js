@@ -195,7 +195,7 @@
       if (entry.baseUrl === 'copyvalue') {
         return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
       } else {
-        const escapedUrl = escapeHtml(entry.baseUrl + String(value));
+        const escapedUrl = escapeHtml(entry.baseUrl.replace('##REPLACE##', encodeURIComponent(String(value))));
         const icon = entry.icon
           ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
           : ICON_OPEN;

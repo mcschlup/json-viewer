@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026040703',
+  appVersion: '2026040901',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1006,7 +1006,7 @@ const CONFIG = {
   // Each entry: { key, actions }
   //   key     – exact field key to match
   //   actions – array of { baseUrl, description, icon }
-  //               baseUrl     : URL prefix to which the field value is appended to form the final URL
+  //               baseUrl     : URL containing ##REPLACE## as placeholder for the field value (URL-encoded)
   //                             use 'copyvalue' to show a copy-icon that copies the raw field value
   //               description : tooltip text shown on hover over the button
   //               icon        : (optional) filename of an image in the img/ folder used as button icon
