@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026033103',
+  appVersion: '2026040902',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -12,6 +12,21 @@ const CONFIG = {
   // testKey(key) and testValue(value) must both return true for the rule to apply.
   // Use the generic CSS classes hl-red / hl-orange / hl-yellow / hl-green / hl-blue.
   keyValueHighlightRules: [
+    {
+      testKey:   (key)   => key === 'asset_business_criticality',
+      testValue: (value) => String(value).toLowerCase() === 'businesscritical',
+      cssClass: 'hl-orange'
+    },
+    {
+      testKey:   (key)   => key === 'asset_business_criticality',
+      testValue: (value) => String(value).toLowerCase() === 'missioncritical',
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'asset_business_criticality',
+      testValue: (value) => String(value).toLowerCase() === 'administrativeservice',
+      cssClass: 'hl-red'
+    },
     {
       testKey:   (key)   => key === 'anomaly_severity_level',
       testValue: (value) => String(value).toLowerCase() === 'critical',
@@ -94,8 +109,13 @@ const CONFIG = {
     },
     {
       testKey:   (key)   => key === 'risk_vulnerability_factor',
-      testValue: (value) => value > 1,
+      testValue: (value) => value > 1.3,
       cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'risk_vulnerability_factor',
+      testValue: (value) => value > 1,
+      cssClass: 'hl-orange'
     },
     {
       testKey:   (key)   => key === 'asset_software_vulnerability_factor',
@@ -104,13 +124,13 @@ const CONFIG = {
     },
     {
       testKey:   (key)   => key === 'asset_insecure_configuration_factor',
-      testValue: (value) => value > 1,
-      cssClass: 'hl-orange'
+      testValue: (value) => value > 1.3,
+      cssClass: 'hl-red'
     },
     {
       testKey:   (key)   => key === 'asset_insecure_configuration_factor',
-      testValue: (value) => value > 1.3,
-      cssClass: 'hl-red'
+      testValue: (value) => value > 1,
+      cssClass: 'hl-orange'
     },
     {
       testKey:   (key)   => key === 'asset_internet_exposure_factor',
@@ -937,7 +957,7 @@ const CONFIG = {
     },
     {
       key: 'risk_vulnerability_factor_broken_by_submodule',
-      name: 'Risk Vulnerability Factor Breakdown',
+      name: 'Vulnerability Risk Factor Breakdown',
       description: 'Risk Vulnerability Factor Breakdown'
     },
     {
@@ -967,7 +987,7 @@ const CONFIG = {
     },
     {
       key: 'risk_impact_factor_broken_by_submodule',
-      name: 'Risk Impact Factor Breakdown',
+      name: 'Impact Risk Factor Breakdown',
       description: 'Risk Impact Factor Breakdown'
     },
     {
@@ -1006,7 +1026,7 @@ const CONFIG = {
   // Each entry: { key, actions }
   //   key     – exact field key to match
   //   actions – array of { baseUrl, description, icon }
-  //               baseUrl     : URL prefix to which the field value is appended to form the final URL
+  //               baseUrl     : URL containing ##REPLACE## as placeholder for the field value (URL-encoded)
   //                             use 'copyvalue' to show a copy-icon that copies the raw field value
   //               description : tooltip text shown on hover over the button
   //               icon        : (optional) filename of an image in the img/ folder used as button icon

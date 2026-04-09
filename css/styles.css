@@ -135,6 +135,78 @@ body {
   color: #fff;
 }
 
+/* ── Auth widget (header login/logout) ──────────────────────────────────── */
+.auth-login-form {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.auth-input {
+  height: 26px;
+  width: 7rem;
+  padding: 0 0.5rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input:focus {
+  border-color: var(--primary);
+}
+
+.auth-btn {
+  height: 26px;
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--primary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.auth-btn--login {
+  background: var(--primary);
+  color: #fff;
+}
+.auth-btn--login:hover {
+  opacity: 0.88;
+}
+.auth-btn--logout {
+  background: transparent;
+  color: var(--primary);
+}
+.auth-btn--logout:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.auth-logout-form {
+  display: inline-flex;
+  align-items: center;
+}
+
+.auth-user {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: 0.35rem;
+  white-space: nowrap;
+}
+
+.auth-msg {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.auth-msg--error {
+  color: #dc2626;
+}
+
 /* ── Version popup ───────────────────────────────────────────────────────── */
 .version-popup {
   position: fixed;
