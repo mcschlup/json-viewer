@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026041002',
+  appVersion: '2026041003',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1099,6 +1099,12 @@ const CONFIG = {
     },
     {
       key: 'all_market_units_in_anomalies',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'anomaly_market_unit',
       replacements: [
         { from: '|', to: '<br>' }
       ]
