@@ -691,6 +691,64 @@ body {
 .obj-row.hl-blue .obj-key, .obj-row.hl-blue .obj-value { color: #0c4a6e; }
 .obj-row.hl-blue .field-badge { background: #0284c7; }
 
+/* ── Entity table (related_entities_to_correlated_anomalies_details) ─────── */
+.entity-tbl-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.entity-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  background: var(--surface);
+}
+
+.entity-tbl-th {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.875rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.entity-tbl-td {
+  padding: 0.5rem 0.875rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.entity-tbl-tr:last-child .entity-tbl-td { border-bottom: none; }
+.entity-tbl-tr:hover .entity-tbl-td { background: var(--surface-2); }
+
+.entity-tbl-idx {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  width: 2.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* entity table row highlight colours (mirrors .obj-row.hl-* rules) */
+.entity-tbl-tr.hl-red   .entity-tbl-td { background: #fff0f0; color: #7f1d1d; border-left: 3px solid #ef4444; }
+.entity-tbl-tr.hl-orange .entity-tbl-td { background: #fff7ed; color: #7c2d12; border-left: 3px solid #f97316; }
+.entity-tbl-tr.hl-yellow .entity-tbl-td { background: #fefce8; color: #713f12; border-left: 3px solid #ca8a04; }
+.entity-tbl-tr.hl-green  .entity-tbl-td { background: #f0fdf4; color: #14532d; border-left: 3px solid #16a34a; }
+.entity-tbl-tr.hl-blue   .entity-tbl-td { background: #eff6ff; color: #0c4a6e; border-left: 3px solid #0284c7; }
+.entity-tbl-tr.hl-red:hover    .entity-tbl-td { filter: brightness(0.975); }
+.entity-tbl-tr.hl-orange:hover .entity-tbl-td { filter: brightness(0.975); }
+.entity-tbl-tr.hl-yellow:hover .entity-tbl-td { filter: brightness(0.975); }
+.entity-tbl-tr.hl-green:hover  .entity-tbl-td { filter: brightness(0.975); }
+.entity-tbl-tr.hl-blue:hover   .entity-tbl-td { filter: brightness(0.975); }
+
 /* ── Title link (PHP backend) ───────────────────────────────────────────── */
 .app-title-link {
   display: flex;

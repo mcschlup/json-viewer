@@ -367,6 +367,53 @@
     informational: { fill: '#bae6fd', stroke: '#0284c7' }
   };
 
+  // ── Entity table (related_entities_to_correlated_anomalies_details) ────────
+
+  function renderEntityTable(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) {
+      return '<p class="empty-msg">This section is empty.</p>';
+    }
+
+    const COLS = [
+      'related_entity_score',
+      'related_entity_type',
+      'related_entity',
+    ];
+
+    const headers = COLS.map(key => {
+      const mapping = getFieldMapping(key);
+      return `<th class="entity-tbl-th">${escapeHtml(mapping ? mapping.name : key)}</th>`;
+    }).join('');
+
+    const rows = arr.map((item, idx) => {
+      if (!item || typeof item !== 'object') return '';
+      const hl = COLS.reduce((found, key) => {
+        if (found) return found;
+        const v = item[key];
+        return (v !== undefined && v !== null) ? getHighlight(key, v) : null;
+      }, null);
+      const hlClass = hl ? ` ${hl.cssClass}` : '';
+      const cells = COLS.map(key => {
+        const val = item[key] !== undefined && item[key] !== null ? item[key] : '';
+        const replaced = applyValueReplacements(key, val);
+        const display = replaced !== null ? replaced : formatPrimitive(val);
+        return `<td class="entity-tbl-td">${display}</td>`;
+      }).join('');
+      return `<tr class="entity-tbl-tr${hlClass}">
+          <td class="entity-tbl-td entity-tbl-idx">${idx + 1}</td>${cells}
+        </tr>`;
+    }).join('');
+
+    return `<div class="entity-tbl-wrap">
+        <table class="entity-tbl">
+          <thead><tr>
+            <th class="entity-tbl-th entity-tbl-idx">#</th>${headers}
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
   // ── Risk Score Formula graphic ────────────────────────────────────────────
 
   function renderRiskScoreFormula(obj) {
@@ -684,7 +731,10 @@
       const subtitleNote = SECTION_SUBTITLES[key]
         ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
         : '';
-      panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + renderSection(value);
+      const sectionHtml = (key === 'related_entities_to_correlated_anomalies_details' && Array.isArray(value))
+        ? renderEntityTable(value)
+        : renderSection(value);
+      panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + sectionHtml;
       tabPanels.appendChild(panel);
     });
   }
