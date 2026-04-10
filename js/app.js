@@ -489,8 +489,10 @@
       return padL + ((t - startTime) / rangeMs) * plotW;
     }
 
-    // Status classification helpers
-    function statusIsAbove(s) { return s === 'open'; }
+    // Position / style classification helpers
+    function markerIsAbove(status, sev) {
+      return status === 'open' && ['critical', 'high', 'medium'].includes(sev);
+    }
     function statusIsDashed(s) {
       return ['escalated_fp', 'closed_benign', 'closed_fp',
               'closed_suppressed', 'closed'].includes(s);
@@ -547,7 +549,7 @@
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
 
-      const above    = statusIsAbove(status);
+      const above    = markerIsAbove(status, sev);
       const dashed   = statusIsDashed(status);
       const dashAttr = dashed ? ' stroke-dasharray="5,4"' : '';
       const circY    = above ? circYAbove : circYBelow;
@@ -587,8 +589,8 @@
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>scoring relevant</span>` +
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>not scoring relevant</span>` +
       `<span class="tl-leg-sep"></span>` +
-      `<span class="tl-leg-item">&#9650;&nbsp;open events</span>` +
-      `<span class="tl-leg-item">&#9660;&nbsp;escalated/closed events</span>`;
+      `<span class="tl-leg-item">&#9650;&nbsp;open critical/high/medium</span>` +
+      `<span class="tl-leg-item">&#9660;&nbsp;low/informational or escalated/closed</span>`;
 
     return `
       <div class="timeline-wrap">
