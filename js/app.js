@@ -495,7 +495,7 @@
     }
     function statusIsDashed(s) {
       return ['escalated_fp', 'closed_benign', 'closed_fp',
-              'closed_suppressed', 'closed'].includes(s);
+              'closed_suppressed', 'closed', 'closed_as_child'].includes(s);
     }
 
     let svgBody = '';
