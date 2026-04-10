@@ -493,9 +493,10 @@
     function markerIsAbove(status, sev) {
       return status === 'open' && ['critical', 'high', 'medium'].includes(sev);
     }
-    function statusIsDashed(s) {
+    function markerIsDashed(status, sev) {
       return ['escalated_fp', 'closed_benign', 'closed_fp',
-              'closed_suppressed', 'closed', 'closed_as_child'].includes(s);
+              'closed_suppressed', 'closed', 'closed_as_child'].includes(status)
+          || ['informational', 'low'].includes(sev);
     }
 
     let svgBody = '';
@@ -550,7 +551,7 @@
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
 
       const above    = markerIsAbove(status, sev);
-      const dashed   = statusIsDashed(status);
+      const dashed   = markerIsDashed(status, sev);
       const dashAttr = dashed ? ' stroke-dasharray="5,4"' : '';
       const circY    = above ? circYAbove : circYBelow;
 
