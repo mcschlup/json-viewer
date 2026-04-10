@@ -374,6 +374,12 @@
       return '<p class="empty-msg">This section is empty.</p>';
     }
 
+    const sorted = [...arr].sort((a, b) => {
+      const aVal = (a && a.related_entity_score != null) ? Number(a.related_entity_score) : -Infinity;
+      const bVal = (b && b.related_entity_score != null) ? Number(b.related_entity_score) : -Infinity;
+      return bVal - aVal;
+    });
+
     const COLS = [
       'related_entity_score',
       'related_entity_type',
@@ -385,7 +391,7 @@
       return `<th class="entity-tbl-th">${escapeHtml(mapping ? mapping.name : key)}</th>`;
     }).join('');
 
-    const rows = arr.map((item, idx) => {
+    const rows = sorted.map((item, idx) => {
       if (!item || typeof item !== 'object') return '';
       const hl = COLS.reduce((found, key) => {
         if (found) return found;
