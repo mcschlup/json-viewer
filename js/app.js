@@ -458,7 +458,7 @@
 
     const VARS = [
       { key: 'entity_risk_score',          labels: ['Entity Cyber', 'Risk Score'],          x: 90  },
-      { key: 'risk_threat_factor',         labels: ['Threat Risk Score', '(Sum of individual anomaly scores)'],           x: 240 },
+      { key: 'risk_threat_factor',         labels: ['Threat Risk Score', '(\u2211 Anomaly Threat Scores)'],           x: 240 },
       { key: 'risk_vulnerability_factor',  labels: ['Vulnerability', 'Risk Factor'],   x: 400 },
       { key: 'risk_impact_factor',         labels: ['Impact', 'Risk Factor'],          x: 560 },
       { key: 'risk_grc_tool_factor',       labels: ['GRC Tool', 'Risk Factor'],        x: 710 },
