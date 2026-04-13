@@ -223,6 +223,21 @@
     });
   }
 
+  // ── Collapsible fields ────────────────────────────────────────────────────
+
+  function initCollapsible() {
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.collapsible-toggle');
+      if (!btn) return;
+      const wrap = btn.closest('.collapsible');
+      const collapsed = wrap.classList.toggle('collapsed');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+      btn.textContent = collapsed
+        ? `\u25b6 ${btn.dataset.label}`
+        : `\u25bc Hide`;
+    });
+  }
+
   // ── Rendering: Object Table ────────────────────────────────────────────────
 
   function renderObjectTable(obj, compact) {
@@ -263,6 +278,20 @@
       } else {
         // Nested object
         valueHtml = renderObjectTable(value, true);
+      }
+
+      if (CONFIG.collapsibleFields && CONFIG.collapsibleFields.includes(key)
+          && value !== null && typeof value === 'object') {
+        const count = Array.isArray(value) ? value.length : Object.keys(value).length;
+        const noun  = Array.isArray(value)
+          ? `entr${count === 1 ? 'y' : 'ies'}`
+          : `field${count === 1 ? '' : 's'}`;
+        const label = `${count} ${noun}`;
+        valueHtml = `<div class="collapsible collapsed">` +
+          `<button class="collapsible-toggle" data-label="${escapeHtml(label)}" aria-expanded="false">` +
+          `\u25b6 ${escapeHtml(label)}</button>` +
+          `<div class="collapsible-body">${valueHtml}</div>` +
+          `</div>`;
       }
 
       return `
@@ -829,6 +858,7 @@
     createTabs(data);
     initTimeline();
     initDrillDown();
+    initCollapsible();
     initFieldTooltips();
     initVersionPopup(data);
     showState('viewer');

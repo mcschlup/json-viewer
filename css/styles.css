@@ -937,6 +937,34 @@ body {
   border-color: #16a34a;
 }
 
+/* ── Collapsible fields ─────────────────────────────────────────────────── */
+.collapsible-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.collapsible-toggle:hover {
+  background: var(--primary-lt);
+  border-color: var(--primary);
+}
+
+.collapsible-body {
+  margin-top: 0.5rem;
+}
+.collapsible.collapsed .collapsible-body {
+  display: none;
+}
+
 /* ── Section subtitle note ──────────────────────────────────────────────── */
 .section-subtitle {
   font-size: 0.75rem;
