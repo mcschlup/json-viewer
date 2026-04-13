@@ -233,8 +233,8 @@
       const collapsed = wrap.classList.toggle('collapsed');
       btn.setAttribute('aria-expanded', String(!collapsed));
       btn.textContent = collapsed
-        ? `- ${btn.dataset.label}`
-        : `+ Hide`;
+        ? `+ ${btn.dataset.label}`
+        : `- Hide`;
     });
   }
 
@@ -283,17 +283,16 @@
       if (CONFIG.collapsibleFields && CONFIG.collapsibleFields.includes(key)
           && value !== null && typeof value === 'object') {
         const count = Array.isArray(value) ? value.length : Object.keys(value).length;
-        if (count > 8) {
-          const noun  = Array.isArray(value)
-            ? `entr${count === 1 ? 'y' : 'ies'}`
-            : `field${count === 1 ? '' : 's'}`;
-          const label = `${count} ${noun}`;
-          valueHtml = `<div class="collapsible collapsed">` +
-            `<button class="collapsible-toggle" data-label="${escapeHtml(label)}" aria-expanded="false">` +
-            `- ${escapeHtml(label)}</button>` +
-            `<div class="collapsible-body">${valueHtml}</div>` +
-            `</div>`;
-        }
+        const noun  = Array.isArray(value)
+          ? `entr${count === 1 ? 'y' : 'ies'}`
+          : `field${count === 1 ? '' : 's'}`;
+        const label = `${count} ${noun}`;
+        const startCollapsed = count > 8;
+        valueHtml = `<div class="collapsible${startCollapsed ? ' collapsed' : ''}">` +
+          `<button class="collapsible-toggle" data-label="${escapeHtml(label)}" aria-expanded="${String(!startCollapsed)}">` +
+          `${startCollapsed ? '+' : '-'} ${escapeHtml(label)}</button>` +
+          `<div class="collapsible-body">${valueHtml}</div>` +
+          `</div>`;
       }
 
       return `
