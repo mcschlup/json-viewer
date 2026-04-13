@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026041302',
+  appVersion: '2026041303',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1038,17 +1038,25 @@ const CONFIG = {
   // Fields to hide unconditionally, regardless of their value.
   // Add exact field key strings to this array.
   // Example: hideAlways: ['internal_id', 'raw_payload'],
-  hideAlways: [],
+  hideAlways: [
+    'risk_grc_tool_factor_broken_by_submodule'
+  ],
+
 
   // Fields whose array/object value is shown collapsed by default with a toggle to expand.
   // Add exact field key strings to this array. Only applies to object/array values.
   // Example: collapsibleFields: ['anomaly_details', 'raw_evidence'],
-  collapsibleFields: [],
+  collapsibleFields: [
+    'anomaly_additional_info'
+  ],
 
   // Fields to hide when their value is empty (null, empty/whitespace string, empty array, empty object).
   // Add exact field key strings to this array.
   // Example: hideIfEmpty: ['user_mobile_number', 'host_additional_info'],
-  hideIfEmpty: [],
+  hideIfEmpty: [
+    'anomaly_response_instruction_drill_down'
+  ],
+
 
   // String replacements applied to field values before display, matched by exact field key.
   // Each entry: { key, replacements }
