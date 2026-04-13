@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026041103',
+  appVersion: '2026041301',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1034,6 +1034,11 @@ const CONFIG = {
   //                             if omitted or empty, the built-in external-link icon is used as default
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
+
+  // Fields to hide unconditionally, regardless of their value.
+  // Add exact field key strings to this array.
+  // Example: hideAlways: ['internal_id', 'raw_payload'],
+  hideAlways: [],
 
   // Fields to hide when their value is empty (null, empty/whitespace string, empty array, empty object).
   // Add exact field key strings to this array.

@@ -228,6 +228,7 @@
   function renderObjectTable(obj, compact) {
     const rowClass = compact ? 'obj-row obj-row--compact' : 'obj-row';
     const rows = Object.entries(obj).map(([key, value]) => {
+      if (CONFIG.hideAlways && CONFIG.hideAlways.includes(key)) return '';
       if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
