@@ -9,7 +9,7 @@
 //ini_set('session.name', 'CTIFEEDSID');
 ini_set('session.use_strict_mode', '1');
 ini_set('session.use_only_cookies', '1');
-ini_set('session.gc_maxlifetime', '7200');
+ini_set('session.gc_maxlifetime', '43200');
 
 // start session
 session_start();
