@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026041306',
+  appVersion: '2026041307',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -226,8 +226,8 @@ const CONFIG = {
     },
     {
       key: 'entity_risk_score',
-      name: 'Entity Risk Score',
-      description: 'The total risk score of this specific entity. This is the sum of the correlated anomalies\' individual score values multiplied by the different risk factors (Risk vulnerability factor, Risk impact factor and Risk GRC tool factor).'
+      name: 'Entity Cyber Risk Score',
+      description: 'The total cyber risk score of this specific entity. This is the sum of the correlated anomalies\' individual score values multiplied by the different risk factors (Vulnerability Risk Factor, Impact Risk Factor and GRC Tool Risk Factor).'
     },
     {
       key: 'entity_risk_score_elevated',
@@ -408,8 +408,8 @@ const CONFIG = {
     },
     {
       key: 'risk_impact_factor_details',
-      name: 'Risk Impact Details',
-      description: 'Risk Impact Details'
+      name: 'Impact Risk Details',
+      description: 'Impact Risk Details'
     },
     {
       key: 'identity_is_risky_person',
@@ -559,8 +559,8 @@ const CONFIG = {
     },
     {
       key: 'risk_vulnerability_factor_details',
-      name: 'Risk Vulnerability Details',
-      description: 'Risk Vulnerability Details'
+      name: 'Vulnerability Risk Details',
+      description: 'Vulnerability Risk Details'
     },
     {
       key: 'asset_software_vulnerability',
@@ -958,7 +958,7 @@ const CONFIG = {
     {
       key: 'risk_vulnerability_factor_broken_by_submodule',
       name: 'Vulnerability Risk Factor Breakdown',
-      description: 'Risk Vulnerability Factor Breakdown'
+      description: 'Vulnerability Risk Factor Breakdown'
     },
     {
       key: 'asset_software_vulnerability_factor',
@@ -988,7 +988,7 @@ const CONFIG = {
     {
       key: 'risk_impact_factor_broken_by_submodule',
       name: 'Impact Risk Factor Breakdown',
-      description: 'Risk Impact Factor Breakdown'
+      description: 'Impact Risk Factor Breakdown'
     },
     {
       key: 'asset_cia_and_business_criticality_factor',
@@ -1047,14 +1047,19 @@ const CONFIG = {
   // Add exact field key strings to this array. Only applies to object/array values.
   // Example: collapsibleFields: ['anomaly_details', 'raw_evidence'],
   collapsibleFields: [
-    'anomaly_additional_info'
+    'anomaly_additional_info',
+    'user_last_loggedon_devices'
   ],
 
   // Fields to hide when their value is empty (null, empty/whitespace string, empty array, empty object).
   // Add exact field key strings to this array.
   // Example: hideIfEmpty: ['user_mobile_number', 'host_additional_info'],
   hideIfEmpty: [
-    'anomaly_response_instruction_drill_down'
+    'anomaly_response_instruction_drill_down',
+    'anomaly_source_identity',
+    'anomaly_source_asset',
+    'anomaly_destination_identity',
+    'anomaly_destination_asset'
   ],
 
 
