@@ -937,6 +937,12 @@ body {
   border-color: #16a34a;
 }
 
+.drill-down-url[title] {
+  cursor: help;
+  text-decoration: underline dotted var(--text-muted);
+  text-underline-offset: 2px;
+}
+
 /* ── Collapsible fields ─────────────────────────────────────────────────── */
 .collapsible-toggle {
   display: inline-flex;

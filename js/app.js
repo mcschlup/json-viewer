@@ -179,8 +179,10 @@
     if (!match) return formatPrimitive(value);
     const url = match[0];
     const escapedUrl = escapeHtml(url);
+    const displayUrl = url.length > 60 ? escapeHtml(url.slice(0, 60)) + '&hellip;' : escapeHtml(url);
+    const titleAttr = url.length > 60 ? ` title="${escapedUrl}"` : '';
     return `<div class="drill-down-wrap">
-        <span class="drill-down-text">${escapeHtml(String(value))}</span>
+        <span class="drill-down-text"><span class="drill-down-url"${titleAttr}>${displayUrl}</span></span>
         <span class="drill-down-actions">
           <button class="drill-down-btn drill-down-copy" data-url="${escapedUrl}" title="Copy URL">${ICON_COPY}</button>
           <button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="Open in new tab">${ICON_OPEN}</button>
