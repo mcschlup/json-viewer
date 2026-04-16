@@ -939,8 +939,6 @@ body {
 
 .drill-down-url[title] {
   cursor: help;
-  text-decoration: underline dotted var(--text-muted);
-  text-underline-offset: 2px;
 }
 
 /* ── Collapsible fields ─────────────────────────────────────────────────── */
