@@ -223,11 +223,27 @@
     });
   }
 
+  // ── Collapsible fields ────────────────────────────────────────────────────
+
+  function initCollapsible() {
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.collapsible-toggle');
+      if (!btn) return;
+      const wrap = btn.closest('.collapsible');
+      const collapsed = wrap.classList.toggle('collapsed');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+      btn.textContent = collapsed
+        ? `+ ${btn.dataset.label}`
+        : `- Hide`;
+    });
+  }
+
   // ── Rendering: Object Table ────────────────────────────────────────────────
 
   function renderObjectTable(obj, compact) {
     const rowClass = compact ? 'obj-row obj-row--compact' : 'obj-row';
     const rows = Object.entries(obj).map(([key, value]) => {
+      if (CONFIG.hideAlways && CONFIG.hideAlways.includes(key)) return '';
       if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
@@ -262,6 +278,21 @@
       } else {
         // Nested object
         valueHtml = renderObjectTable(value, true);
+      }
+
+      if (CONFIG.collapsibleFields && CONFIG.collapsibleFields.includes(key)
+          && value !== null && typeof value === 'object') {
+        const count = Array.isArray(value) ? value.length : Object.keys(value).length;
+        const noun  = Array.isArray(value)
+          ? `entr${count === 1 ? 'y' : 'ies'}`
+          : `field${count === 1 ? '' : 's'}`;
+        const label = `${count} ${noun}`;
+        const startCollapsed = count > 8;
+        valueHtml = `<div class="collapsible${startCollapsed ? ' collapsed' : ''}">` +
+          `<button class="collapsible-toggle" data-label="${escapeHtml(label)}" aria-expanded="${String(!startCollapsed)}">` +
+          `${startCollapsed ? '+' : '-'} ${escapeHtml(label)}</button>` +
+          `<div class="collapsible-body">${valueHtml}</div>` +
+          `</div>`;
       }
 
       return `
@@ -367,14 +398,67 @@
     informational: { fill: '#bae6fd', stroke: '#0284c7' }
   };
 
+  // ── Entity table (related_entities_to_correlated_anomalies_details) ────────
+
+  function renderEntityTable(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) {
+      return '<p class="empty-msg">This section is empty.</p>';
+    }
+
+    const sorted = [...arr].sort((a, b) => {
+      const aVal = (a && a.related_entity_score != null) ? Number(a.related_entity_score) : -Infinity;
+      const bVal = (b && b.related_entity_score != null) ? Number(b.related_entity_score) : -Infinity;
+      return bVal - aVal;
+    });
+
+    const COLS = [
+      'related_entity_score',
+      'related_entity_type',
+      'related_entity',
+    ];
+
+    const headers = COLS.map(key => {
+      const mapping = getFieldMapping(key);
+      return `<th class="entity-tbl-th">${escapeHtml(mapping ? mapping.name : key)}</th>`;
+    }).join('');
+
+    const rows = sorted.map((item, idx) => {
+      if (!item || typeof item !== 'object') return '';
+      const hl = COLS.reduce((found, key) => {
+        if (found) return found;
+        const v = item[key];
+        return (v !== undefined && v !== null) ? getHighlight(key, v) : null;
+      }, null);
+      const hlClass = hl ? ` ${hl.cssClass}` : '';
+      const cells = COLS.map(key => {
+        const val = item[key] !== undefined && item[key] !== null ? item[key] : '';
+        const replaced = applyValueReplacements(key, val);
+        const display = replaced !== null ? replaced : formatPrimitive(val);
+        return `<td class="entity-tbl-td">${display}</td>`;
+      }).join('');
+      return `<tr class="entity-tbl-tr${hlClass}">
+          <td class="entity-tbl-td entity-tbl-idx">${idx + 1}</td>${cells}
+        </tr>`;
+    }).join('');
+
+    return `<div class="entity-tbl-wrap">
+        <table class="entity-tbl">
+          <thead><tr>
+            <th class="entity-tbl-th entity-tbl-idx">#</th>${headers}
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
   // ── Risk Score Formula graphic ────────────────────────────────────────────
 
   function renderRiskScoreFormula(obj) {
     if (!obj || typeof obj !== 'object') return '';
 
     const VARS = [
-      { key: 'entity_risk_score',          labels: ['Entity Risk', 'Score'],          x: 90  },
-      { key: 'risk_threat_factor',         labels: ['Threat Risk', 'Score'],           x: 240 },
+      { key: 'entity_risk_score',          labels: ['Entity Cyber', 'Risk Score'],          x: 90  },
+      { key: 'risk_threat_factor',         labels: ['Threat Risk Score', '(\u2211 Anomaly Threat Scores)'],           x: 240 },
       { key: 'risk_vulnerability_factor',  labels: ['Vulnerability', 'Risk Factor'],   x: 400 },
       { key: 'risk_impact_factor',         labels: ['Impact', 'Risk Factor'],          x: 560 },
       { key: 'risk_grc_tool_factor',       labels: ['GRC Tool', 'Risk Factor'],        x: 710 },
@@ -436,11 +520,14 @@
       return padL + ((t - startTime) / rangeMs) * plotW;
     }
 
-    // Status classification helpers
-    function statusIsAbove(s) { return s === 'open'; }
-    function statusIsDashed(s) {
+    // Position / style classification helpers
+    function markerIsAbove(status, sev) {
+      return status === 'open' && ['critical', 'high', 'medium'].includes(sev);
+    }
+    function markerIsDashed(status, sev) {
       return ['escalated_fp', 'closed_benign', 'closed_fp',
-              'closed_suppressed', 'closed'].includes(s);
+              'closed_suppressed', 'closed', 'closed_as_child'].includes(status)
+          || ['informational', 'low'].includes(sev);
     }
 
     let svgBody = '';
@@ -494,8 +581,8 @@
       const status = (item.anomaly_analysis_status || '').toLowerCase();
       const colors = SEVERITY_COLORS[sev] || { fill: '#e2e8f0', stroke: '#94a3b8' };
 
-      const above    = statusIsAbove(status);
-      const dashed   = statusIsDashed(status);
+      const above    = markerIsAbove(status, sev);
+      const dashed   = markerIsDashed(status, sev);
       const dashAttr = dashed ? ' stroke-dasharray="5,4"' : '';
       const circY    = above ? circYAbove : circYBelow;
 
@@ -534,8 +621,8 @@
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--solid"></span>scoring relevant</span>` +
       `<span class="tl-leg-item"><span class="tl-leg-line tl-leg-line--dashed"></span>not scoring relevant</span>` +
       `<span class="tl-leg-sep"></span>` +
-      `<span class="tl-leg-item">&#9650;&nbsp;open events</span>` +
-      `<span class="tl-leg-item">&#9660;&nbsp;escalated/closed events</span>`;
+      `<span class="tl-leg-item">&#9650;&nbsp;open critical/high/medium</span>` +
+      `<span class="tl-leg-item">&#9660;&nbsp;low/informational or escalated/closed</span>`;
 
     return `
       <div class="timeline-wrap">
@@ -684,7 +771,10 @@
       const subtitleNote = SECTION_SUBTITLES[key]
         ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
         : '';
-      panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + renderSection(value);
+      const sectionHtml = (key === 'related_entities_to_correlated_anomalies_details' && Array.isArray(value))
+        ? renderEntityTable(value)
+        : renderSection(value);
+      panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + sectionHtml;
       tabPanels.appendChild(panel);
     });
   }
@@ -769,6 +859,7 @@
     createTabs(data);
     initTimeline();
     initDrillDown();
+    initCollapsible();
     initFieldTooltips();
     initVersionPopup(data);
     showState('viewer');
