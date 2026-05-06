@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026050601',
+  appVersion: '2026050602',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1039,7 +1039,9 @@ const CONFIG = {
   // Add exact field key strings to this array.
   // Example: hideAlways: ['internal_id', 'raw_payload'],
   hideAlways: [
-    'risk_grc_tool_factor_broken_by_submodule'
+    'risk_grc_tool_factor_broken_by_submodule',
+    'user_calendar_drill_down',
+    'anomaly_number'
   ],
 
 

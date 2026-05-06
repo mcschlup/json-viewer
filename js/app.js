@@ -800,9 +800,10 @@
       const subtitleNote = SECTION_SUBTITLES[key]
         ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
         : '';
+      const ANOMALY_LIST_KEYS = new Set(['anomaly_overview', 'open_relevant_anomaly_details', 'contextual_anomaly_details']);
       const sectionHtml = (key === 'related_entities_to_correlated_anomalies_details' && Array.isArray(value))
         ? renderEntityTable(value)
-        : (key === 'anomaly_overview' && Array.isArray(value))
+        : (ANOMALY_LIST_KEYS.has(key) && Array.isArray(value))
           ? renderAnomalyList(value)
           : renderSection(value);
       panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + sectionHtml;
