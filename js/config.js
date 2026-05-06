@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026050602',
+  appVersion: '2026050603',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -170,6 +170,16 @@ const CONFIG = {
     {
       testKey:   (key)   => key === 'risk_grc_tool_factor',
       testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'host_status',
+      testValue: (value) => /(MDE Onboarding Status=Onboarded\|MDE Health Status=Active)/.test(String(value)),
+      cssClass: 'hl-green'
+    },
+    {
+      testKey:   (key)   => key === 'host_status',
+      testValue: (value) => /(MDE Onboarding Status)/.test(String(value)),
       cssClass: 'hl-red'
     },
   //  {
