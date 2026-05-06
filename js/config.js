@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026050603',
+  appVersion: '2026050604',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1071,7 +1071,10 @@ const CONFIG = {
     'anomaly_source_identity',
     'anomaly_source_asset',
     'anomaly_destination_identity',
-    'anomaly_destination_asset'
+    'anomaly_destination_asset',
+    'asset_critical_vulnerabilities_list',
+    'asset_exploitable_vulnerabilities_list',
+    'asset_high_epss_vulnerabilities_list'
   ],
 
 
