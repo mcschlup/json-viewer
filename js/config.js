@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026050604',
+  appVersion: '2026050701',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',

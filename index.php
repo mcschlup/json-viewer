@@ -147,7 +147,7 @@ if (isset($_GET['view'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRSI JSON Viewer</title>
+  <title>CRSI Risk Notable Viewer</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -158,7 +158,7 @@ if (isset($_GET['view'])) {
         <h1 class="app-title">
           <a href="index.php" class="app-title-link">
             <img src="img/icon.png" class="title-icon" alt="">
-            CRSI JSON Viewer
+            CRSI Risk Notable Viewer
           </a>
         </h1>
         <div class="header-right">
