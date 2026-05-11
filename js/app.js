@@ -656,7 +656,7 @@
     return `
       <div class="timeline-wrap">
         <div class="timeline-head">
-          <span class="timeline-title">Anomaly Timeline</span>
+          <span class="timeline-title">Anomaly Timeline (${Math.round(rangeMs / MS_DAY)} days)</span>
           <div class="timeline-legend">${sevLegend}${statusLegend}</div>
         </div>
         ${svgEl}
