@@ -1,7 +1,7 @@
 <?php
 
 /*
- * ctifeeds include file: check if authenticated
+ * include file: check if authenticated
  *
  */
 

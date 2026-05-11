@@ -1,7 +1,7 @@
 <?php
 
 /*
- * ctifeeds include file: start session
+ * include file: start session
  *
  */
 
