@@ -179,8 +179,10 @@
     if (!match) return formatPrimitive(value);
     const url = match[0];
     const escapedUrl = escapeHtml(url);
+    const displayUrl = url.length > 60 ? escapeHtml(url.slice(0, 60)) + '&hellip;' : escapeHtml(url);
+    const titleAttr = url.length > 60 ? ` title="${escapedUrl}"` : '';
     return `<div class="drill-down-wrap">
-        <span class="drill-down-text">${escapeHtml(String(value))}</span>
+        <span class="drill-down-text"><span class="drill-down-url"${titleAttr}>${displayUrl}</span></span>
         <span class="drill-down-actions">
           <button class="drill-down-btn drill-down-copy" data-url="${escapedUrl}" title="Copy URL">${ICON_COPY}</button>
           <button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="Open in new tab">${ICON_OPEN}</button>
@@ -338,6 +340,32 @@
           <div class="card-body card-body--primitive"><span>${formatPrimitive(item)}</span></div>`;
       }
       return `<div class="array-card">${bodyHtml}</div>`;
+    }).join('');
+
+    return `<div class="array-grid">${cards}</div>`;
+  }
+
+  function renderAnomalyList(arr) {
+    if (arr.length === 0) {
+      return '<p class="empty-msg">This array is empty.</p>';
+    }
+
+    const cards = arr.map((item, i) => {
+      if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
+        const num    = item.anomaly_number !== undefined ? item.anomaly_number : i + 1;
+        const status = item.anomaly_analysis_status !== undefined ? escapeHtml(String(item.anomaly_analysis_status)) : '';
+        return `<div class="array-card">
+          <div class="card-header">
+            <span class="card-index"># ${escapeHtml(String(num))}</span>
+            ${status ? `<span class="card-summary">${status}</span>` : ''}
+          </div>
+          <div class="card-body">${renderObjectTable(item)}</div>
+        </div>`;
+      }
+      return `<div class="array-card">
+        <div class="card-header"><span class="card-index"># ${i + 1}</span></div>
+        <div class="card-body card-body--primitive"><span>${formatPrimitive(item)}</span></div>
+      </div>`;
     }).join('');
 
     return `<div class="array-grid">${cards}</div>`;
@@ -590,7 +618,8 @@
       const escapedSev    = escapeHtml(item.anomaly_severity_level || '');
       const escapedStatus = escapeHtml(item.anomaly_analysis_status || '');
       const escapedName   = escapeHtml(item.anomaly_name || '');
-      const tipAttrs = `data-index="${idx + 1}" data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
+      const anomalyNum = item.anomaly_number !== undefined ? item.anomaly_number : idx + 1;
+      const tipAttrs = `data-index="${escapeHtml(String(anomalyNum))}" data-time="${escapedTime}" data-severity="${escapedSev}" data-status="${escapedStatus}" data-name="${escapedName}"`;
 
       // Stem: straight vertical for first half, then cubic bezier to exact time x on axis.
       // Control points share the same Y (midpoint of second half) → vertical tangents at
@@ -605,7 +634,7 @@
 
       // Number without circle — invisible rect for hover area, then the label
       svgBody += `<rect x="${x - 7}" y="${circY - 7}" width="14" height="14" fill="transparent" class="tl-marker" ${tipAttrs}/>`;
-      svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" class="tl-marker" ${tipAttrs} pointer-events="none">${idx + 1}</text>`;
+      svgBody += `<text x="${x}" y="${circY}" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="700" fill="${colors.stroke}" font-family="-apple-system,BlinkMacSystemFont,sans-serif" class="tl-marker" ${tipAttrs} pointer-events="none">${escapeHtml(String(anomalyNum))}</text>`;
     });
 
     const svgEl = `<svg viewBox="0 0 ${W} ${H}" class="timeline-svg" role="img" aria-label="Anomaly timeline">${svgBody}</svg>`;
@@ -627,7 +656,7 @@
     return `
       <div class="timeline-wrap">
         <div class="timeline-head">
-          <span class="timeline-title">Anomaly Timeline</span>
+          <span class="timeline-title">Anomaly Timeline (${Math.round(rangeMs / MS_DAY)} days)</span>
           <div class="timeline-legend">${sevLegend}${statusLegend}</div>
         </div>
         ${svgEl}
@@ -771,9 +800,12 @@
       const subtitleNote = SECTION_SUBTITLES[key]
         ? `<p class="section-subtitle">${escapeHtml(SECTION_SUBTITLES[key])}</p>`
         : '';
+      const ANOMALY_LIST_KEYS = new Set(['anomaly_overview', 'open_relevant_anomaly_details', 'contextual_anomaly_details']);
       const sectionHtml = (key === 'related_entities_to_correlated_anomalies_details' && Array.isArray(value))
         ? renderEntityTable(value)
-        : renderSection(value);
+        : (ANOMALY_LIST_KEYS.has(key) && Array.isArray(value))
+          ? renderAnomalyList(value)
+          : renderSection(value);
       panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + sectionHtml;
       tabPanels.appendChild(panel);
     });

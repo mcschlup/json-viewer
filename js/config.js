@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026041309',
+  appVersion: '2026051101',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -170,6 +170,16 @@ const CONFIG = {
     {
       testKey:   (key)   => key === 'risk_grc_tool_factor',
       testValue: (value) => value > 1,
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'host_status',
+      testValue: (value) => /(MDE Onboarding Status=Onboarded\|MDE Health Status=Active)/.test(String(value)),
+      cssClass: 'hl-green'
+    },
+    {
+      testKey:   (key)   => key === 'host_status',
+      testValue: (value) => /(MDE Onboarding Status)/.test(String(value)),
       cssClass: 'hl-red'
     },
   //  {
@@ -1039,7 +1049,9 @@ const CONFIG = {
   // Add exact field key strings to this array.
   // Example: hideAlways: ['internal_id', 'raw_payload'],
   hideAlways: [
-    'risk_grc_tool_factor_broken_by_submodule'
+    'risk_grc_tool_factor_broken_by_submodule',
+    'user_calendar_drill_down',
+    'anomaly_number'
   ],
 
 
@@ -1059,7 +1071,10 @@ const CONFIG = {
     'anomaly_source_identity',
     'anomaly_source_asset',
     'anomaly_destination_identity',
-    'anomaly_destination_asset'
+    'anomaly_destination_asset',
+    'asset_critical_vulnerabilities_list',
+    'asset_exploitable_vulnerabilities_list',
+    'asset_high_epss_vulnerabilities_list'
   ],
 
 
