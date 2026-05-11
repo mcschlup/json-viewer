@@ -16,8 +16,9 @@ if (file_exists(__DIR__ . '/config-local.inc.php')) {
     require_once __DIR__ . '/config-local.inc.php';
 }
 
-/* ── Load authentication function ────────────────────────────────────────── */
+/* ── Load authentication function and process login/logout ───────────────── */
 require_once __DIR__ . '/authfunction.inc.php';
+require_once __DIR__ . '/authprocess.inc.php';
 
 /* ── Handle ?rnid=<id>: fetch from REST API, store, redirect ─────────────── */
 if (isset($_GET['rnid'])) {
@@ -28,9 +29,8 @@ if (isset($_GET['rnid'])) {
         echo json_encode(['error' => 'rnid parameter is empty.']);
         exit;
     }
-    
+
     // when doing splunk requests in the background, user needs to authenticate first
-    require_once __DIR__ . '/authcheck.inc.php';
     if ($is_authenticated) {
 
       $url = $api_base_url;
