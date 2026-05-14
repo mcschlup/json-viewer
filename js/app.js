@@ -238,11 +238,23 @@
       if (!btn) { popup.classList.add('hidden'); return; }
       const fn = DRILL_DOWN_HOVER_FNS[btn.getAttribute('data-hover-fn')];
       if (!fn) { popup.classList.add('hidden'); return; }
+      const value = btn.getAttribute('data-hover-value');
+      const key   = btn.getAttribute('data-hover-key');
       try {
-        popup.innerHTML = fn(btn.getAttribute('data-hover-value'), btn.getAttribute('data-hover-key'));
+        const result = fn(value, key);
+        if (result && typeof result.then === 'function') {
+          popup.innerHTML = '<span class="dd-popup-loading">Loading…</span>';
+          popup.classList.remove('hidden');
+          result
+            .then(html  => { popup.innerHTML = html; })
+            .catch(err  => { popup.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`; });
+        } else {
+          popup.innerHTML = result;
+          popup.classList.remove('hidden');
+        }
+      } catch (err) {
+        popup.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`;
         popup.classList.remove('hidden');
-      } catch (_) {
-        popup.classList.add('hidden');
       }
     });
 

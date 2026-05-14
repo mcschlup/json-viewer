@@ -895,6 +895,21 @@ body {
 }
 .drill-down-popup.hidden { display: none; }
 
+.dd-popup-row {
+  display: flex;
+  gap: 0.5rem;
+  word-break: break-word;
+}
+.dd-popup-row + .dd-popup-row { margin-top: 0.2rem; }
+.dd-popup-lbl {
+  font-weight: 600;
+  opacity: 0.55;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+.dd-popup-loading { opacity: 0.65; font-style: italic; }
+.dd-popup-error   { color: #fca5a5; }
+
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {
   display: flex;

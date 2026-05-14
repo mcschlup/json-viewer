@@ -242,5 +242,6 @@ if (isset($_GET['view'])) {
   <script src="js/config.js"></script>
   <script src="js/config-local.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/hover-functions.js"></script>
 </body>
 </html>
