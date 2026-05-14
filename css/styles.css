@@ -878,6 +878,23 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+.drill-down-popup {
+  position: fixed;
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+  font-family: var(--font);
+  line-height: 1.65;
+  max-width: 360px;
+  white-space: normal;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+}
+.drill-down-popup.hidden { display: none; }
+
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {
   display: flex;

@@ -190,18 +190,23 @@
       </div>`;
   }
 
-  function formatFieldDrillDowns(value, actions) {
+  const DRILL_DOWN_HOVER_FNS = {};
+
+  function formatFieldDrillDowns(value, actions, key) {
     const escapedValue = escapeHtml(String(value));
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
+      const hoverAttrs = entry.hoverFunction
+        ? ` data-hover-fn="${escapeHtml(entry.hoverFunction)}" data-hover-value="${escapedValue}" data-hover-key="${escapeHtml(key || '')}"`
+        : '';
       if (entry.baseUrl === 'copyvalue') {
-        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
+        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${hoverAttrs}>${ICON_COPY}</button>`;
       } else {
         const escapedUrl = escapeHtml(entry.baseUrl.replace('##REPLACE##', encodeURIComponent(String(value))));
         const icon = entry.icon
           ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
           : ICON_OPEN;
-        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${icon}</button>`;
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}"${hoverAttrs}>${icon}</button>`;
       }
     }).join('');
     return `<div class="drill-down-wrap">
@@ -211,6 +216,10 @@
   }
 
   function initDrillDown() {
+    const popup = document.createElement('div');
+    popup.className = 'drill-down-popup hidden';
+    document.body.appendChild(popup);
+
     document.addEventListener('click', e => {
       const copyBtn = e.target.closest('.drill-down-copy');
       if (copyBtn) {
@@ -222,6 +231,29 @@
       }
       const openBtn = e.target.closest('.drill-down-open');
       if (openBtn) window.open(openBtn.dataset.url, '_blank', 'noopener,noreferrer');
+    });
+
+    document.addEventListener('mouseover', e => {
+      const btn = e.target.closest('[data-hover-fn]');
+      if (!btn) { popup.classList.add('hidden'); return; }
+      const fn = DRILL_DOWN_HOVER_FNS[btn.getAttribute('data-hover-fn')];
+      if (!fn) { popup.classList.add('hidden'); return; }
+      try {
+        popup.innerHTML = fn(btn.getAttribute('data-hover-value'), btn.getAttribute('data-hover-key'));
+        popup.classList.remove('hidden');
+      } catch (_) {
+        popup.classList.add('hidden');
+      }
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (popup.classList.contains('hidden')) return;
+      let left = e.clientX + 14;
+      let top  = e.clientY - 10;
+      if (left + popup.offsetWidth  > window.innerWidth  - 8) left = e.clientX - popup.offsetWidth  - 14;
+      if (top  + popup.offsetHeight > window.innerHeight - 8) top  = e.clientY - popup.offsetHeight - 10;
+      popup.style.left = left + 'px';
+      popup.style.top  = top  + 'px';
     });
   }
 
@@ -262,7 +294,7 @@
       const fieldDrillDownActions = (value !== null && typeof value !== 'object')
         ? getFieldDrillDowns(key) : null;
       if (fieldDrillDownActions) {
-        valueHtml = formatFieldDrillDowns(value, fieldDrillDownActions);
+        valueHtml = formatFieldDrillDowns(value, fieldDrillDownActions, key);
       } else if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
         valueHtml = formatDrillDown(value);
       } else if (value === null || typeof value !== 'object') {
@@ -897,6 +929,8 @@
     showState('viewer');
     initScrollyTabs();
   }
+
+  window.registerDrillDownHoverFn = (name, fn) => { DRILL_DOWN_HOVER_FNS[name] = fn; };
 
   document.addEventListener('DOMContentLoaded', init);
 })();
