@@ -20,6 +20,87 @@ if (file_exists(__DIR__ . '/config-local.inc.php')) {
 require_once __DIR__ . '/authfunction.inc.php';
 require_once __DIR__ . '/authprocess.inc.php';
 
+/* ── Handle ?proxy=<name>: server-side proxy for external API calls ─────── */
+if (isset($_GET['proxy'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store, no-cache');
+
+    if (!$is_authenticated) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Authentication required.']);
+        exit;
+    }
+
+    $proxyName = $_GET['proxy'];
+    if (!isset($proxyEndpoints[$proxyName])) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Unknown proxy endpoint: ' . htmlspecialchars($proxyName, ENT_QUOTES)]);
+        exit;
+    }
+
+    $cfg    = $proxyEndpoints[$proxyName];
+    $url    = $cfg['url'];
+    $method = strtoupper($cfg['method'] ?? 'GET');
+
+    // Forward only whitelisted client-supplied GET params
+    $params = [];
+    foreach ($cfg['passParams'] ?? [] as $p) {
+        if (isset($_GET[$p])) $params[$p] = $_GET[$p];
+    }
+
+    // Append params to URL for GET, merge with static postData for POST
+    if ($method === 'GET' && $params) {
+        $url .= '?' . http_build_query($params);
+    }
+
+    // Build header list
+    $curlHeaders = [];
+    foreach ($cfg['headers'] ?? [] as $k => $v) {
+        $curlHeaders[] = "$k: $v";
+    }
+
+    // Bearer token auth adds an Authorization header
+    if (isset($cfg['auth']) && $cfg['auth']['type'] === 'bearer') {
+        $curlHeaders[] = 'Authorization: Bearer ' . $cfg['auth']['token'];
+    }
+
+    $curlOpts = [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_HTTPHEADER     => $curlHeaders,
+    ];
+
+    if ($method === 'POST') {
+        $postData = array_merge($cfg['postData'] ?? [], $params);
+        $curlOpts[CURLOPT_POST]       = true;
+        $curlOpts[CURLOPT_POSTFIELDS] = http_build_query($postData);
+    }
+
+    // Basic auth
+    if (isset($cfg['auth']) && $cfg['auth']['type'] === 'basic') {
+        $curlOpts[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
+        $curlOpts[CURLOPT_USERPWD]  = $cfg['auth']['user'] . ':' . $cfg['auth']['pass'];
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $curlOpts);
+    $response  = curl_exec($ch);
+    $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false || $curlError !== '') {
+        http_response_code(502);
+        echo json_encode(['error' => 'Proxy request failed: ' . $curlError]);
+        exit;
+    }
+
+    http_response_code($httpCode);
+    echo $response;
+    exit;
+}
+
 /* ── Handle ?rnid=<id>: fetch from REST API, store, redirect ─────────────── */
 if (isset($_GET['rnid'])) {
     $rnid = trim($_GET['rnid']);

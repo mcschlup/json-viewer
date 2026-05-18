@@ -17,18 +17,17 @@
   }
 
   // ── AbuseIPDB ──────────────────────────────────────────────────────────────
+  // Proxy endpoint 'abuseipdb' must be configured in config-local.inc.php.
 
-  const ABUSEIPDB_API_KEY = 'YOUR_API_KEY_HERE';
   const abuseIPDBCache = {};
 
   async function fetchAbuseIPDB(ip) {
     if (abuseIPDBCache[ip]) return abuseIPDBCache[ip];
-    const url = `https://api.abuseipdb.com/api/v2/check?ipAddress=${encodeURIComponent(ip)}&maxAgeInDays=90`;
-    const resp = await fetch(url, {
-      headers: { 'Key': ABUSEIPDB_API_KEY, 'Accept': 'application/json' }
-    });
-    if (!resp.ok) throw new Error(`AbuseIPDB returned HTTP ${resp.status}`);
+    const url = `index.php?proxy=abuseipdb&ipAddress=${encodeURIComponent(ip)}&maxAgeInDays=90`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`AbuseIPDB proxy returned HTTP ${resp.status}`);
     const json = await resp.json();
+    if (json.error) throw new Error(json.error);
     abuseIPDBCache[ip] = json.data;
     return json.data;
   }
