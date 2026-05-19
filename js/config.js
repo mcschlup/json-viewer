@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026051102',
+  appVersion: '2026051901',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -809,24 +809,34 @@ const CONFIG = {
     {
       key: 'application_name',
       name: 'Application Name',
-      description: 'Name of the Application assigned to this account/subscription'
+      description: 'Name of the Application'
+    },
+    {
+      key: 'so_name',
+      name: 'Service Offering Name',
+      description: 'Name of the Service offering'
     },
     {
       key: 'application_confidentiality',
       name: 'Application Confidentiality',
-      description: 'Confidentiality of the Application assigned to this account/subscription'
+      description: 'Confidentiality of the Application'
     },
     {
       key: 'application_integrity',
       name: 'Application Integrity',
-      description: 'Integrity of the Application assigned to this account/subscription'
+      description: 'Integrity of the Application'
     },
     {
       key: 'application_availability',
       name: 'Application Availability',
-      description: 'Availability of the Application assigned to this account/subscription'
+      description: 'Availability of the Application'
     },
     {
+      key: 'application_criticality',
+      name: 'Application Business Criticality',
+      description: 'Business Criticality of the Application'
+    },
+    { // keep for some time - can be removed then
       key: 'business_criticality',
       name: 'Application Business Criticality',
       description: 'Business Criticality of the Application assigned to this account/subscription'
@@ -946,6 +956,21 @@ const CONFIG = {
       key: 'related_entity_score',
       name: 'Entity Risk Score',
       description: 'Entity Risk Score'
+    },
+    {
+      key: 'related_entity_market_unit',
+      name: 'Entity Market Unit',
+      description: 'Entity Market Unit'
+    },
+    {
+      key: 'related_entity_anomaly_numbers',
+      name: 'Entity Anomaly Number(s)',
+      description: 'Number(s) of those anomalies that have this entity listed as source/destination asset/identity'
+    },
+    {
+      key: 'related_entity_risk_notable_id',
+      name: 'Entity Risk Notable ID',
+      description: 'Reference to Risk Notable where this entity is the prioritized entity'
     },
     //-------------------------------------------------------------------------------------------------------
     // Risk Score Details section

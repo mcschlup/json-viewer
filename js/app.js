@@ -443,6 +443,8 @@
       'related_entity_score',
       'related_entity_type',
       'related_entity',
+      'related_entity_market_unit',
+      'related_entity_anomaly_numbers',
     ];
 
     const headers = COLS.map(key => {
