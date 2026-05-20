@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026051901',
+  appVersion: '2026052001',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1150,6 +1150,12 @@ const CONFIG = {
     },
     {
       key: 'asset_risky_person_authentication_against_asset_last_200_days_identity_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'identity_authentication_against_vulnerable_asset_last_200_days_asset_list',
       replacements: [
         { from: '|', to: '<br>' }
       ]
