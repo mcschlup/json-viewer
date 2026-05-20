@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052002',
+  appVersion: '2026052003',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1035,16 +1035,16 @@ const CONFIG = {
   // Field drill-downs: for a specific field key, add one or more action buttons next to the value.
   // Each entry: { key, actions }
   //   key     – exact field key to match
-  //   actions – array of { baseUrl, description, icon, hoverFunction }
+  //   actions – array of { baseUrl, description, icon, popupFunction }
   //               baseUrl       : URL containing ##REPLACE## as placeholder for the field value (URL-encoded)
   //                               use 'copyvalue' to show a copy-icon that copies the raw field value
   //               description   : tooltip text shown on hover over the button
   //               icon          : (optional) filename of an image in the img/ folder used as button icon
   //                               only applies to non-copyvalue entries (copyvalue always uses the built-in copy icon)
   //                               if omitted or empty, the built-in external-link icon is used as default
-  //               hoverFunction : (optional) name of a function registered via registerDrillDownHoverFn(name, fn)
-  //                               called as fn(value, key) on button hover; must return an HTML string
-  //                               displayed in a popup next to the cursor
+  //               popupFunction : (optional) name of a function registered via registerDrillDownPopupFn(name, fn)
+  //                               called as fn(value, key) on button click; must return an HTML string or Promise<string>
+  //                               displayed in a modal popup; the button URL (if any) appears as a link in the popup
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
 

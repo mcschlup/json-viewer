@@ -190,23 +190,23 @@
       </div>`;
   }
 
-  const DRILL_DOWN_HOVER_FNS = {};
+  const DRILL_DOWN_POPUP_FNS = {};
 
   function formatFieldDrillDowns(value, actions, key) {
     const escapedValue = escapeHtml(String(value));
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
-      const hoverAttrs = entry.hoverFunction
-        ? ` data-hover-fn="${escapeHtml(entry.hoverFunction)}" data-hover-value="${escapedValue}" data-hover-key="${escapeHtml(key || '')}"`
+      const popupAttrs = entry.popupFunction
+        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}"`
         : '';
       if (entry.baseUrl === 'copyvalue') {
-        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${hoverAttrs}>${ICON_COPY}</button>`;
+        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${popupAttrs}>${ICON_COPY}</button>`;
       } else {
         const escapedUrl = escapeHtml(entry.baseUrl.replace('##REPLACE##', encodeURIComponent(String(value))));
         const icon = entry.icon
           ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
           : ICON_OPEN;
-        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}"${hoverAttrs}>${icon}</button>`;
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}"${popupAttrs}>${icon}</button>`;
       }
     }).join('');
     return `<div class="drill-down-wrap">
@@ -216,11 +216,84 @@
   }
 
   function initDrillDown() {
-    const popup = document.createElement('div');
-    popup.className = 'drill-down-popup hidden';
-    document.body.appendChild(popup);
+    // Modal element (reuses version-popup styles)
+    const modal = document.createElement('div');
+    modal.className = 'version-popup hidden';
+    modal.id = 'dd-modal';
+    modal.innerHTML =
+      `<div class="version-popup-box dd-modal-box">` +
+        `<div class="version-popup-header">` +
+          `<span id="dd-modal-title">Details</span>` +
+          `<div class="dd-modal-actions">` +
+            `<button class="dd-modal-btn" id="dd-modal-copy" title="Copy to clipboard">${ICON_COPY}</button>` +
+            `<a class="dd-modal-btn hidden" id="dd-modal-link" href="#" target="_blank" rel="noopener noreferrer" title="Open in new tab">${ICON_OPEN}</a>` +
+            `<button class="version-popup-close" id="dd-modal-close">&times;</button>` +
+          `</div>` +
+        `</div>` +
+        `<div class="version-popup-body" id="dd-modal-body"></div>` +
+      `</div>`;
+    document.body.appendChild(modal);
+
+    const modalTitle = modal.querySelector('#dd-modal-title');
+    const modalBody  = modal.querySelector('#dd-modal-body');
+    const modalLink  = modal.querySelector('#dd-modal-link');
+    const modalCopy  = modal.querySelector('#dd-modal-copy');
+    const modalClose = modal.querySelector('#dd-modal-close');
+
+    function closeModal() { modal.classList.add('hidden'); }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    modalCopy.addEventListener('click', () => {
+      const text = modalBody.innerText || modalBody.textContent || '';
+      navigator.clipboard.writeText(text).then(() => {
+        modalCopy.classList.add('copied');
+        setTimeout(() => modalCopy.classList.remove('copied'), 1500);
+      }).catch(() => {});
+    });
 
     document.addEventListener('click', e => {
+      // Popup-function button — show modal instead of navigating
+      const popupBtn = e.target.closest('[data-popup-fn]');
+      if (popupBtn) {
+        const fnName = popupBtn.getAttribute('data-popup-fn');
+        const value  = popupBtn.getAttribute('data-popup-value');
+        const key    = popupBtn.getAttribute('data-popup-key');
+        const url    = popupBtn.dataset.url || '';
+
+        const mapping = getFieldMapping(key);
+        modalTitle.textContent = mapping ? mapping.name : (key || 'Details');
+
+        if (url) {
+          modalLink.href = url;
+          modalLink.classList.remove('hidden');
+        } else {
+          modalLink.classList.add('hidden');
+        }
+
+        modalBody.innerHTML = '<span class="dd-popup-loading">Loading…</span>';
+        modal.classList.remove('hidden');
+
+        const fn = DRILL_DOWN_POPUP_FNS[fnName];
+        if (fn) {
+          try {
+            const result = fn(value, key);
+            if (result && typeof result.then === 'function') {
+              result
+                .then(html => { modalBody.innerHTML = html; })
+                .catch(err => { modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`; });
+            } else {
+              modalBody.innerHTML = result || '';
+            }
+          } catch (err) {
+            modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`;
+          }
+        } else {
+          modalBody.innerHTML = `<span class="dd-popup-error">Popup function “${escapeHtml(fnName)}” not registered.</span>`;
+        }
+        return;
+      }
+
       const copyBtn = e.target.closest('.drill-down-copy');
       if (copyBtn) {
         navigator.clipboard.writeText(copyBtn.dataset.url).then(() => {
@@ -231,41 +304,6 @@
       }
       const openBtn = e.target.closest('.drill-down-open');
       if (openBtn) window.open(openBtn.dataset.url, '_blank', 'noopener,noreferrer');
-    });
-
-    document.addEventListener('mouseover', e => {
-      const btn = e.target.closest('[data-hover-fn]');
-      if (!btn) { popup.classList.add('hidden'); return; }
-      const fn = DRILL_DOWN_HOVER_FNS[btn.getAttribute('data-hover-fn')];
-      if (!fn) { popup.classList.add('hidden'); return; }
-      const value = btn.getAttribute('data-hover-value');
-      const key   = btn.getAttribute('data-hover-key');
-      try {
-        const result = fn(value, key);
-        if (result && typeof result.then === 'function') {
-          popup.innerHTML = '<span class="dd-popup-loading">Loading…</span>';
-          popup.classList.remove('hidden');
-          result
-            .then(html  => { popup.innerHTML = html; })
-            .catch(err  => { popup.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`; });
-        } else {
-          popup.innerHTML = result;
-          popup.classList.remove('hidden');
-        }
-      } catch (err) {
-        popup.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`;
-        popup.classList.remove('hidden');
-      }
-    });
-
-    document.addEventListener('mousemove', e => {
-      if (popup.classList.contains('hidden')) return;
-      let left = e.clientX + 14;
-      let top  = e.clientY - 10;
-      if (left + popup.offsetWidth  > window.innerWidth  - 8) left = e.clientX - popup.offsetWidth  - 14;
-      if (top  + popup.offsetHeight > window.innerHeight - 8) top  = e.clientY - popup.offsetHeight - 10;
-      popup.style.left = left + 'px';
-      popup.style.top  = top  + 'px';
     });
   }
 
@@ -942,7 +980,7 @@
     initScrollyTabs();
   }
 
-  window.registerDrillDownHoverFn = (name, fn) => { DRILL_DOWN_HOVER_FNS[name] = fn; };
+  window.registerDrillDownPopupFn = (name, fn) => { DRILL_DOWN_POPUP_FNS[name] = fn; };
 
   document.addEventListener('DOMContentLoaded', init);
 })();

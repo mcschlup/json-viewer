@@ -1,5 +1,5 @@
 // js/hover-functions.js
-// Hover popup functions registered via registerDrillDownHoverFn().
+// Popup functions registered via registerDrillDownPopupFn().
 // Each function receives (value, key) and must return an HTML string or a Promise<string>.
 
 (function () {
@@ -45,7 +45,7 @@
     ].join('');
   }
 
-  registerDrillDownHoverFn('abuseIPDB', async (value) => {
+  registerDrillDownPopupFn('abuseIPDB', async (value) => {
     const data = await fetchAbuseIPDB(value);
     return formatAbuseIPDB(data);
   });

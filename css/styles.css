@@ -878,22 +878,34 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-.drill-down-popup {
-  position: fixed;
-  background: #1e293b;
-  color: #f8fafc;
-  border-radius: var(--radius);
-  padding: 0.45rem 0.7rem;
-  font-size: 0.75rem;
-  font-family: var(--font);
-  line-height: 1.65;
-  max-width: 360px;
-  white-space: normal;
-  pointer-events: none;
-  z-index: 1000;
-  box-shadow: var(--shadow-md);
+.dd-modal-box {
+  max-width: 480px;
 }
-.drill-down-popup.hidden { display: none; }
+
+.dd-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dd-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.dd-modal-btn svg { width: 14px; height: 14px; pointer-events: none; }
+.dd-modal-btn:hover { background: var(--primary-lt); color: var(--primary); }
+.dd-modal-btn.copied { color: #16a34a; }
 
 .dd-popup-row {
   display: flex;
