@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052004',
+  appVersion: '2026052005',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -324,6 +324,11 @@ const CONFIG = {
       key: 'user_name',
       name: 'User Name',
       description: 'Full name of the current prioritized entity'
+    },
+    {
+      key: 'user_entra_object_id',
+      name: 'User Entra ID Object ID',
+      description: 'Entra ID Object ID of the current prioritized entity'
     },
     {
       key: 'user_is_risky_person',
