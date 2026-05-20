@@ -11,6 +11,7 @@
 /*   ],                                                                        */
 /*   'postData'   => ['key'=>'val'], // static POST fields (method=POST only)  */
 /*   'passParams' => ['param1'],     // client GET params forwarded upstream   */
+/*   'proxy'      => 'http://proxy.example.com:8080', // optional HTTP proxy   */
 /* ];                                                                          */
 $proxyEndpoints = [];
 

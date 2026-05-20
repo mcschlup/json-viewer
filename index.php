@@ -69,7 +69,12 @@ if (isset($_GET['proxy'])) {
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_HTTPHEADER     => $curlHeaders,
+        CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
     ];
+
+    if (isset($cfg['proxy'])) {
+        $curlOpts[CURLOPT_PROXY] = $cfg['proxy'];
+    }
 
     if ($method === 'POST') {
         $postData = array_merge($cfg['postData'] ?? [], $params);
