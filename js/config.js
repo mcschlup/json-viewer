@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052003',
+  appVersion: '2026052004',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1045,6 +1045,8 @@ const CONFIG = {
   //               popupFunction : (optional) name of a function registered via registerDrillDownPopupFn(name, fn)
   //                               called as fn(value, key) on button click; must return an HTML string or Promise<string>
   //                               displayed in a modal popup; the button URL (if any) appears as a link in the popup
+  //               popupTitle    : (optional, used with popupFunction) provider label shown in the modal title
+  //                               title format: "<fieldName>: <popupTitle> details for <value>"
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
 

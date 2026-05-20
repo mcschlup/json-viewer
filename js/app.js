@@ -197,7 +197,7 @@
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
       const popupAttrs = entry.popupFunction
-        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}"`
+        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}" data-popup-title="${escapeHtml(entry.popupTitle || '')}" data-popup-icon="${escapeHtml(entry.icon || '')}"`
         : '';
       if (entry.baseUrl === 'copyvalue') {
         return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${popupAttrs}>${ICON_COPY}</button>`;
@@ -261,11 +261,19 @@
         const key    = popupBtn.getAttribute('data-popup-key');
         const url    = popupBtn.dataset.url || '';
 
-        const mapping = getFieldMapping(key);
-        modalTitle.textContent = mapping ? mapping.name : (key || 'Details');
+        const popupTitle = popupBtn.getAttribute('data-popup-title') || '';
+        const popupIcon  = popupBtn.getAttribute('data-popup-icon') || '';
+        const mapping    = getFieldMapping(key);
+        const fieldName  = mapping ? mapping.name : (key || 'Details');
+        modalTitle.textContent = popupTitle
+          ? `${fieldName}: ${popupTitle} details for ${value}`
+          : `${fieldName}: Details for ${value}`;
 
         if (url) {
           modalLink.href = url;
+          modalLink.innerHTML = popupIcon
+            ? `<img src="img/${escapeHtml(popupIcon)}" alt="" class="drill-down-img">`
+            : ICON_OPEN;
           modalLink.classList.remove('hidden');
         } else {
           modalLink.classList.add('hidden');
