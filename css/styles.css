@@ -903,7 +903,8 @@ body {
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 }
-.dd-modal-btn svg { width: 14px; height: 14px; pointer-events: none; }
+.dd-modal-btn svg,
+.dd-modal-btn img { width: 14px; height: 14px; pointer-events: none; object-fit: contain; }
 .dd-modal-btn:hover { background: var(--primary-lt); color: var(--primary); }
 .dd-modal-btn.copied { color: #16a34a; }
 

@@ -266,8 +266,8 @@
         const mapping    = getFieldMapping(key);
         const fieldName  = mapping ? mapping.name : (key || 'Details');
         modalTitle.textContent = popupTitle
-          ? `${fieldName}: ${popupTitle} details for ${value}`
-          : `${fieldName}: Details for ${value}`;
+          ? `${popupTitle} details for ${value}`
+          : `Details for ${value}`;
 
         if (url) {
           modalLink.href = url;
