@@ -78,6 +78,7 @@ if (isset($_GET['proxy'])) {
                 CURLOPT_USERPWD        => $cfg['auth']['user'] . ':' . $cfg['auth']['pass'],
                 CURLOPT_TIMEOUT        => 10,
                 CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
+                CURLOPT_USERAGENT      => 'curl/7.76.1',
             ];
             if (isset($cfg['proxy'])) $tOpts[CURLOPT_PROXY] = $cfg['proxy'];
             curl_setopt_array($tch, $tOpts);
@@ -116,6 +117,7 @@ if (isset($_GET['proxy'])) {
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_HTTPHEADER     => $curlHeaders,
         CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
+        CURLOPT_USERAGENT      => 'curl/7.76.1',
     ];
 
     if (isset($cfg['proxy'])) {
