@@ -87,7 +87,7 @@
     if (!results.length) return '<div class="dd-popup-row">No detections found.</div>';
     return results.map((r, i) => {
       const header = results.length > 1
-        ? `<div class="dd-popup-section-hdr">#${i + 1} &ndash; ${esc(r.detection)}</div>`
+        ? `<div class="dd-popup-section-hdr">#${i + 1}</div>`
         : '';
       return header + formatVectraResult(r);
     }).join('<hr class="dd-popup-sep">');
