@@ -92,6 +92,21 @@
     return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
   }
 
+  function getFieldCombine(key) {
+    if (!CONFIG.fieldCombine) return null;
+    return CONFIG.fieldCombine.find(e => e.key === key) || null;
+  }
+
+  let _combinedAdditionalFieldsCache = null;
+  function isCombinedAdditionalField(key) {
+    if (!_combinedAdditionalFieldsCache) {
+      _combinedAdditionalFieldsCache = new Set(
+        (CONFIG.fieldCombine || []).flatMap(e => e.additionalFields || [])
+      );
+    }
+    return _combinedAdditionalFieldsCache.has(key);
+  }
+
   // Returns a finished HTML string if replacements apply, or null if not.
   // The source value is HTML-escaped first; `to` strings may contain raw HTML (e.g. <br>).
   function applyValueReplacements(key, value) {
@@ -190,18 +205,23 @@
       </div>`;
   }
 
-  function formatFieldDrillDowns(value, actions) {
+  const DRILL_DOWN_POPUP_FNS = {};
+
+  function formatFieldDrillDowns(value, actions, key) {
     const escapedValue = escapeHtml(String(value));
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
+      const popupAttrs = entry.popupFunction
+        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}" data-popup-title="${escapeHtml(entry.popupTitle || '')}" data-popup-icon="${escapeHtml(entry.icon || '')}"`
+        : '';
       if (entry.baseUrl === 'copyvalue') {
-        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}">${ICON_COPY}</button>`;
+        return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${popupAttrs}>${ICON_COPY}</button>`;
       } else {
         const escapedUrl = escapeHtml(entry.baseUrl.replace('##REPLACE##', encodeURIComponent(String(value))));
         const icon = entry.icon
           ? `<img src="img/${escapeHtml(entry.icon)}" alt="" class="drill-down-img">`
           : ICON_OPEN;
-        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}">${icon}</button>`;
+        return `<button class="drill-down-btn drill-down-open" data-url="${escapedUrl}" title="${escapedDesc}"${popupAttrs}>${icon}</button>`;
       }
     }).join('');
     return `<div class="drill-down-wrap">
@@ -211,7 +231,92 @@
   }
 
   function initDrillDown() {
+    // Modal element (reuses version-popup styles)
+    const modal = document.createElement('div');
+    modal.className = 'version-popup hidden';
+    modal.id = 'dd-modal';
+    modal.innerHTML =
+      `<div class="version-popup-box dd-modal-box">` +
+        `<div class="version-popup-header">` +
+          `<span id="dd-modal-title">Details</span>` +
+          `<div class="dd-modal-actions">` +
+            `<button class="dd-modal-btn" id="dd-modal-copy" title="Copy to clipboard">${ICON_COPY}</button>` +
+            `<a class="dd-modal-btn hidden" id="dd-modal-link" href="#" target="_blank" rel="noopener noreferrer" title="Open in new tab">${ICON_OPEN}</a>` +
+            `<button class="version-popup-close" id="dd-modal-close">&times;</button>` +
+          `</div>` +
+        `</div>` +
+        `<div class="version-popup-body" id="dd-modal-body"></div>` +
+      `</div>`;
+    document.body.appendChild(modal);
+
+    const modalTitle = modal.querySelector('#dd-modal-title');
+    const modalBody  = modal.querySelector('#dd-modal-body');
+    const modalLink  = modal.querySelector('#dd-modal-link');
+    const modalCopy  = modal.querySelector('#dd-modal-copy');
+    const modalClose = modal.querySelector('#dd-modal-close');
+
+    function closeModal() { modal.classList.add('hidden'); }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    modalCopy.addEventListener('click', () => {
+      const text = modalBody.innerText || modalBody.textContent || '';
+      navigator.clipboard.writeText(text).then(() => {
+        modalCopy.classList.add('copied');
+        setTimeout(() => modalCopy.classList.remove('copied'), 1500);
+      }).catch(() => {});
+    });
+
     document.addEventListener('click', e => {
+      // Popup-function button — show modal instead of navigating
+      const popupBtn = e.target.closest('[data-popup-fn]');
+      if (popupBtn) {
+        const fnName = popupBtn.getAttribute('data-popup-fn');
+        const value  = popupBtn.getAttribute('data-popup-value');
+        const key    = popupBtn.getAttribute('data-popup-key');
+        const url    = popupBtn.dataset.url || '';
+
+        const popupTitle = popupBtn.getAttribute('data-popup-title') || '';
+        const popupIcon  = popupBtn.getAttribute('data-popup-icon') || '';
+        const mapping    = getFieldMapping(key);
+        const fieldName  = mapping ? mapping.name : (key || 'Details');
+        modalTitle.textContent = popupTitle
+          ? `${popupTitle} details for ${value}`
+          : `Details for ${value}`;
+
+        if (url) {
+          modalLink.href = url;
+          modalLink.innerHTML = popupIcon
+            ? `<img src="img/${escapeHtml(popupIcon)}" alt="" class="drill-down-img">`
+            : ICON_OPEN;
+          modalLink.classList.remove('hidden');
+        } else {
+          modalLink.classList.add('hidden');
+        }
+
+        modalBody.innerHTML = '<span class="dd-popup-loading">Loading…</span>';
+        modal.classList.remove('hidden');
+
+        const fn = DRILL_DOWN_POPUP_FNS[fnName];
+        if (fn) {
+          try {
+            const result = fn(value, key);
+            if (result && typeof result.then === 'function') {
+              result
+                .then(html => { modalBody.innerHTML = html; })
+                .catch(err => { modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`; });
+            } else {
+              modalBody.innerHTML = result || '';
+            }
+          } catch (err) {
+            modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`;
+          }
+        } else {
+          modalBody.innerHTML = `<span class="dd-popup-error">Popup function “${escapeHtml(fnName)}” not registered.</span>`;
+        }
+        return;
+      }
+
       const copyBtn = e.target.closest('.drill-down-copy');
       if (copyBtn) {
         navigator.clipboard.writeText(copyBtn.dataset.url).then(() => {
@@ -247,6 +352,7 @@
     const rows = Object.entries(obj).map(([key, value]) => {
       if (CONFIG.hideAlways && CONFIG.hideAlways.includes(key)) return '';
       if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
+      if (isCombinedAdditionalField(key)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
       const mapping = getFieldMapping(key);
@@ -258,11 +364,32 @@
           `</svg></span>`
         : '';
 
+      const combineRule = (value !== null && typeof value !== 'object') ? getFieldCombine(key) : null;
+      if (combineRule) {
+        const parts = [String(value ?? '')];
+        for (const addKey of (combineRule.additionalFields || [])) {
+          const addVal = obj[addKey];
+          if (addVal !== null && addVal !== undefined && typeof addVal !== 'object') {
+            parts.push(String(addVal));
+          }
+        }
+        const combined = parts.join(combineRule.separator ?? ' / ');
+        const combineHl = getHighlight(key, combined);
+        const combineHlClass = combineHl ? combineHl.cssClass : '';
+        const replaced = applyValueReplacements(key, combined);
+        const valueHtml = replaced !== null ? replaced : formatPrimitive(combined);
+        return `
+        <div class="${rowClass} ${combineHlClass}">
+          <div class="obj-key">${displayKey}${infoIcon}</div>
+          <div class="obj-value">${valueHtml}</div>
+        </div>`;
+      }
+
       let valueHtml;
       const fieldDrillDownActions = (value !== null && typeof value !== 'object')
         ? getFieldDrillDowns(key) : null;
       if (fieldDrillDownActions) {
-        valueHtml = formatFieldDrillDowns(value, fieldDrillDownActions);
+        valueHtml = formatFieldDrillDowns(value, fieldDrillDownActions, key);
       } else if (/drill_down$/i.test(key) && value !== null && typeof value !== 'object') {
         valueHtml = formatDrillDown(value);
       } else if (value === null || typeof value !== 'object') {
@@ -353,11 +480,14 @@
     const cards = arr.map((item, i) => {
       if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
         const num    = item.anomaly_number !== undefined ? item.anomaly_number : i + 1;
-        const status = item.anomaly_analysis_status !== undefined ? escapeHtml(String(item.anomaly_analysis_status)) : '';
+        const statusRaw = item.anomaly_analysis_status !== undefined ? String(item.anomaly_analysis_status) : '';
+        const statusHtml = statusRaw
+          ? `<span class="card-summary${statusRaw.toLowerCase() === 'open' ? ' card-summary--open' : ''}">Anomaly status: ${escapeHtml(statusRaw)}</span>`
+          : '';
         return `<div class="array-card">
           <div class="card-header">
-            <span class="card-index"># ${escapeHtml(String(num))}</span>
-            ${status ? `<span class="card-summary">${status}</span>` : ''}
+            <span class="card-index">Anomaly number: ${escapeHtml(String(num))}</span>
+            ${statusHtml}
           </div>
           <div class="card-body">${renderObjectTable(item)}</div>
         </div>`;
@@ -899,6 +1029,8 @@
     showState('viewer');
     initScrollyTabs();
   }
+
+  window.registerDrillDownPopupFn = (name, fn) => { DRILL_DOWN_POPUP_FNS[name] = fn; };
 
   document.addEventListener('DOMContentLoaded', init);
 })();

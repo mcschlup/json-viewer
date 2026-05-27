@@ -624,7 +624,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0.625rem 0.875rem;
-  background: var(--surface-2);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   gap: 0.5rem;
 }
@@ -644,6 +644,11 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-summary--open {
+  font-style: normal;
+  font-weight: 700;
 }
 
 /* Inside a card, the obj-viewer needs no outer shadow/border */
@@ -877,6 +882,51 @@ body {
   z-index: 1000;
   box-shadow: var(--shadow-md);
 }
+
+.dd-modal-box {
+  max-width: 480px;
+}
+
+.dd-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dd-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.dd-modal-btn svg,
+.dd-modal-btn img { width: 14px; height: 14px; pointer-events: none; object-fit: contain; }
+.dd-modal-btn:hover { background: var(--primary-lt); color: var(--primary); }
+.dd-modal-btn.copied { color: #16a34a; }
+
+.dd-popup-row {
+  display: flex;
+  gap: 0.5rem;
+  word-break: break-word;
+}
+.dd-popup-row + .dd-popup-row { margin-top: 0.2rem; }
+.dd-popup-lbl {
+  font-weight: 600;
+  opacity: 0.55;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+.dd-popup-loading { opacity: 0.65; font-style: italic; }
+.dd-popup-error   { color: #fca5a5; }
 
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {

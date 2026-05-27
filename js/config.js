@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052001',
+  appVersion: '2026052706',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -182,6 +182,16 @@ const CONFIG = {
       testValue: (value) => /(MDE Onboarding Status)/.test(String(value)),
       cssClass: 'hl-red'
     },
+    {
+      testKey:   (key)   => key === 'asset_application_confidentiality',
+      testValue: (value) => /(Secret \/ High \/ High)/.test(String(value)),
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'application_confidentiality',
+      testValue: (value) => /(Secret \/ High \/ High)/.test(String(value)),
+      cssClass: 'hl-red'
+    },
   //  {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
   //    testValue: (value) => String(value).toLowerCase() === 'open',
@@ -224,10 +234,10 @@ const CONFIG = {
       name: 'Prioritized Entity',
       description: 'The entity of this risk notable - may be either an asset (server, client, cloud account) or an identity (user, app registration). This is the "main character" of this risk notable.'
     },
-    {
+    { // combined fields
       key: 'entity_type',
-      name: 'Entity Type',
-      description: 'Type of the entity. Possible values: asset or identity.'
+      name: 'Entity Type / Subtype',
+      description: 'Type /Subtype of the entity. Possible type values: asset or identity. Possible Subtype values for asset: host or cloud. Possible Subtype values for identity: user or appreg.'
     },
     {
       key: 'entity_subtype',
@@ -324,6 +334,11 @@ const CONFIG = {
       key: 'user_name',
       name: 'User Name',
       description: 'Full name of the current prioritized entity'
+    },
+    {
+      key: 'user_entra_object_id',
+      name: 'User Entra ID Object ID',
+      description: 'Entra ID Object ID of the current prioritized entity'
     },
     {
       key: 'user_is_risky_person',
@@ -633,10 +648,10 @@ const CONFIG = {
       name: 'Application Name',
       description: 'Application assigned to this asset with the highest assigned CIA rating / criticality'
     },
-    {
+    { // combined fields
       key: 'asset_application_confidentiality',
-      name: 'Application Confidentiality',
-      description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
+      name: 'Application CIA Classification',
+      description: 'CIA classification of the application assigned to this host with the highest CIA rating / criticality'
     },
     {
       key: 'asset_application_integrity',
@@ -816,10 +831,10 @@ const CONFIG = {
       name: 'Service Offering Name',
       description: 'Name of the Service offering'
     },
-    {
+    { // combined fields
       key: 'application_confidentiality',
-      name: 'Application Confidentiality',
-      description: 'Confidentiality of the Application'
+      name: 'Application CIA Classification',
+      description: 'CIA classification of the Application'
     },
     {
       key: 'application_integrity',
@@ -958,6 +973,11 @@ const CONFIG = {
       description: 'Entity Risk Score'
     },
     {
+      key: 'related_entity_score',
+      name: 'Entity Risk Score',
+      description: 'Entity Risk Score'
+    },
+    {
       key: 'related_entity_market_unit',
       name: 'Entity Market Unit',
       description: 'Entity Market Unit'
@@ -1060,15 +1080,47 @@ const CONFIG = {
   // Field drill-downs: for a specific field key, add one or more action buttons next to the value.
   // Each entry: { key, actions }
   //   key     – exact field key to match
-  //   actions – array of { baseUrl, description, icon }
-  //               baseUrl     : URL containing ##REPLACE## as placeholder for the field value (URL-encoded)
-  //                             use 'copyvalue' to show a copy-icon that copies the raw field value
-  //               description : tooltip text shown on hover over the button
-  //               icon        : (optional) filename of an image in the img/ folder used as button icon
-  //                             only applies to non-copyvalue entries (copyvalue always uses the built-in copy icon)
-  //                             if omitted or empty, the built-in external-link icon is used as default
+  //   actions – array of { baseUrl, description, icon, popupFunction }
+  //               baseUrl       : URL containing ##REPLACE## as placeholder for the field value (URL-encoded)
+  //                               use 'copyvalue' to show a copy-icon that copies the raw field value
+  //               description   : tooltip text shown on hover over the button
+  //               icon          : (optional) filename of an image in the img/ folder used as button icon
+  //                               only applies to non-copyvalue entries (copyvalue always uses the built-in copy icon)
+  //                               if omitted or empty, the built-in external-link icon is used as default
+  //               popupFunction : (optional) name of a function registered via registerDrillDownPopupFn(name, fn)
+  //                               called as fn(value, key) on button click; must return an HTML string or Promise<string>
+  //                               displayed in a modal popup; the button URL (if any) appears as a link in the popup
+  //               popupTitle    : (optional, used with popupFunction) provider label shown in the modal title
+  //                               title format: "<fieldName>: <popupTitle> details for <value>"
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
+
+  // Combine multiple field values into a single row displayed under the main field's label.
+  // Each entry: { key, additionalFields, separator }
+  //   key              – the main field key (its row is shown; fieldMappings applies to it as usual)
+  //   additionalFields – array of field keys whose values are appended to the main value;
+  //                      these fields are hidden from their own rows
+  //   separator        – string placed between each value (e.g. ' / ')
+  // Only primitive (non-object, non-array) values are combined; missing/null values are skipped.
+  // Example: { key: 'src_ip', additionalFields: ['src_port'], separator: ':' }
+  // Default empty — override in js/config-local.js (not tracked in git)
+  fieldCombine: [
+    {
+      key: 'entity_type',
+      additionalFields: [ 'entity_subtype' ],
+      separator: ' / '
+    },
+    {
+      key: 'asset_application_confidentiality',
+      additionalFields: [ 'asset_application_integrity', 'asset_application_availability' ],
+      separator: ' / '
+    },
+    {
+      key: 'application_confidentiality',
+      additionalFields: [ 'application_integrity', 'application_availability' ],
+      separator: ' / '
+    }
+  ],
 
   // Fields to hide unconditionally, regardless of their value.
   // Add exact field key strings to this array.
@@ -1076,7 +1128,8 @@ const CONFIG = {
   hideAlways: [
     'risk_grc_tool_factor_broken_by_submodule',
     'user_calendar_drill_down',
-    'anomaly_number'
+    'anomaly_number',
+    'anomaly_analysis_status'
   ],
 
 
