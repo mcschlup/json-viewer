@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052704',
+  appVersion: '2026052705',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1118,7 +1118,8 @@ const CONFIG = {
   hideAlways: [
     'risk_grc_tool_factor_broken_by_submodule',
     'user_calendar_drill_down',
-    'anomaly_number'
+    'anomaly_number',
+    'anomaly_analysis_status'
   ],
 
 
