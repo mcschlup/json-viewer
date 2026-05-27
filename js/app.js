@@ -480,11 +480,14 @@
     const cards = arr.map((item, i) => {
       if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
         const num    = item.anomaly_number !== undefined ? item.anomaly_number : i + 1;
-        const status = item.anomaly_analysis_status !== undefined ? escapeHtml(String(item.anomaly_analysis_status)) : '';
+        const statusRaw = item.anomaly_analysis_status !== undefined ? String(item.anomaly_analysis_status) : '';
+        const statusHtml = statusRaw
+          ? `<span class="card-summary${statusRaw.toLowerCase() === 'open' ? ' card-summary--open' : ''}">Anomaly status: ${escapeHtml(statusRaw)}</span>`
+          : '';
         return `<div class="array-card">
           <div class="card-header">
-            <span class="card-index"># ${escapeHtml(String(num))}</span>
-            ${status ? `<span class="card-summary">${status}</span>` : ''}
+            <span class="card-index">Anomaly number: ${escapeHtml(String(num))}</span>
+            ${statusHtml}
           </div>
           <div class="card-body">${renderObjectTable(item)}</div>
         </div>`;

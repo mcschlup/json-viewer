@@ -624,7 +624,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0.625rem 0.875rem;
-  background: var(--surface-2);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   gap: 0.5rem;
 }
@@ -644,6 +644,11 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-summary--open {
+  font-style: normal;
+  font-weight: 700;
 }
 
 /* Inside a card, the obj-viewer needs no outer shadow/border */
