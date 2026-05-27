@@ -92,6 +92,21 @@
     return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
   }
 
+  function getFieldCombine(key) {
+    if (!CONFIG.fieldCombine) return null;
+    return CONFIG.fieldCombine.find(e => e.key === key) || null;
+  }
+
+  let _combinedAdditionalFieldsCache = null;
+  function isCombinedAdditionalField(key) {
+    if (!_combinedAdditionalFieldsCache) {
+      _combinedAdditionalFieldsCache = new Set(
+        (CONFIG.fieldCombine || []).flatMap(e => e.additionalFields || [])
+      );
+    }
+    return _combinedAdditionalFieldsCache.has(key);
+  }
+
   // Returns a finished HTML string if replacements apply, or null if not.
   // The source value is HTML-escaped first; `to` strings may contain raw HTML (e.g. <br>).
   function applyValueReplacements(key, value) {
@@ -337,6 +352,7 @@
     const rows = Object.entries(obj).map(([key, value]) => {
       if (CONFIG.hideAlways && CONFIG.hideAlways.includes(key)) return '';
       if (CONFIG.hideIfEmpty && CONFIG.hideIfEmpty.includes(key) && isValueEmpty(value)) return '';
+      if (isCombinedAdditionalField(key)) return '';
       const hl = getHighlight(key, value);
       const hlClass = hl ? hl.cssClass : '';
       const mapping = getFieldMapping(key);
@@ -347,6 +363,25 @@
           `<circle cx="8" cy="8" r="6.5"/><line x1="8" y1="7.5" x2="8" y2="11"/><circle cx="8" cy="5" r="0.75" fill="currentColor" stroke="none"/>` +
           `</svg></span>`
         : '';
+
+      const combineRule = (value !== null && typeof value !== 'object') ? getFieldCombine(key) : null;
+      if (combineRule) {
+        const parts = [String(value ?? '')];
+        for (const addKey of (combineRule.additionalFields || [])) {
+          const addVal = obj[addKey];
+          if (addVal !== null && addVal !== undefined && typeof addVal !== 'object') {
+            parts.push(String(addVal));
+          }
+        }
+        const combined = parts.join(combineRule.separator ?? ' / ');
+        const replaced = applyValueReplacements(key, combined);
+        const valueHtml = replaced !== null ? replaced : formatPrimitive(combined);
+        return `
+        <div class="${rowClass} ${hlClass}">
+          <div class="obj-key">${displayKey}${infoIcon}</div>
+          <div class="obj-value">${valueHtml}</div>
+        </div>`;
+      }
 
       let valueHtml;
       const fieldDrillDownActions = (value !== null && typeof value !== 'object')

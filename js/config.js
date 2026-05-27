@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052008',
+  appVersion: '2026052701',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1084,6 +1084,17 @@ const CONFIG = {
   //                               title format: "<fieldName>: <popupTitle> details for <value>"
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
+
+  // Combine multiple field values into a single row displayed under the main field's label.
+  // Each entry: { key, additionalFields, separator }
+  //   key              – the main field key (its row is shown; fieldMappings applies to it as usual)
+  //   additionalFields – array of field keys whose values are appended to the main value;
+  //                      these fields are hidden from their own rows
+  //   separator        – string placed between each value (e.g. ' / ')
+  // Only primitive (non-object, non-array) values are combined; missing/null values are skipped.
+  // Example: { key: 'src_ip', additionalFields: ['src_port'], separator: ':' }
+  // Default empty — override in js/config-local.js (not tracked in git)
+  fieldCombine: [],
 
   // Fields to hide unconditionally, regardless of their value.
   // Add exact field key strings to this array.
