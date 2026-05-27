@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052705',
+  appVersion: '2026052706',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -184,6 +184,11 @@ const CONFIG = {
     },
     {
       testKey:   (key)   => key === 'asset_application_confidentiality',
+      testValue: (value) => /(Secret \/ High \/ High)/.test(String(value)),
+      cssClass: 'hl-red'
+    },
+    {
+      testKey:   (key)   => key === 'application_confidentiality',
       testValue: (value) => /(Secret \/ High \/ High)/.test(String(value)),
       cssClass: 'hl-red'
     },
@@ -826,10 +831,10 @@ const CONFIG = {
       name: 'Service Offering Name',
       description: 'Name of the Service offering'
     },
-    {
+    { // combined fields
       key: 'application_confidentiality',
-      name: 'Application Confidentiality',
-      description: 'Confidentiality of the Application'
+      name: 'Application CIA Classification',
+      description: 'CIA classification of the Application'
     },
     {
       key: 'application_integrity',
@@ -1108,6 +1113,11 @@ const CONFIG = {
     {
       key: 'asset_application_confidentiality',
       additionalFields: [ 'asset_application_integrity', 'asset_application_availability' ],
+      separator: ' / '
+    },
+    {
+      key: 'application_confidentiality',
+      additionalFields: [ 'application_integrity', 'application_availability' ],
       separator: ' / '
     }
   ],
