@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052701',
+  appVersion: '2026052702',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1094,7 +1094,13 @@ const CONFIG = {
   // Only primitive (non-object, non-array) values are combined; missing/null values are skipped.
   // Example: { key: 'src_ip', additionalFields: ['src_port'], separator: ':' }
   // Default empty — override in js/config-local.js (not tracked in git)
-  fieldCombine: [],
+  fieldCombine: [
+    {
+      key: 'entity_type',
+      additionalFields: [ 'entity_subtype' ],
+      separator: ' / '
+    }
+  ],
 
   // Fields to hide unconditionally, regardless of their value.
   // Add exact field key strings to this array.
