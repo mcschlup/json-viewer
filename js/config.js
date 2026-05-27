@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026052702',
+  appVersion: '2026052703',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -182,6 +182,11 @@ const CONFIG = {
       testValue: (value) => /(MDE Onboarding Status)/.test(String(value)),
       cssClass: 'hl-red'
     },
+    {
+      testKey:   (key)   => key === 'asset_application_confidentiality',
+      testValue: (value) => /(Secret \/ High \/ High)/.test(String(value)),
+      cssClass: 'hl-red'
+    },
   //  {
   //    testKey:   (key)   => key === 'anomaly_analysis_status',
   //    testValue: (value) => String(value).toLowerCase() === 'open',
@@ -224,10 +229,10 @@ const CONFIG = {
       name: 'Prioritized Entity',
       description: 'The entity of this risk notable - may be either an asset (server, client, cloud account) or an identity (user, app registration). This is the "main character" of this risk notable.'
     },
-    {
+    { // combined fields
       key: 'entity_type',
-      name: 'Entity Type',
-      description: 'Type of the entity. Possible values: asset or identity.'
+      name: 'Entity Type / Subtype',
+      description: 'Type /Subtype of the entity. Possible type values: asset or identity. Possible Subtype values for asset: host or cloud. Possible Subtype values for identity: user or appreg.'
     },
     {
       key: 'entity_subtype',
@@ -638,10 +643,10 @@ const CONFIG = {
       name: 'Application Name',
       description: 'Application assigned to this asset with the highest assigned CIA rating / criticality'
     },
-    {
+    { // combined fields
       key: 'asset_application_confidentiality',
-      name: 'Application Confidentiality',
-      description: 'Confidentiality of the application assigned to this host with the highest assigned CIA rating / criticality'
+      name: 'Application CIA Classification',
+      description: 'CIA classification of the application assigned to this host with the highest CIA rating / criticality'
     },
     {
       key: 'asset_application_integrity',
@@ -1098,6 +1103,11 @@ const CONFIG = {
     {
       key: 'entity_type',
       additionalFields: [ 'entity_subtype' ],
+      separator: ' / '
+    },
+    {
+      key: 'asset_application_confidentiality',
+      additionalFields: [ 'asset_application_integrity', 'asset_application_availability' ],
       separator: ' / '
     }
   ],

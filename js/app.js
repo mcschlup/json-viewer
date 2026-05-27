@@ -374,10 +374,12 @@
           }
         }
         const combined = parts.join(combineRule.separator ?? ' / ');
+        const combineHl = getHighlight(key, combined);
+        const combineHlClass = combineHl ? combineHl.cssClass : '';
         const replaced = applyValueReplacements(key, combined);
         const valueHtml = replaced !== null ? replaced : formatPrimitive(combined);
         return `
-        <div class="${rowClass} ${hlClass}">
+        <div class="${rowClass} ${combineHlClass}">
           <div class="obj-key">${displayKey}${infoIcon}</div>
           <div class="obj-value">${valueHtml}</div>
         </div>`;
