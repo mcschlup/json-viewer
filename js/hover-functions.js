@@ -50,17 +50,32 @@
     return formatAbuseIPDB(data);
   });
 
+  // ── Timestamp formatter ───────────────────────────────────────────────────
+
+  function fmtTimestamp(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return esc(String(iso));
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Zurich',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hourCycle: 'h23', timeZoneName: 'short'
+    }).formatToParts(d);
+    const p = {};
+    parts.forEach(({ type, value }) => { p[type] = value; });
+    return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second} ${p.timeZoneName}`;
+  }
+
   // ── Vectra Group API ───────────────────────────────────────────────────────
   // Proxy endpoint 'vectra' must be configured in config-local.inc.php.
   // Auth type: oauth2 (client_credentials via token_url + user/pass).
-
-  const VECTRA_FIELDS = 'id,url,detection,detection_category,description,state,certainty,threat,first_timestamp,last_timestamp,sensor,sensor_name';
 
   const vectraCache = {};
 
   async function fetchVectraGroupAPI(entityId) {
     if (vectraCache[entityId]) return vectraCache[entityId];
-    const url = `index.php?proxy=vectra&entity_id=${encodeURIComponent(entityId)}&fields=${encodeURIComponent(VECTRA_FIELDS)}`;
+    const url = `index.php?proxy=vectra&entity_id=${encodeURIComponent(entityId)}`;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`Vectra proxy returned HTTP ${resp.status}`);
     const json = await resp.json();
@@ -76,9 +91,8 @@
       row('State',       esc(r.state)),
       row('Threat',      esc(r.threat)),
       row('Certainty',   esc(r.certainty)),
-      row('Description', esc(r.description) || '—'),
-      row('First Seen',  esc(r.first_timestamp)),
-      row('Last Seen',   esc(r.last_timestamp)),
+      row('First Seen',  fmtTimestamp(r.first_timestamp)),
+      row('Last Seen',   fmtTimestamp(r.last_timestamp)),
       row('Sensor',      esc(r.sensor_name)),
     ].join('');
   }
