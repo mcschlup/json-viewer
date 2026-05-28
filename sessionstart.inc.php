@@ -6,10 +6,11 @@
  */
 
 // initialize custom session configuration
-//ini_set('session.name', 'CTIFEEDSID');
+ini_set('session.name',            'CRSISESSID');
+ini_set('session.save_path',       '/var/lib/crsi');
 ini_set('session.use_strict_mode', '1');
 ini_set('session.use_only_cookies', '1');
-ini_set('session.gc_maxlifetime', '43200');
+ini_set('session.gc_maxlifetime',  '43200');
 
 // start session
 session_start();
