@@ -64,12 +64,60 @@ if (isset($_GET['proxy'])) {
         $curlHeaders[] = 'Authorization: Bearer ' . $cfg['auth']['token'];
     }
 
+    // OAuth2 client_credentials: fetch (or reuse cached) access token, then use as Bearer
+    if (isset($cfg['auth']) && $cfg['auth']['type'] === 'oauth2') {
+        $cacheKey = 'oauth2_token_' . $proxyName;
+        $now      = time();
+        if (!isset($_SESSION[$cacheKey]) || $_SESSION[$cacheKey]['expires_at'] <= $now) {
+            $tch = curl_init($cfg['auth']['token_url']);
+            $tOpts = [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => http_build_query(['grant_type' => 'client_credentials']),
+                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
+                CURLOPT_USERPWD        => $cfg['auth']['user'] . ':' . $cfg['auth']['pass'],
+                CURLOPT_TIMEOUT        => 10,
+                CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
+                CURLOPT_USERAGENT      => 'curl/7.76.1',
+            ];
+            if (isset($cfg['proxy'])) $tOpts[CURLOPT_PROXY] = $cfg['proxy'];
+            curl_setopt_array($tch, $tOpts);
+            $tResp  = curl_exec($tch);
+            $tCode  = curl_getinfo($tch, CURLINFO_HTTP_CODE);
+            $tError = curl_error($tch);
+            curl_close($tch);
+            if ($tResp === false || $tError !== '') {
+                http_response_code(502);
+                echo json_encode(['error' => 'OAuth2 token request failed: ' . $tError]);
+                exit;
+            }
+            if ($tCode < 200 || $tCode >= 300) {
+                http_response_code(502);
+                echo json_encode(['error' => "OAuth2 token endpoint returned HTTP $tCode"]);
+                exit;
+            }
+            $tData = json_decode($tResp, true);
+            if (empty($tData['access_token'])) {
+                http_response_code(502);
+                echo json_encode(['error' => 'OAuth2 response missing access_token']);
+                exit;
+            }
+            $expiresIn = (int)($tData['expires_in'] ?? 3600);
+            $_SESSION[$cacheKey] = [
+                'token'      => $tData['access_token'],
+                'expires_at' => $now + $expiresIn - 60,
+            ];
+        }
+        $curlHeaders[] = 'Authorization: Bearer ' . $_SESSION[$cacheKey]['token'];
+    }
+
     $curlOpts = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_HTTPHEADER     => $curlHeaders,
         CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
+        CURLOPT_USERAGENT      => 'curl/7.76.1',
     ];
 
     if (isset($cfg['proxy'])) {

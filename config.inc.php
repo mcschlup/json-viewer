@@ -8,6 +8,9 @@
 /*   'auth'       => [               // optional — mutually exclusive types:   */
 /*     'type' => 'basic', 'user' => '...', 'pass' => '...',                   */
 /*     // or: 'type' => 'bearer', 'token' => '...',                           */
+/*     // or: 'type' => 'oauth2', 'token_url' => '...', 'user' => '...',      */
+/*     //     'pass' => '...',  // POSTs grant_type=client_credentials via     */
+/*     //     basic auth; caches access_token in session until expiry          */
 /*   ],                                                                        */
 /*   'postData'   => ['key'=>'val'], // static POST fields (method=POST only)  */
 /*   'passParams' => ['param1'],     // client GET params forwarded upstream   */

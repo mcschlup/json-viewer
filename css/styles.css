@@ -885,6 +885,13 @@ body {
 
 .dd-modal-box {
   max-width: 480px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.dd-modal-box .version-popup-body {
+  overflow-y: auto;
+  flex: 1;
 }
 
 .dd-modal-actions {
@@ -927,6 +934,20 @@ body {
 }
 .dd-popup-loading { opacity: 0.65; font-style: italic; }
 .dd-popup-error   { color: #fca5a5; }
+.dd-popup-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.5rem -1rem;
+}
+.dd-popup-section-hdr {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 0.3rem 1rem;
+  margin: 0 -1rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
 
 /* ── Drill-down URL fields ──────────────────────────────────────────────── */
 .drill-down-wrap {
