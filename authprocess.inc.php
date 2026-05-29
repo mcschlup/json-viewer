@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
     try {
         if (authenticate($username, $password)) {
             $_SESSION['authenticated'] = true;
+            $_SESSION['lastsuccessfulauthtime'] = time();
         } else {
             $_SESSION['authenticated'] = false;
             $auth_failed = true;
