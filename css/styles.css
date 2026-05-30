@@ -273,12 +273,13 @@ body {
 }
 .version-popup-data-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 .vp-data-btn {
   flex: 1;
-  padding: 0.35rem 0.6rem;
+  padding: 0.15rem 0.5rem;
   font-size: 0.8rem;
+  white-space: nowrap;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface-2);
