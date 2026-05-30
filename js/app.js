@@ -960,12 +960,14 @@
         html += `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
 
       if (data !== null) {
-        html += `<hr class="version-popup-sep">` +
-          `<div class="version-popup-section-label">JSON data</div>` +
-          `<div class="version-popup-data-actions">` +
-            `<button class="vp-data-btn" id="vp-open-btn">Open in new window</button>` +
+        html += `<div class="version-popup-row">` +
+          `<span class="version-popup-label">JSON data</span>` +
+          `<span class="version-popup-data-actions">` +
+            `<button class="vp-data-btn" id="vp-open-btn">Open</button>` +
             `<button class="vp-data-btn" id="vp-download-btn">Download</button>` +
-          `</div>`;
+            `<button class="vp-data-btn" id="vp-copy-btn">Copy</button>` +
+          `</span>` +
+        `</div>`;
       }
 
       body.innerHTML = html;
@@ -993,6 +995,14 @@
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
+        });
+
+        const copyBtn = document.getElementById('vp-copy-btn');
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(jsonStr).then(() => {
+            copyBtn.textContent = '✓';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+          });
         });
       }
     }

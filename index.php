@@ -330,7 +330,7 @@ if (isset($_GET['view'])) {
         </h1>
         <div class="header-right">
           <?php require_once __DIR__ . '/auth.inc.php'; ?>
-          <button class="info-btn" id="info-btn" title="Version Info" aria-label="Show Version Info">i</button>
+          <button class="info-btn" id="info-btn" title="Version/Debug Info" aria-label="Show Version/Debug Info">i</button>
           <img src="img/logo.png" class="header-logo" alt="Logo">
         </div>
       </div>
@@ -340,7 +340,7 @@ if (isset($_GET['view'])) {
     <div id="version-popup" class="version-popup hidden" role="dialog" aria-modal="true" aria-labelledby="version-popup-title">
       <div class="version-popup-box">
         <div class="version-popup-header">
-          <span id="version-popup-title">Version Info</span>
+          <span id="version-popup-title">Version/Debug Info</span>
           <button class="version-popup-close" id="version-popup-close" aria-label="Close">&times;</button>
         </div>
         <div class="version-popup-body" id="version-popup-body"></div>

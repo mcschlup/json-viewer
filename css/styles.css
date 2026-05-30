@@ -271,19 +271,6 @@ body {
   color: var(--text-muted);
   flex-shrink: 0;
 }
-.version-popup-sep {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0.5rem 0;
-}
-.version-popup-section-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.4rem;
-}
 .version-popup-data-actions {
   display: flex;
   gap: 0.5rem;
