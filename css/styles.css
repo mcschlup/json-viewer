@@ -271,6 +271,35 @@ body {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+.version-popup-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.5rem 0;
+}
+.version-popup-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+.version-popup-data-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.vp-data-btn {
+  flex: 1;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.vp-data-btn:hover { background: var(--bg); }
 
 /* Legend */
 .legend {
