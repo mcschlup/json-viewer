@@ -92,6 +92,13 @@
     return (entry && entry.actions && entry.actions.length) ? entry.actions : null;
   }
 
+  const FIELD_UPDATE_FNS = {};
+
+  function getFieldDynamicUpdate(key) {
+    if (!CONFIG.fieldDynamicUpdate) return null;
+    return CONFIG.fieldDynamicUpdate.find(e => e.key === key) || null;
+  }
+
   function getFieldCombine(key) {
     if (!CONFIG.fieldCombine) return null;
     return CONFIG.fieldCombine.find(e => e.key === key) || null;
@@ -186,8 +193,9 @@
 
   // ── Rendering: Drill-down URL fields ──────────────────────────────────────
 
-  const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-  const ICON_OPEN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+  const ICON_COPY   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+  const ICON_OPEN   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+  const ICON_RELOAD = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.65 2.35A6.5 6.5 0 1 0 15 8"/><polyline points="11 2 15 2 15 6"/></svg>`;
 
   function formatDrillDown(value) {
     const match = String(value).match(/https?:\/\/[^\s"'<>]+/);
@@ -332,6 +340,40 @@
 
   // ── Collapsible fields ────────────────────────────────────────────────────
 
+  // ── Field Dynamic Update ───────────────────────────────────────────────────
+
+  function initFieldDynamicUpdate() {
+    document.addEventListener('click', async e => {
+      const btn = e.target.closest('.fdu-reload-btn');
+      if (!btn || btn.disabled) return;
+      const key = btn.dataset.fduKey;
+      const entry = CONFIG.fieldDynamicUpdate && CONFIG.fieldDynamicUpdate.find(e => e.key === key);
+      if (!entry) return;
+      const fn = FIELD_UPDATE_FNS[entry.updateFunction];
+      if (!fn) return;
+
+      const wrap = btn.closest('.fdu-wrap');
+      const valueEl = wrap.querySelector('.fdu-value');
+      const rawVal = valueEl.dataset.fduRaw;
+
+      btn.disabled = true;
+      btn.classList.add('fdu-spinning');
+      valueEl.innerHTML = '<span class="fdu-updating">…</span>';
+
+      try {
+        const newValue = await fn(rawVal, key);
+        const replaced = applyValueReplacements(key, newValue);
+        valueEl.innerHTML = replaced !== null ? replaced : formatPrimitive(newValue);
+        valueEl.dataset.fduRaw = String(newValue ?? '');
+      } catch (err) {
+        valueEl.innerHTML = `<span class="fdu-error">${escapeHtml(String(err.message))}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('fdu-spinning');
+      }
+    });
+  }
+
   function initCollapsible() {
     document.addEventListener('click', e => {
       const btn = e.target.closest('.collapsible-toggle');
@@ -422,6 +464,15 @@
           `${startCollapsed ? '+' : '-'} ${escapeHtml(label)}</button>` +
           `<div class="collapsible-body">${valueHtml}</div>` +
           `</div>`;
+      }
+
+      const updateEntry = (value !== null && typeof value !== 'object') ? getFieldDynamicUpdate(key) : null;
+      if (updateEntry) {
+        const tooltip = escapeHtml(updateEntry.description || 'Reload');
+        valueHtml = `<span class="fdu-wrap">` +
+          `<span class="fdu-value" data-fdu-raw="${escapeHtml(String(value ?? ''))}">${valueHtml}</span>` +
+          `<button class="fdu-reload-btn" data-fdu-key="${escapeHtml(key)}" title="${tooltip}">${ICON_RELOAD}</button>` +
+          `</span>`;
       }
 
       return `
@@ -1067,6 +1118,7 @@
     createTabs(data);
     initTimeline();
     initDrillDown();
+    initFieldDynamicUpdate();
     initCollapsible();
     initFieldTooltips();
     initVersionPopup(data);
@@ -1075,6 +1127,7 @@
   }
 
   window.registerDrillDownPopupFn = (name, fn) => { DRILL_DOWN_POPUP_FNS[name] = fn; };
+  window.registerFieldUpdateFn    = (name, fn) => { FIELD_UPDATE_FNS[name] = fn; };
 
   document.addEventListener('DOMContentLoaded', init);
 })();
