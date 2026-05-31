@@ -958,9 +958,53 @@
       let html = `<div class="version-popup-row"><span class="version-popup-label">App version</span><span>${escapeHtml(CONFIG.appVersion)}</span></div>`;
       if (jsonVersion !== null)
         html += `<div class="version-popup-row"><span class="version-popup-label">JSON version</span><span>${escapeHtml(jsonVersion)}</span></div>`;
+
+      if (data !== null) {
+        html += `<div class="version-popup-row">` +
+          `<span class="version-popup-label">JSON data</span>` +
+          `<span class="version-popup-data-actions">` +
+            `<button class="vp-data-btn" id="vp-open-btn">Open</button>` +
+            `<button class="vp-data-btn" id="vp-download-btn">Download</button>` +
+            `<button class="vp-data-btn" id="vp-copy-btn">Copy</button>` +
+          `</span>` +
+        `</div>`;
+      }
+
       body.innerHTML = html;
       popup.classList.remove('hidden');
       close.focus();
+
+      if (data !== null) {
+        const jsonStr = JSON.stringify(data, null, 2);
+        const filename = (data.risk_notable_id ? String(data.risk_notable_id) : 'data') + '.json';
+
+        document.getElementById('vp-open-btn').addEventListener('click', () => {
+          const blob = new Blob([jsonStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+        });
+
+        document.getElementById('vp-download-btn').addEventListener('click', () => {
+          const blob = new Blob([jsonStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+
+        const copyBtn = document.getElementById('vp-copy-btn');
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(jsonStr).then(() => {
+            copyBtn.textContent = '✓';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
     }
     function closePopup() {
       popup.classList.add('hidden');

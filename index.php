@@ -20,21 +20,27 @@ if (file_exists(__DIR__ . '/config-local.inc.php')) {
 require_once __DIR__ . '/authfunction.inc.php';
 require_once __DIR__ . '/authprocess.inc.php';
 
-/* ── Handle ?proxy=<name>: server-side proxy for external API calls ─────── */
+/* ── Handle ?proxy=<name>: server-side proxy for external API calls ───────- */
 if (isset($_GET['proxy'])) {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store, no-cache');
 
     if (!$is_authenticated) {
         http_response_code(401);
-        echo json_encode(['error' => 'Authentication required.']);
+        header('Content-Type: application/json; charset=utf-8');
+        $error_msg = 'Authentication required.';
+        error_log($error_msg);
+        echo json_encode(['error' => $error_msg]);
         exit;
     }
 
     $proxyName = $_GET['proxy'];
     if (!isset($proxyEndpoints[$proxyName])) {
         http_response_code(404);
-        echo json_encode(['error' => 'Unknown proxy endpoint: ' . htmlspecialchars($proxyName, ENT_QUOTES)]);
+        header('Content-Type: application/json; charset=utf-8');
+        $error_msg = 'Unknown proxy endpoint: ' . htmlspecialchars($proxyName, ENT_QUOTES);
+        error_log($error_msg);
+        echo json_encode(['error' => $error_msg]);
         exit;
     }
 
@@ -88,18 +94,30 @@ if (isset($_GET['proxy'])) {
             curl_close($tch);
             if ($tResp === false || $tError !== '') {
                 http_response_code(502);
-                echo json_encode(['error' => 'OAuth2 token request failed: ' . $tError]);
+                header('Content-Type: application/json; charset=utf-8');
+                $error_msg = 'OAuth2 token request failed: ' . $tError;
+                error_log(print_r(array_diff_key($tOpts, [CURLOPT_USERPWD => 0]), true));
+                error_log($error_msg);
+                echo json_encode(['error' => $error_msg]);
                 exit;
             }
             if ($tCode < 200 || $tCode >= 300) {
                 http_response_code(502);
-                echo json_encode(['error' => "OAuth2 token endpoint returned HTTP $tCode"]);
+                header('Content-Type: application/json; charset=utf-8');
+                $error_msg = 'OAuth2 token endpoint returned HTTP ' . $tCode;
+                error_log(print_r(array_diff_key($tOpts, [CURLOPT_USERPWD => 0]), true));
+                error_log($error_msg);
+                echo json_encode(['error' => $error_msg]);
                 exit;
             }
             $tData = json_decode($tResp, true);
             if (empty($tData['access_token'])) {
                 http_response_code(502);
-                echo json_encode(['error' => 'OAuth2 response missing access_token']);
+                header('Content-Type: application/json; charset=utf-8');
+                $error_msg = 'OAuth2 response missing access_token';
+                error_log(print_r(array_diff_key($tOpts, [CURLOPT_USERPWD => 0]), true));
+                error_log($error_msg);
+                echo json_encode(['error' => $error_msg]);
                 exit;
             }
             $expiresIn = (int)($tData['expires_in'] ?? 3600);
@@ -145,7 +163,11 @@ if (isset($_GET['proxy'])) {
 
     if ($response === false || $curlError !== '') {
         http_response_code(502);
-        echo json_encode(['error' => 'Proxy request failed: ' . $curlError]);
+        header('Content-Type: application/json; charset=utf-8');
+        $error_msg = 'Proxy request failed: ' . $curlError;
+        error_log(print_r(array_diff_key($curlOpts, [CURLOPT_USERPWD => 0]), true));
+        error_log($error_msg);
+        echo json_encode(['error' => $error_msg]);
         exit;
     }
 
@@ -172,8 +194,7 @@ if (isset($_GET['rnid'])) {
       // send the search query with $rnid in the search post parameter
       $post_fields = array_merge($api_post_data, ['search' => "| savedsearch crsi_get_risk_notable_data args.rnid=$rnid"]);
 
-      $ch = curl_init($url);
-      curl_setopt_array($ch, [
+      $curlROpts = [
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_FOLLOWLOCATION => true,
           CURLOPT_POST           => true,
@@ -182,22 +203,31 @@ if (isset($_GET['rnid'])) {
           CURLOPT_USERPWD        => $api_username . ':' . $api_password,
           CURLOPT_HTTPHEADER     => ['Accept: application/json'],
           CURLOPT_TIMEOUT        => 15,
-      ]);
+      ];
+
+      $ch = curl_init($url);
+      curl_setopt_array($ch, $curlROpts);
       $response = curl_exec($ch);
       $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      $curl_error = curl_error($ch);
+      $curlError = curl_error($ch);
       curl_close($ch);
 
-      if ($response === false || $curl_error !== '') {
+      if ($response === false || $curlError !== '') {
           http_response_code(502);
           header('Content-Type: application/json; charset=utf-8');
-          echo json_encode(['error' => 'REST API request failed: ' . $curl_error]);
+          $error_msg = 'REST API request failed: ' . $curlError;
+          error_log(print_r(array_diff_key($curlROpts, [CURLOPT_USERPWD => 0]), true));
+          error_log($error_msg);
+          echo json_encode(['error' => $error_msg]);
           exit;
       }
       if ($http_code !== 200) {
           http_response_code(502);
           header('Content-Type: application/json; charset=utf-8');
-          echo json_encode(['error' => 'REST API returned HTTP ' . $http_code]);
+          $error_msg = 'REST API returned HTTP ' . $http_code;
+          error_log(print_r(array_diff_key($curlROpts, [CURLOPT_USERPWD => 0]), true));
+          error_log($error_msg);
+          echo json_encode(['error' => $error_msg]);
           exit;
       }
 
@@ -207,7 +237,10 @@ if (isset($_GET['rnid'])) {
       ) {
           http_response_code(502);
           header('Content-Type: application/json; charset=utf-8');
-          echo json_encode(['error' => 'Unexpected REST API response format.']);
+          $error_msg = 'Unexpected REST API response format.';
+          error_log(print_r(array_diff_key($curlROpts, [CURLOPT_USERPWD => 0]), true));
+          error_log($error_msg);
+          echo json_encode(['error' => $error_msg]);
           exit;
       }
 
@@ -297,7 +330,7 @@ if (isset($_GET['view'])) {
         </h1>
         <div class="header-right">
           <?php require_once __DIR__ . '/auth.inc.php'; ?>
-          <button class="info-btn" id="info-btn" title="Version Info" aria-label="Show Version Info">i</button>
+          <button class="info-btn" id="info-btn" title="Version/Debug Info" aria-label="Show Version/Debug Info">i</button>
           <img src="img/logo.png" class="header-logo" alt="Logo">
         </div>
       </div>
@@ -307,7 +340,7 @@ if (isset($_GET['view'])) {
     <div id="version-popup" class="version-popup hidden" role="dialog" aria-modal="true" aria-labelledby="version-popup-title">
       <div class="version-popup-box">
         <div class="version-popup-header">
-          <span id="version-popup-title">Version Info</span>
+          <span id="version-popup-title">Version/Debug Info</span>
           <button class="version-popup-close" id="version-popup-close" aria-label="Close">&times;</button>
         </div>
         <div class="version-popup-body" id="version-popup-body"></div>

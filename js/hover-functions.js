@@ -50,6 +50,36 @@
     return formatAbuseIPDB(data);
   });
 
+  // ── IPLocation ────────────────────────────────────────────────────────────
+  // Proxy endpoint 'iplocation' must be configured in config-local.inc.php.
+  // No auth required. passParams: ['ip']
+
+  const ipLocationCache = {};
+
+  async function fetchIPLocation(ip) {
+    if (ipLocationCache[ip]) return ipLocationCache[ip];
+    const url = `index.php?proxy=iplocation&ip=${encodeURIComponent(ip)}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`IPLocation proxy returned HTTP ${resp.status}`);
+    const json = await resp.json();
+    if (json.error) throw new Error(json.error);
+    if (json.response_code !== '200') throw new Error(`IPLocation: ${json.response_message}`);
+    ipLocationCache[ip] = json;
+    return json;
+  }
+
+  function formatIPLocation(data) {
+    return [
+      row('Country', esc(data.country_name)),
+      row('ISP',     esc(data.isp)),
+    ].join('');
+  }
+
+  registerDrillDownPopupFn('IPLocation', async (value) => {
+    const data = await fetchIPLocation(value);
+    return formatIPLocation(data);
+  });
+
   // ── Timestamp formatter ───────────────────────────────────────────────────
 
   function fmtTimestamp(iso) {
@@ -89,11 +119,8 @@
       row('Detection',   esc(r.detection)),
       row('Category',    esc(r.detection_category)),
       row('State',       esc(r.state)),
-      row('Threat',      esc(r.threat)),
-      row('Certainty',   esc(r.certainty)),
       row('First Seen',  fmtTimestamp(r.first_timestamp)),
       row('Last Seen',   fmtTimestamp(r.last_timestamp)),
-      row('Sensor',      esc(r.sensor_name)),
     ].join('');
   }
 
