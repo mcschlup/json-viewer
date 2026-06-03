@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026053005',
+  appVersion: '2026060301',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1094,6 +1094,16 @@ const CONFIG = {
   //                               title format: "<fieldName>: <popupTitle> details for <value>"
   // Default empty — override in js/config-local.js (not tracked in git)
   fieldDrillDowns: [],
+
+  // Dynamic field update: add a reload button to a field that fetches a fresh value via proxy.
+  // Each entry: { key, updateFunction, description }
+  //   key            – exact field key to match
+  //   updateFunction – name of a function registered via registerFieldUpdateFn(name, fn)
+  //                    called as fn(currentValue, key) on button click; must return a Promise<string>
+  //                    with the new value to display in place of the current one
+  //   description    – tooltip text shown on hover over the reload button (optional)
+  // Default empty — override in js/config-local.js (not tracked in git)
+  fieldDynamicUpdate: [],
 
   // Combine multiple field values into a single row displayed under the main field's label.
   // Each entry: { key, additionalFields, separator }
