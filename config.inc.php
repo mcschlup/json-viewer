@@ -12,8 +12,9 @@
 /*     //     'pass' => '...',  // POSTs grant_type=client_credentials via     */
 /*     //     basic auth; caches access_token in session until expiry          */
 /*   ],                                                                        */
-/*   'postData'   => ['key'=>'val'], // static POST fields (method=POST only)  */
-/*   'passParams' => ['param1'],     // client GET params forwarded upstream   */
+/*   'postData'      => ['key'=>'val'], // static POST fields (method=POST only)  */
+/*   'passParams'    => ['param1'],     // client GET params forwarded upstream   */
+/*   'passPostParams'=> ['param1'],     // client POST params forwarded upstream  */
 /*   'proxy'      => 'http://proxy.example.com:8080', // optional HTTP proxy   */
 /* ];                                                                          */
 $proxyEndpoints = [];

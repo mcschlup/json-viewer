@@ -361,7 +361,8 @@
       valueEl.innerHTML = '<span class="fdu-updating">…</span>';
 
       try {
-        const newValue = await fn(rawVal, key);
+        const argVal = 'fduSource' in valueEl.dataset ? valueEl.dataset.fduSource : rawVal;
+        const newValue = await fn(argVal, key);
         const replaced = applyValueReplacements(key, newValue);
         valueEl.innerHTML = replaced !== null ? replaced : formatPrimitive(newValue);
         valueEl.dataset.fduRaw = String(newValue ?? '');
@@ -469,8 +470,11 @@
       const updateEntry = (value !== null && typeof value !== 'object') ? getFieldDynamicUpdate(key) : null;
       if (updateEntry) {
         const tooltip = escapeHtml(updateEntry.description || 'Reload');
+        const sourceAttr = updateEntry.sourceKey
+          ? ` data-fdu-source="${escapeHtml(String(obj[updateEntry.sourceKey] ?? ''))}"`
+          : '';
         valueHtml = `<span class="fdu-wrap">` +
-          `<span class="fdu-value" data-fdu-raw="${escapeHtml(String(value ?? ''))}">${valueHtml}</span>` +
+          `<span class="fdu-value" data-fdu-raw="${escapeHtml(String(value ?? ''))}"${sourceAttr}>${valueHtml}</span>` +
           `<button class="fdu-reload-btn" data-fdu-key="${escapeHtml(key)}" title="${tooltip}">${ICON_RELOAD}</button>` +
           `</span>`;
       }

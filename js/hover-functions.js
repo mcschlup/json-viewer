@@ -139,4 +139,25 @@
     return formatVectraGroupAPI(results);
   });
 
+  // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────
+  // Proxy endpoint 'splunk-seclog' must be configured in config-local.inc.php.
+  // Auth type: basic. method: POST. passPostParams: ['search'].
+  // postData: { output_mode: 'json', preview: 'false' }.
+
+  registerFieldUpdateFn('dynamicUpdateUserLastPwChange', async (sourceValue) => {
+    const resp = await fetch('index.php?proxy=splunk-seclog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        search: `| savedsearch crsi_get_user_last_pwchange args.uid=${sourceValue}`,
+      }),
+    });
+    if (!resp.ok) throw new Error(`splunk-seclog proxy returned HTTP ${resp.status}`);
+    const json = await resp.json();
+    if (json.error) throw new Error(json.error);
+    if (!json.result || json.result.user_last_pwchange === undefined)
+      throw new Error('No result returned');
+    return json.result.user_last_pwchange;
+  });
+
 })();

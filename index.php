@@ -54,6 +54,12 @@ if (isset($_GET['proxy'])) {
         if (isset($_GET[$p])) $params[$p] = $_GET[$p];
     }
 
+    // Forward only whitelisted client-supplied POST params
+    $postPassParams = [];
+    foreach ($cfg['passPostParams'] ?? [] as $p) {
+        if (isset($_POST[$p])) $postPassParams[$p] = $_POST[$p];
+    }
+
     // Append params to URL for GET, merge with static postData for POST
     if ($method === 'GET' && $params) {
         $url .= '?' . http_build_query($params);
@@ -155,7 +161,7 @@ if (isset($_GET['proxy'])) {
     }
 
     if ($method === 'POST') {
-        $postData = array_merge($cfg['postData'] ?? [], $params);
+        $postData = array_merge($cfg['postData'] ?? [], $params, $postPassParams);
         $curlOpts[CURLOPT_POST]       = true;
         $curlOpts[CURLOPT_POSTFIELDS] = http_build_query($postData);
     }

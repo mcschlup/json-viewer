@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026060501',
+  appVersion: '2026060502',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1101,10 +1101,12 @@ const CONFIG = {
   fieldDrillDowns: [],
 
   // Dynamic field update: add a reload button to a field that fetches a fresh value via proxy.
-  // Each entry: { key, updateFunction, description }
-  //   key            – exact field key to match
+  // Each entry: { key, sourceKey, updateFunction, description }
+  //   key            – exact field key whose displayed value gets updated (reload button shown here)
+  //   sourceKey      – (optional) field key whose value is passed to the updateFunction as its first
+  //                    argument; if omitted, the key field's own current value is passed instead
   //   updateFunction – name of a function registered via registerFieldUpdateFn(name, fn)
-  //                    called as fn(currentValue, key) on button click; must return a Promise<string>
+  //                    called as fn(sourceValue, key) on button click; must return a Promise<string>
   //                    with the new value to display in place of the current one
   //   description    – tooltip text shown on hover over the reload button (optional)
   // Default empty — override in js/config-local.js (not tracked in git)
