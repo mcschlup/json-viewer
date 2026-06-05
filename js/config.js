@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026060301',
+  appVersion: '2026060501',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -522,10 +522,15 @@ const CONFIG = {
       name: 'Host Details',
       description: 'Host Details'
     },
-    {
+    { // keep for some time - can be removed then
       key: 'host_id',
       name: 'Host ID',
       description: 'Host ID'
+    },
+    {
+      key: 'host_fqdn',
+      name: 'Host FQDN',
+      description: 'Host Fully Qualified Domain Name'
     },
     {
       key: 'host_name',
