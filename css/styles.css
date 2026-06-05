@@ -968,27 +968,34 @@ body {
 
 /* ── Field Dynamic Update ───────────────────────────────────────────────── */
 .fdu-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+}
+.fdu-value {
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
 }
 .fdu-reload-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: none;
-  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
   color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
-  border-radius: var(--radius);
-  transition: color 0.15s, background 0.15s;
+  margin-left: 0.5rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.fdu-reload-btn:hover { color: var(--primary); background: var(--primary-lt); }
-.fdu-reload-btn svg { width: 12px; height: 12px; display: block; }
+.fdu-reload-btn:hover { color: var(--primary); background: var(--primary-lt); border-color: var(--primary); }
+.fdu-reload-btn svg { width: 14px; height: 14px; display: block; pointer-events: none; }
 .fdu-reload-btn.fdu-spinning svg { animation: fdu-spin 0.7s linear infinite; }
 @keyframes fdu-spin { to { transform: rotate(360deg); } }
 .fdu-updating { opacity: 0.55; font-style: italic; }
