@@ -60,6 +60,19 @@ if (isset($_GET['proxy'])) {
         if (isset($_POST[$p])) $postPassParams[$p] = $_POST[$p];
     }
 
+    // Search template: validate client-supplied value and build search param server-side
+    if (isset($cfg['searchTemplate'])) {
+        $value = $_POST['value'] ?? '';
+        if (isset($cfg['valuePattern']) && !preg_match($cfg['valuePattern'], $value)) {
+            http_response_code(400);
+            $error_msg = 'Invalid value for proxy search template.';
+            error_log($error_msg);
+            echo json_encode(['error' => $error_msg]);
+            exit;
+        }
+        $postPassParams['search'] = str_replace('##VALUE##', $value, $cfg['searchTemplate']);
+    }
+
     // Append params to URL for GET, merge with static postData for POST
     if ($method === 'GET' && $params) {
         $url .= '?' . http_build_query($params);

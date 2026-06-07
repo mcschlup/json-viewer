@@ -148,9 +148,7 @@
     const resp = await fetch('index.php?proxy=splunk-seclog', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        search: `| savedsearch crsi_get_user_last_pwchange args.uid=${sourceValue}`,
-      }),
+      body: new URLSearchParams({ value: sourceValue }),
     });
     if (!resp.ok) throw new Error(`splunk-seclog proxy returned HTTP ${resp.status}`);
     const json = await resp.json();

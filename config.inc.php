@@ -15,6 +15,12 @@
 /*   'postData'      => ['key'=>'val'], // static POST fields (method=POST only)  */
 /*   'passParams'    => ['param1'],     // client GET params forwarded upstream   */
 /*   'passPostParams'=> ['param1'],     // client POST params forwarded upstream  */
+/*   'searchTemplate'=> '| savedsearch foo args.uid=##VALUE##',                  */
+/*                   // if set, client sends ?value=<x>; server validates x      */
+/*                   // against valuePattern, substitutes into template as        */
+/*                   // 'search' POST param — client never controls the query     */
+/*   'valuePattern' => '/^[\w@.\-]+$/', // regex to validate the substituted     */
+/*                   // value before inserting it into searchTemplate             */
 /*   'proxy'      => 'http://proxy.example.com:8080', // optional HTTP proxy   */
 /* ];                                                                          */
 $proxyEndpoints = [];
