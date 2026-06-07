@@ -129,6 +129,7 @@
       row('State',       esc(r.state)),
       row('First Seen',  fmtTimestamp(r.first_timestamp)),
       row('Last Seen',   fmtTimestamp(r.last_timestamp)),
+      row('Summary',     fmtTimestamp(r.summary?.description)),
     ].join('');
   }
 
@@ -156,6 +157,24 @@
 
   const seclogAppDataCache = {};
 
+  function formatSeclogAppData(data) {
+    return [
+      row('Name',                    esc(data.application_name)),
+      row('ID',                      esc(data.application_id)),
+      row('Market Unit',             esc(data.application_market_unit)),
+      row('Owner',                   esc(data.application_owner_name)),
+      row('Responsible',             esc(data.application_responsible_name)),
+      row('Ops Responsible',         esc(data.application_operations_responsible_name)),
+      row('Support Group',           esc(data.application_support_group_name)),
+      row('Confidentiality',         esc(data.application_confidentiality)),
+      row('Integrity',               esc(data.application_integrity)),
+      row('Availability',            esc(data.application_availability)),
+      row('Criticality',             esc(data.application_criticality)),
+      row('DORA Relevancy',          esc(data.application_dora_relevancy)),
+      row('LeanIX ID',               esc(data.application_leanix_id)),
+    ].join('');
+  }
+
   registerDrillDownPopupFn('SeclogAppData', async (value, key, baseUrl) => {
     let result = seclogAppDataCache[value];
     if (!result) {
@@ -172,16 +191,12 @@
       seclogAppDataCache[value] = result;
     }
 
-    const html = Object.entries(result)
-      .map(([k, v]) => row(fieldLabel(k), esc(v)))
-      .join('');
-
     const leanixId = result.application_leanix_id;
     const url = (baseUrl && leanixId)
       ? baseUrl.replace('##REPLACE##', encodeURIComponent(leanixId))
       : '';
 
-    return { html, url };
+    return { html: formatSeclogAppData(result), url };
   });
 
   // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────

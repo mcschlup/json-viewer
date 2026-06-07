@@ -74,6 +74,8 @@ if (isset($_GET['proxy'])) {
             http_response_code(400);
             $error_msg = 'Invalid value for proxy search template.';
             error_log($error_msg);
+            error_log($cfg['valuePattern']);
+            error_log($value);
             echo json_encode(['error' => $error_msg]);
             exit;
         }
@@ -182,6 +184,7 @@ if (isset($_GET['proxy'])) {
 
     if ($method === 'POST') {
         $postData = array_merge($cfg['postData'] ?? [], $params, $postPassParams);
+        error_log(print_r($postData, true));
         $curlOpts[CURLOPT_POST]       = true;
         $curlOpts[CURLOPT_POSTFIELDS] = http_build_query($postData);
     }
@@ -216,6 +219,7 @@ if (isset($_GET['proxy'])) {
     http_response_code($httpCode);
     echo $response;
     error_log("HTTP Response Code: " . $httpCode);
+    error_log(substr($response, 0, 5000));
     exit;
 }
 
