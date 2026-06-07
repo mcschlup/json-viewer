@@ -24,6 +24,7 @@ require_once __DIR__ . '/authprocess.inc.php';
 if (isset($_GET['proxy'])) {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store, no-cache');
+    error_log("Proxy endpoint used: " . $_GET['proxy']);
 
     if (!$is_authenticated) {
         http_response_code(401);
@@ -51,13 +52,19 @@ if (isset($_GET['proxy'])) {
     // Forward only whitelisted client-supplied GET params
     $params = [];
     foreach ($cfg['passParams'] ?? [] as $p) {
-        if (isset($_GET[$p])) $params[$p] = $_GET[$p];
+        if (isset($_GET[$p])) {
+            $params[$p] = $_GET[$p];
+            error_log("GET param: " . $p . " => " . $_GET[$p]);
+        }
     }
 
     // Forward only whitelisted client-supplied POST params
     $postPassParams = [];
     foreach ($cfg['passPostParams'] ?? [] as $p) {
-        if (isset($_POST[$p])) $postPassParams[$p] = $_POST[$p];
+        if (isset($_POST[$p])) {
+            $postPassParams[$p] = $_POST[$p];
+            error_log("POST param: " . $p . " => " . $_POST[$p]);
+        }
     }
 
     // Search template: validate client-supplied value and build search param server-side
@@ -208,6 +215,7 @@ if (isset($_GET['proxy'])) {
 
     http_response_code($httpCode);
     echo $response;
+    error_log("HTTP Response Code: " . $httpCode);
     exit;
 }
 
