@@ -220,7 +220,8 @@
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
       const popupAttrs = entry.popupFunction
-        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}" data-popup-title="${escapeHtml(entry.popupTitle || '')}" data-popup-icon="${escapeHtml(entry.icon || '')}"`
+        ? ` data-popup-fn="${escapeHtml(entry.popupFunction)}" data-popup-value="${escapedValue}" data-popup-key="${escapeHtml(key || '')}" data-popup-title="${escapeHtml(entry.popupTitle || '')}" data-popup-icon="${escapeHtml(entry.icon || '')}"` +
+          (entry.baseUrl && entry.baseUrl !== 'copyvalue' ? ` data-popup-base-url="${escapeHtml(entry.baseUrl)}"` : '')
         : '';
       if (entry.baseUrl === 'copyvalue') {
         return `<button class="drill-down-btn drill-down-copy" data-url="${escapedValue}" title="${escapedDesc}"${popupAttrs}>${ICON_COPY}</button>`;
@@ -279,10 +280,11 @@
       // Popup-function button — show modal instead of navigating
       const popupBtn = e.target.closest('[data-popup-fn]');
       if (popupBtn) {
-        const fnName = popupBtn.getAttribute('data-popup-fn');
-        const value  = popupBtn.getAttribute('data-popup-value');
-        const key    = popupBtn.getAttribute('data-popup-key');
-        const url    = popupBtn.dataset.url || '';
+        const fnName  = popupBtn.getAttribute('data-popup-fn');
+        const value   = popupBtn.getAttribute('data-popup-value');
+        const key     = popupBtn.getAttribute('data-popup-key');
+        const url     = popupBtn.dataset.url || '';
+        const baseUrl = popupBtn.getAttribute('data-popup-base-url') || '';
 
         const popupTitle = popupBtn.getAttribute('data-popup-title') || '';
         const popupIcon  = popupBtn.getAttribute('data-popup-icon') || '';
@@ -308,13 +310,27 @@
         const fn = DRILL_DOWN_POPUP_FNS[fnName];
         if (fn) {
           try {
-            const result = fn(value, key);
+            function applyPopupResult(res) {
+              if (res && typeof res === 'object' && 'html' in res) {
+                modalBody.innerHTML = res.html || '';
+                if (res.url) {
+                  modalLink.href = res.url;
+                  modalLink.innerHTML = popupIcon
+                    ? `<img src="img/${escapeHtml(popupIcon)}" alt="" class="drill-down-img">`
+                    : ICON_OPEN;
+                  modalLink.classList.remove('hidden');
+                }
+              } else {
+                modalBody.innerHTML = res || '';
+              }
+            }
+            const result = fn(value, key, baseUrl);
             if (result && typeof result.then === 'function') {
               result
-                .then(html => { modalBody.innerHTML = html; })
+                .then(applyPopupResult)
                 .catch(err => { modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`; });
             } else {
-              modalBody.innerHTML = result || '';
+              applyPopupResult(result);
             }
           } catch (err) {
             modalBody.innerHTML = `<span class="dd-popup-error">${escapeHtml(String(err))}</span>`;

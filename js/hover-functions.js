@@ -16,6 +16,14 @@
     return `<div class="dd-popup-row"><span class="dd-popup-lbl">${label}</span><span>${value ?? '—'}</span></div>`;
   }
 
+  function fieldLabel(key) {
+    if (typeof CONFIG !== 'undefined' && CONFIG.fieldMappings) {
+      const m = CONFIG.fieldMappings.find(e => e.key === key);
+      if (m) return m.name;
+    }
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
   // ── AbuseIPDB ──────────────────────────────────────────────────────────────
   // Proxy endpoint 'abuseipdb' must be configured in config-local.inc.php.
 
@@ -137,6 +145,43 @@
   registerDrillDownPopupFn('vectraGroupAPI', async (value) => {
     const results = await fetchVectraGroupAPI(value);
     return formatVectraGroupAPI(results);
+  });
+
+  // ── SeclogAppData ──────────────────────────────────────────────────────────
+  // Proxy endpoint 'splunk-seclog-appdata' must be configured in config-local.inc.php.
+  // Same auth/url/postData as 'splunk-seclog' but with:
+  //   searchTemplate: '| savedsearch crsi_get_application_data args.appname=##VALUE##'
+  // The popup link URL is built from baseUrl (config fieldDrillDowns entry) with
+  // result.application_leanix_id substituted for ##REPLACE##.
+
+  const seclogAppDataCache = {};
+
+  registerDrillDownPopupFn('SeclogAppData', async (value, key, baseUrl) => {
+    let result = seclogAppDataCache[value];
+    if (!result) {
+      const resp = await fetch('index.php?proxy=splunk-seclog-appdata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ value }),
+      });
+      if (!resp.ok) throw new Error(`splunk-seclog-appdata proxy returned HTTP ${resp.status}`);
+      const json = await resp.json();
+      if (json.error) throw new Error(json.error);
+      if (!json.result) throw new Error('No result returned');
+      result = json.result;
+      seclogAppDataCache[value] = result;
+    }
+
+    const html = Object.entries(result)
+      .map(([k, v]) => row(fieldLabel(k), esc(v)))
+      .join('');
+
+    const leanixId = result.application_leanix_id;
+    const url = (baseUrl && leanixId)
+      ? baseUrl.replace('##REPLACE##', encodeURIComponent(leanixId))
+      : '';
+
+    return { html, url };
   });
 
   // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────
