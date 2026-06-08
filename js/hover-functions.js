@@ -216,7 +216,7 @@
   }
 
   function formatSeclogOwnerData(results) {
-    if (!results.length) return '<div class="dd-popup-row">No data found.</div>';
+    if (!results.length) return '<div class="dd-popup-row">No results found.</div>';
     return results.map((r, i) => {
       const header = results.length > 1
         ? `<div class="dd-popup-section-hdr">#${i + 1}</div>`
@@ -242,7 +242,6 @@
       .filter(obj => obj && obj.result)
       .map(obj => obj.result);
 
-    if (results.length === 0) throw new Error('No results returned');
     seclogOwnerDataCache[value] = results;
     return formatSeclogOwnerData(results);
   });
