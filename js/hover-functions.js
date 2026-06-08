@@ -199,6 +199,54 @@
     return { html: formatSeclogAppData(result), url };
   });
 
+  // ── SeclogOwnerData ────────────────────────────────────────────────────────
+  // Proxy endpoint 'splunk-seclog-ownerdata' must be configured in config-local.inc.php.
+  // Same auth/url/postData as 'splunk-seclog' but with:
+  //   searchTemplate: '| savedsearch crsi_get_owner_data args.uid=##VALUE##'
+  // Response is JSONL: one JSON object per line, each with a 'result' key.
+
+  const seclogOwnerDataCache = {};
+
+  function formatSeclogOwnerResult(r) {
+    return [
+      row('Item', esc(r.item)),
+      row('Name', esc(r.name)),
+      row('Role', esc(r.role)),
+    ].join('');
+  }
+
+  function formatSeclogOwnerData(results) {
+    if (!results.length) return '<div class="dd-popup-row">No data found.</div>';
+    return results.map((r, i) => {
+      const header = results.length > 1
+        ? `<div class="dd-popup-section-hdr">#${i + 1}</div>`
+        : '';
+      return header + formatSeclogOwnerResult(r);
+    }).join('<hr class="dd-popup-sep">');
+  }
+
+  registerDrillDownPopupFn('SeclogOwnerData', async (value) => {
+    if (seclogOwnerDataCache[value]) return formatSeclogOwnerData(seclogOwnerDataCache[value]);
+
+    const resp = await fetch('index.php?proxy=splunk-seclog-ownerdata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ value }),
+    });
+    if (!resp.ok) throw new Error(`splunk-seclog-ownerdata proxy returned HTTP ${resp.status}`);
+
+    const text = await resp.text();
+    const results = text.trim().split('\n')
+      .filter(line => line.trim())
+      .map(line => { try { return JSON.parse(line); } catch (_) { return null; } })
+      .filter(obj => obj && obj.result)
+      .map(obj => obj.result);
+
+    if (results.length === 0) throw new Error('No results returned');
+    seclogOwnerDataCache[value] = results;
+    return formatSeclogOwnerData(results);
+  });
+
   // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────
   // Proxy endpoint 'splunk-seclog' must be configured in config-local.inc.php.
   // Auth type: basic. method: POST. passPostParams: ['search'].
