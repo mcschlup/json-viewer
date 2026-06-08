@@ -946,7 +946,7 @@ body {
 .dd-popup-lbl {
   font-weight: 600;
   opacity: 0.55;
-  min-width: 100px;
+  min-width: 120px;
   flex-shrink: 0;
 }
 .dd-popup-loading { opacity: 0.65; font-style: italic; }
