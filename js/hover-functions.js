@@ -16,6 +16,11 @@
     return `<div class="dd-popup-row"><span class="dd-popup-lbl">${label}</span><span>${value ?? '—'}</span></div>`;
   }
 
+  function optRow(label, value) {
+    if (value == null || value === '') return '';
+    return row(label, esc(value));
+  }
+
   function fieldLabel(key) {
     if (typeof CONFIG !== 'undefined' && CONFIG.fieldMappings) {
       const m = CONFIG.fieldMappings.find(e => e.key === key);
@@ -129,7 +134,17 @@
       row('State',       esc(r.state)),
       row('First Seen',  fmtTimestamp(r.first_timestamp)),
       row('Last Seen',   fmtTimestamp(r.last_timestamp)),
-      row('Summary',     fmtTimestamp(r.summary?.description)),
+      optRow('IP(s)',    r.summary?.ips),
+      optRow('Src IP(s)',  r.summary?.src_ips),
+      optRow('Dst IP(s)',  r.summary?.dst_ips),
+      optRow('Dst Port(s)',  r.summary?.dst_ports),
+      optRow('Protocol(s)',  r.summary?.protocols),
+      optRow('App(s)',  r.summary?.app_protocols),
+      optRow('App(s)',  r.summary?.applications),
+      optRow('Account(s)',  r.summary?.accounts),
+      optRow('Operation(s)',  r.summary?.operations),
+      optRow('Domain(s)',  r.summary?.target_domains),
+      optRow('DNS Request',  r.summary?.dns_request),
     ].join('');
   }
 
