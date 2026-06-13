@@ -160,11 +160,14 @@ body {
 }
 
 .auth-btn {
+  display: inline-flex;
+  align-items: center;
   height: 26px;
   padding: 0 0.75rem;
   font-size: 0.8rem;
   font-family: inherit;
   font-weight: 600;
+  text-decoration: none;
   border-radius: var(--radius);
   border: 1.5px solid var(--primary);
   cursor: pointer;

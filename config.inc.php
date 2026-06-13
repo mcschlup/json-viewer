@@ -43,3 +43,16 @@ $ldap_groups = [ 'cn=examplegroup,ou=groups,ou=example,ou=com' ];
 $ldap_user_attr = 'uid';
 $ldap_bind_user = 'cn=exampleuser,ou=users,ou=example,ou=com';
 $ldap_bind_password = 'securepassword';
+
+/* ── Authentication methods displayed in the header widget ───────────────── */
+/* At least one should be true. Override in config-local.inc.php.             */
+$auth_show_userpass = true;   // show username/password login form
+$auth_show_sso      = false;  // show "SSO Sign-in" button
+
+/* ── Entra ID (Azure AD) SSO configuration ───────────────────────────────── */
+/* Set in config-local.inc.php. Only used when $auth_show_sso is true.        */
+$entra_tenant_id     = '';    // tenant GUID
+$entra_client_id     = '';    // app registration "Application (client) ID"
+$entra_client_secret = '';    // client secret from the app registration
+$entra_redirect_uri  = '';    // must match the redirect URI configured in Entra,
+                              // e.g. 'https://yourhost/index.php?sso=callback'

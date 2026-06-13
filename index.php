@@ -19,6 +19,8 @@ if (file_exists(__DIR__ . '/config-local.inc.php')) {
 /* ── Load authentication function and process login/logout ───────────────── */
 require_once __DIR__ . '/authfunction.inc.php';
 require_once __DIR__ . '/authprocess.inc.php';
+require_once __DIR__ . '/authsso.inc.php';
+$is_authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
 /* ── Handle ?proxy=<name>: server-side proxy for external API calls ───────- */
 if (isset($_GET['proxy'])) {
