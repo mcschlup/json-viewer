@@ -56,3 +56,6 @@ $entra_client_id     = '';    // app registration "Application (client) ID"
 $entra_client_secret = '';    // client secret from the app registration
 $entra_redirect_uri  = '';    // must match the redirect URI configured in Entra,
                               // e.g. 'https://yourhost/index.php?sso=callback'
+$entra_allowed_groups = [];   // list of allowed group object IDs (GUIDs); empty = allow any
+                              // requires the "groups" claim to be enabled in the app
+                              // registration (Token configuration → Add groups claim)

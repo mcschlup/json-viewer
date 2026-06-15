@@ -142,6 +142,18 @@ if ($_GET['sso'] === 'callback') {
         return;
     }
 
+    // Group membership check (skipped if $entra_allowed_groups is empty)
+    // Note: if a user is in >~150 groups, Entra omits the 'groups' claim and
+    // emits a '_claim_names' pointer to Graph API instead — unsupported here.
+    if (!empty($entra_allowed_groups)) {
+        $userGroups = (array)($payload->groups ?? []);
+        if (!array_intersect($entra_allowed_groups, $userGroups)) {
+            $auth_error = 'User is not a member of an allowed group.';
+            error_log('SSO: user not in allowed groups; got: ' . implode(',', $userGroups));
+            return;
+        }
+    }
+
     // Success — set the same session state as the LDAP login path
     $_SESSION['authenticated']           = true;
     $_SESSION['mail']                    = $payload->email ?? $payload->preferred_username ?? $payload->upn ?? '';
