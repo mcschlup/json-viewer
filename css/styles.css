@@ -642,37 +642,32 @@ body {
 .card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0.625rem 0.875rem;
-  background: var(--bg);
+  background: var(--border);
   border-bottom: 1px solid var(--border);
   gap: 0.5rem;
 }
 
 .card-index {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--text-muted);
-  font-family: var(--mono);
   flex-shrink: 0;
 }
 
 .card-summary {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
   font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-left: auto;
 }
 
 .card-summary--open {
   font-style: normal;
   font-weight: 700;
-}
-
-.anomaly-copy-btn {
-  margin-left: auto;
 }
 
 /* Inside a card, the obj-viewer needs no outer shadow/border */
