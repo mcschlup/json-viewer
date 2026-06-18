@@ -557,6 +557,14 @@
       }
     }
 
+    const extractEntryValue = e => {
+      if (e === null || e === undefined) return '';
+      if (typeof e !== 'object') return String(e);
+      if (e.value !== undefined) return String(e.value);
+      const keys = Object.keys(e);
+      return keys.length === 1 ? String(e[keys[0]]) : JSON.stringify(e);
+    };
+
     for (const k of [
       'anomaly_source_identity',
       'anomaly_source_asset',
@@ -565,16 +573,22 @@
     ]) {
       const v = item[k];
       if (Array.isArray(v) && v.length > 0) {
-        lines.push(`${labelOf(k)}: ${v.join(', ')}`);
+        const values = v.map(extractEntryValue).filter(s => s !== '');
+        if (values.length > 0) {
+          lines.push(`${labelOf(k)}: ${values.join(', ')}`);
+        }
       }
     }
 
     const addInfo = item.anomaly_additional_info;
     if (Array.isArray(addInfo) && addInfo.length > 0) {
       for (const entry of addInfo) {
-        if (entry && typeof entry === 'object') {
-          for (const [k, v] of Object.entries(entry)) {
-            lines.push(`${k}: ${v}`);
+        const objs = Array.isArray(entry) ? entry : [entry];
+        for (const obj of objs) {
+          if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+            for (const [k, v] of Object.entries(obj)) {
+              lines.push(`${k}: ${v}`);
+            }
           }
         }
       }
