@@ -59,3 +59,5 @@ $entra_redirect_uri  = '';    // must match the redirect URI configured in Entra
 $entra_allowed_groups = [];   // list of allowed group object IDs (GUIDs); empty = allow any
                               // requires the "groups" claim to be enabled in the app
                               // registration (Token configuration → Add groups claim)
+$entra_proxy         = '';    // optional HTTP proxy for the outbound calls to
+                              // login.microsoftonline.com; empty = direct

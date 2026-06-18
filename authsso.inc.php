@@ -74,8 +74,7 @@ if ($_GET['sso'] === 'callback') {
         'redirect_uri'  => $entra_redirect_uri,
     ]);
 
-    $ch = curl_init($tokenUrl);
-    curl_setopt_array($ch, [
+    $tokenOpts = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => $postFields,
@@ -83,7 +82,11 @@ if ($_GET['sso'] === 'callback') {
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
         CURLOPT_USERAGENT      => 'curl/7.76.1',
-    ]);
+    ];
+    if (!empty($entra_proxy)) $tokenOpts[CURLOPT_PROXY] = $entra_proxy;
+
+    $ch = curl_init($tokenUrl);
+    curl_setopt_array($ch, $tokenOpts);
     $tokenResp = curl_exec($ch);
     $tokenCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $tokenErr  = curl_error($ch);
@@ -103,13 +106,16 @@ if ($_GET['sso'] === 'callback') {
 
     // Fetch Microsoft's JWKS for this tenant to verify the ID token signature
     $jwksUrl = "https://login.microsoftonline.com/{$entra_tenant_id}/discovery/v2.0/keys";
-    $ch = curl_init($jwksUrl);
-    curl_setopt_array($ch, [
+    $jwksOpts = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT        => 10,
         CURLOPT_CAINFO         => '/etc/pki/tls/certs/ca-bundle.crt',
         CURLOPT_USERAGENT      => 'curl/7.76.1',
-    ]);
+    ];
+    if (!empty($entra_proxy)) $jwksOpts[CURLOPT_PROXY] = $entra_proxy;
+
+    $ch = curl_init($jwksUrl);
+    curl_setopt_array($ch, $jwksOpts);
     $jwksResp = curl_exec($ch);
     curl_close($ch);
 
