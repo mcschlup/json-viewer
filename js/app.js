@@ -543,10 +543,52 @@
     return `<div class="array-grid">${cards}</div>`;
   }
 
-  function renderAnomalyList(arr) {
+  function buildAnomalyCopyText(item) {
+    const lines = [];
+    const labelOf = k => {
+      const m = getFieldMapping(k);
+      return m ? m.name : k;
+    };
+
+    for (const k of ['anomaly_time', 'anomaly_name']) {
+      const v = item[k];
+      if (v !== undefined && v !== null && v !== '') {
+        lines.push(`${labelOf(k)}: ${v}`);
+      }
+    }
+
+    for (const k of [
+      'anomaly_source_identity',
+      'anomaly_source_asset',
+      'anomaly_destination_identity',
+      'anomaly_destination_asset',
+    ]) {
+      const v = item[k];
+      if (Array.isArray(v) && v.length > 0) {
+        lines.push(`${labelOf(k)}: ${v.join(', ')}`);
+      }
+    }
+
+    const addInfo = item.anomaly_additional_info;
+    if (Array.isArray(addInfo) && addInfo.length > 0) {
+      for (const entry of addInfo) {
+        if (entry && typeof entry === 'object') {
+          for (const [k, v] of Object.entries(entry)) {
+            lines.push(`${k}: ${v}`);
+          }
+        }
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  function renderAnomalyList(arr, sectionKey) {
     if (arr.length === 0) {
       return '<p class="empty-msg">This array is empty.</p>';
     }
+
+    const showCopyBtn = sectionKey === 'open_relevant_anomaly_details';
 
     const cards = arr.map((item, i) => {
       if (item !== null && typeof item === 'object' && !Array.isArray(item)) {
@@ -555,10 +597,14 @@
         const statusHtml = statusRaw
           ? `<span class="card-summary${statusRaw.toLowerCase() === 'open' ? ' card-summary--open' : ''}">Anomaly status: ${escapeHtml(statusRaw)}</span>`
           : '';
+        const copyBtnHtml = showCopyBtn
+          ? `<button class="drill-down-btn anomaly-copy-btn" data-copy-text="${escapeHtml(buildAnomalyCopyText(item))}" title="Copy relevant info to clipboard">${ICON_COPY}</button>`
+          : '';
         return `<div class="array-card">
           <div class="card-header">
             <span class="card-index">Anomaly number: ${escapeHtml(String(num))}</span>
             ${statusHtml}
+            ${copyBtnHtml}
           </div>
           <div class="card-body">${renderObjectTable(item)}</div>
         </div>`;
@@ -570,6 +616,18 @@
     }).join('');
 
     return `<div class="array-grid">${cards}</div>`;
+  }
+
+  function initAnomalyCopy() {
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.anomaly-copy-btn');
+      if (!btn) return;
+      const text = btn.dataset.copyText || '';
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 1500);
+      }).catch(() => {});
+    });
   }
 
   // ── Rendering: Section dispatcher ─────────────────────────────────────────
@@ -1007,7 +1065,7 @@
       const sectionHtml = (key === 'related_entities_to_correlated_anomalies_details' && Array.isArray(value))
         ? renderEntityTable(value)
         : (ANOMALY_LIST_KEYS.has(key) && Array.isArray(value))
-          ? renderAnomalyList(value)
+          ? renderAnomalyList(value, key)
           : renderSection(value);
       panel.innerHTML = timelineHtml + formulaHtml + subtitleNote + sectionHtml;
       tabPanels.appendChild(panel);
@@ -1139,6 +1197,7 @@
     initTimeline();
     initDrillDown();
     initFieldDynamicUpdate();
+    initAnomalyCopy();
     initCollapsible();
     initFieldTooltips();
     initVersionPopup(data);

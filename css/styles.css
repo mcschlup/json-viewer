@@ -671,6 +671,10 @@ body {
   font-weight: 700;
 }
 
+.anomaly-copy-btn {
+  margin-left: auto;
+}
+
 /* Inside a card, the obj-viewer needs no outer shadow/border */
 .card-body .obj-viewer {
   border: none;
