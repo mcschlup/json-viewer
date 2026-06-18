@@ -125,7 +125,7 @@ if ($_GET['sso'] === 'callback') {
     }
 
     try {
-        $keys    = JWK::parseKeySet(json_decode($jwksResp, true));
+        $keys    = JWK::parseKeySet(json_decode($jwksResp, true), 'RS256');
         $payload = JWT::decode($tokenData['id_token'], $keys);
     } catch (Exception $e) {
         $auth_error = 'ID token validation failed: ' . $e->getMessage();
