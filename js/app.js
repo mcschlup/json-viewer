@@ -217,6 +217,8 @@
 
   function formatFieldDrillDowns(value, actions, key) {
     const escapedValue = escapeHtml(String(value));
+    const replaced     = applyValueReplacements(key, value);
+    const displayHtml  = replaced !== null ? replaced : escapedValue;
     const buttons = actions.map(entry => {
       const escapedDesc = escapeHtml(entry.description || '');
       const popupAttrs = entry.popupFunction
@@ -234,7 +236,7 @@
       }
     }).join('');
     return `<div class="drill-down-wrap">
-        <span class="drill-down-text">${escapedValue}</span>
+        <span class="drill-down-text">${displayHtml}</span>
         <span class="drill-down-actions">${buttons}</span>
       </div>`;
   }
