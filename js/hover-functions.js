@@ -273,14 +273,17 @@
 
   function formatSeclogCveResult(r) {
     return [
-      row('CVE',           esc(r.cve)),
-      row('Description',   esc(r.description)),
-      row('CVSS Severity', esc(r.cvss_severity)),
-      row('CVSS Score',    esc(r.cvss_score)),
-      row('Published',     esc(r.published)),
-      row('Updated',       esc(r.updated)),
-      row('Exploitable',   esc(r.exploitable)),
-      row('EPSS',          esc(r.epss)),
+      row('CVE',              esc(r.cve)),
+      optRow('Vendor',        r.vendor),
+      optRow('Product',       r.product),
+      optRow('Title',         r.title),
+      optRow('Description',   r.description),
+      row('CVSS Severity',    esc(r.cvss_severity)),
+      row('CVSS Score',       esc(r.cvss_score)),
+      row('Published',        esc(r.published)),
+      row('Updated',          esc(r.updated)),
+      row('Exploitable',      esc(r.exploitable)),
+      row('EPSS',             esc(r.epss)),
     ].join('');
   }
 
