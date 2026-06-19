@@ -261,6 +261,62 @@
     return formatSeclogOwnerData(results);
   });
 
+  // ── SeclogCveDetails ───────────────────────────────────────────────────────
+  // Proxy endpoint 'splunk-seclog-cvedetails' must be configured in config-local.inc.php.
+  // Same auth/url/postData as 'splunk-seclog' but with:
+  //   searchTemplate: '| savedsearch crsi_get_cve_details args.cves=##VALUE##'
+  // Response is JSONL: one JSON object per line, each with a 'result' key.
+  // Input transform: '|' in the source value is replaced with ',' before sending.
+  // Note: the proxy 'valuePattern' must allow commas (e.g. /^[\w,.\-]+$/).
+
+  const seclogCveDetailsCache = {};
+
+  function formatSeclogCveResult(r) {
+    return [
+      row('CVE',           esc(r.cve)),
+      row('Description',   esc(r.description)),
+      row('CVSS Severity', esc(r.cvss_severity)),
+      row('CVSS Score',    esc(r.cvss_score)),
+      row('Published',     esc(r.published)),
+      row('Updated',       esc(r.updated)),
+      row('Exploitable',   esc(r.exploitable)),
+      row('EPSS',          esc(r.epss)),
+    ].join('');
+  }
+
+  function formatSeclogCveDetails(results) {
+    if (!results.length) return '<div class="dd-popup-row">No results found.</div>';
+    return results.map((r, i) => {
+      const header = results.length > 1
+        ? `<div class="dd-popup-section-hdr">#${i + 1}</div>`
+        : '';
+      return header + formatSeclogCveResult(r);
+    }).join('<hr class="dd-popup-sep">');
+  }
+
+  registerDrillDownPopupFn('SeclogCveDetails', async (value) => {
+    if (seclogCveDetailsCache[value]) return formatSeclogCveDetails(seclogCveDetailsCache[value]);
+
+    const transformedValue = String(value).replace(/\|/g, ',');
+
+    const resp = await fetch('index.php?proxy=splunk-seclog-cvedetails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ value: transformedValue }),
+    });
+    if (!resp.ok) throw new Error(`splunk-seclog-cvedetails proxy returned HTTP ${resp.status}`);
+
+    const text = await resp.text();
+    const results = text.trim().split('\n')
+      .filter(line => line.trim())
+      .map(line => { try { return JSON.parse(line); } catch (_) { return null; } })
+      .filter(obj => obj && obj.result)
+      .map(obj => obj.result);
+
+    seclogCveDetailsCache[value] = results;
+    return formatSeclogCveDetails(results);
+  });
+
   // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────
   // Proxy endpoint 'splunk-seclog' must be configured in config-local.inc.php.
   // Auth type: basic. method: POST. passPostParams: ['search'].
