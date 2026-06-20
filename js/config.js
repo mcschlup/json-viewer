@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026061903',
+  appVersion: '2026062001',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -423,12 +423,12 @@ const CONFIG = {
     // key "risk_vulnerability_factor_details" already defined in host details section
     {
       key: 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days',
-      name: 'Authentication against risky assets',
+      name: 'Authentication against vulnerable or insecure assets',
       description: 'Current prioritized entity has authenticated against an asset that is known to have software vulnerabilities and/or insecure configurations'
     },
     {
       key: 'identity_authentication_against_vulnerable_asset_last_200_days_asset_list',
-      name: 'List of risky assets',
+      name: 'List of vulnerable/insecure assets',
       description: 'List of assets with known software vulnerabilities and/or insecure configurations that the current prioritized entity has authenticated against during the last 200 days'
     },
     {
@@ -453,7 +453,7 @@ const CONFIG = {
     },
     {
       key: 'identity_authentication_against_critical_or_cia_application_last_200_days_application_list',
-      name: 'Critical or High CIA Score Application Authenticated against',
+      name: 'Authentication against Critical or High CIA Score Application',
       description: 'List of applications rated critical or with high CIA score running on assets that the current prioritized entity (an Identity) has authenticated against during the last 200 days'
     },
     //-------------------------------------------------------------------------------------------------------
@@ -636,6 +636,11 @@ const CONFIG = {
       key: 'total_number_of_insecure_configurations',
       name: '# of Insecure Configurations',
       description: 'Number of Insecure Configurations assigned to the current prioritized entity'
+    },
+    {
+      key: 'asset_insecure_configurations_list',
+      name: 'List of Insecure Configurations',
+      description: 'List of Insecure Configurations assigned to the current prioritized entity'
     },
     {
       key: 'asset_internet_exposure',
