@@ -320,6 +320,57 @@
     return formatSeclogCveDetails(results);
   });
 
+  // ── SeclogInsecureConfigDetails ────────────────────────────────────────────
+  // Proxy endpoint 'splunk-seclog-insecureconfigdetails' must be configured in
+  // config-local.inc.php. Same auth/url/postData as 'splunk-seclog' but with:
+  //   searchTemplate: '| savedsearch crsi_get_insecure_config_details args.scid=##VALUE##'
+  // Response is JSONL: one JSON object per line, each with a 'result' key.
+  // Input transform: '|' in the source value is replaced with ',' before sending.
+  // Note: the proxy 'valuePattern' must allow commas (e.g. /^[\w,.\-]+$/).
+
+  const seclogInsecureConfigDetailsCache = {};
+
+  function formatSeclogInsecureConfigResult(r) {
+    return [
+      row('ID',   esc(r.sc_id)),
+      row('Name', esc(r.sc_name)),
+      row('OS',   esc(r.sc_os)),
+    ].join('');
+  }
+
+  function formatSeclogInsecureConfigDetails(results) {
+    if (!results.length) return '<div class="dd-popup-row">No results found.</div>';
+    return results.map((r, i) => {
+      const header = results.length > 1
+        ? `<div class="dd-popup-section-hdr">#${i + 1}</div>`
+        : '';
+      return header + formatSeclogInsecureConfigResult(r);
+    }).join('<hr class="dd-popup-sep">');
+  }
+
+  registerDrillDownPopupFn('SeclogInsecureConfigDetails', async (value) => {
+    if (seclogInsecureConfigDetailsCache[value]) return formatSeclogInsecureConfigDetails(seclogInsecureConfigDetailsCache[value]);
+
+    const transformedValue = String(value).replace(/\|/g, ',');
+
+    const resp = await fetch('index.php?proxy=splunk-seclog-insecureconfigdetails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ value: transformedValue }),
+    });
+    if (!resp.ok) throw new Error(`splunk-seclog-insecureconfigdetails proxy returned HTTP ${resp.status}`);
+
+    const text = await resp.text();
+    const results = text.trim().split('\n')
+      .filter(line => line.trim())
+      .map(line => { try { return JSON.parse(line); } catch (_) { return null; } })
+      .filter(obj => obj && obj.result)
+      .map(obj => obj.result);
+
+    seclogInsecureConfigDetailsCache[value] = results;
+    return formatSeclogInsecureConfigDetails(results);
+  });
+
   // ── dynamicUpdateUserLastPwChange ─────────────────────────────────────────
   // Proxy endpoint 'splunk-seclog' must be configured in config-local.inc.php.
   // Auth type: basic. method: POST. passPostParams: ['search'].
