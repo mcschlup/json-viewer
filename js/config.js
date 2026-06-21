@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026062001',
+  appVersion: '2026062101',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -1219,6 +1219,12 @@ const CONFIG = {
     },
     {
       key: 'asset_high_epss_vulnerabilities_list',
+      replacements: [
+        { from: '|', to: '<br>' }
+      ]
+    },
+    {
+      key: 'asset_insecure_configurations_list',
       replacements: [
         { from: '|', to: '<br>' }
       ]

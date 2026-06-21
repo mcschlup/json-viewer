@@ -293,7 +293,7 @@
         const mapping    = getFieldMapping(key);
         const fieldName  = mapping ? mapping.name : (key || 'Details');
         modalTitle.textContent = popupTitle
-          ? `${popupTitle} details for ${value}`
+          ? popupTitle.split('##REPLACE##').join(value)
           : `Details for ${value}`;
 
         if (url) {
