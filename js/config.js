@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026062102',
+  appVersion: '2026062401',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
@@ -455,6 +455,21 @@ const CONFIG = {
       key: 'identity_authentication_against_critical_or_cia_application_last_200_days_application_list',
       name: 'Authentication against Critical or High CIA Score Application',
       description: 'List of applications rated critical or with high CIA score running on assets that the current prioritized entity (an Identity) has authenticated against during the last 200 days'
+    },
+    {
+      key: 'host',
+      name: 'Host FQDN',
+      description: 'Host Fully Qualified Domain Name'
+    },
+    {
+      key: 'number_of_exploitable_vulnerabilities',
+      name: '# of Exploitable Vulnerabilities',
+      description: 'Number of Exploitable Vulnerabilities assigned to the listed asset'
+    },
+    {
+      key: 'number_of_vulnerabilities_with_elevated_epss_score',
+      name: '# of Vulnerabilities with high EPSS',
+      description: 'Number of Vulnerabilities with high EPSS score assigned to the listed asset'
     },
     //-------------------------------------------------------------------------------------------------------
     // App Reg Details section
@@ -1042,7 +1057,7 @@ const CONFIG = {
     },
     {
       key: 'identity_authentication_against_vulnerable_or_insecure_asset_last_200_days_factor',
-      name: 'Authentications against risky assets Factor',
+      name: 'Authentications against vulnerable/insecure assets Factor',
       description: 'Risk factor based on authentications against risky assets - elevated from 1 to 1.5 if current prioritized entity has authenticated against an asset that is known to have software vulnerabilities and/or insecure configurations'
     },
     {
@@ -1174,7 +1189,8 @@ const CONFIG = {
     'anomaly_destination_asset',
     'asset_critical_vulnerabilities_list',
     'asset_exploitable_vulnerabilities_list',
-    'asset_high_epss_vulnerabilities_list'
+    'asset_high_epss_vulnerabilities_list',
+    'asset_insecure_configurations_list'
   ],
 
 
