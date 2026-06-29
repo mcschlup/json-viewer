@@ -22,6 +22,9 @@ require_once __DIR__ . '/authprocess.inc.php';
 require_once __DIR__ . '/authsso.inc.php';
 $is_authenticated = isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true;
 
+/* ── Load AI Summary backend helper ──────────────────────────────────────── */
+require_once __DIR__ . '/aisummary.inc.php';
+
 /* ── Handle ?proxy=<name>: server-side proxy for external API calls ───────- */
 if (isset($_GET['proxy'])) {
     header('Content-Type: application/json; charset=utf-8');
@@ -332,6 +335,28 @@ if (isset($_GET['rnid'])) {
     }
 }
 
+/* ── API: return AI Summary JSON by session ID ───────────────────────────── */
+if (isset($_GET['aisummary'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store, no-cache');
+
+    if (!$is_authenticated) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Authentication required.']);
+        exit;
+    }
+
+    $id = preg_replace('/[^a-f0-9]/', '', $_GET['aisummary']);
+    if (empty($id) || !isset($_SESSION['json_store'][$id])) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Session data not found or expired.']);
+        exit;
+    }
+
+    echo json_encode(fetchAiSummary($_SESSION['json_store'][$id]));
+    exit;
+}
+
 /* ── API: return JSON by session ID ──────────────────────────────────────── */
 if (isset($_GET['jsonid'])) {
     $id = preg_replace('/[^a-f0-9]/', '', $_GET['jsonid']);
@@ -416,7 +441,10 @@ if (isset($_GET['view'])) {
     <main class="app-main">
 
 <?php if ($view_id): ?>
-      <script>window.__DATA_URL = 'index.php?jsonid=<?= htmlspecialchars($view_id, ENT_QUOTES) ?>';</script>
+      <script>
+        window.__DATA_URL       = 'index.php?jsonid=<?= htmlspecialchars($view_id, ENT_QUOTES) ?>';
+        window.__AI_SUMMARY_URL = 'index.php?aisummary=<?= htmlspecialchars($view_id, ENT_QUOTES) ?>';
+      </script>
 
       <!-- Error state -->
       <div id="error-state" class="state-container hidden" role="alert">

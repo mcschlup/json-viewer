@@ -1088,6 +1088,56 @@
     });
   }
 
+  // ── AI Summary tab ─────────────────────────────────────────────────────────
+
+  function addAiSummaryTab() {
+    const url = window.__AI_SUMMARY_URL;
+    if (!url) return;
+
+    const tabBar    = document.getElementById('tab-bar');
+    const tabPanels = document.getElementById('tab-panels');
+    if (!tabBar || !tabPanels) return;
+
+    const key = '__ai_summary__';
+    const idx = tabPanels.querySelectorAll('.tab-panel').length;
+
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', 'false');
+    btn.setAttribute('aria-controls', `panel-${idx}`);
+    btn.dataset.tab = key;
+    btn.textContent = 'AI Summary';
+    btn.addEventListener('click', () => switchTab(key));
+    tabBar.appendChild(btn);
+
+    const panel = document.createElement('div');
+    panel.className = 'tab-panel';
+    panel.id = `panel-${idx}`;
+    panel.setAttribute('role', 'tabpanel');
+    panel.dataset.tab = key;
+    panel.innerHTML = '<p class="empty-msg">Loading AI Summary…</p>';
+    tabPanels.appendChild(panel);
+
+    loadAiSummary(url, panel);
+  }
+
+  async function loadAiSummary(url, panel) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        const msg = body.error || `HTTP ${resp.status}`;
+        panel.innerHTML = `<p class="empty-msg">Failed to load AI Summary: ${escapeHtml(msg)}</p>`;
+        return;
+      }
+      const data = await resp.json();
+      panel.innerHTML = renderSection(data);
+    } catch (e) {
+      panel.innerHTML = `<p class="empty-msg">Failed to load AI Summary: ${escapeHtml(e.message)}</p>`;
+    }
+  }
+
   // ── Version Popup ──────────────────────────────────────────────────────────
 
   function initVersionPopup(data) {
@@ -1210,6 +1260,7 @@
     }
 
     createTabs(data);
+    addAiSummaryTab();
     initTimeline();
     initDrillDown();
     initFieldDynamicUpdate();

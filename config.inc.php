@@ -61,3 +61,11 @@ $entra_allowed_groups = [];   // list of allowed group object IDs (GUIDs); empty
                               // registration (Token configuration → Add groups claim)
 $entra_proxy         = '';    // optional HTTP proxy for the outbound calls to
                               // login.microsoftonline.com; empty = direct
+
+/* ── AI Summary backend ──────────────────────────────────────────────────── */
+/* Consumed by aisummary.inc.php :: fetchAiSummary(). Currently the function  */
+/* returns a static stub; populate these once the real REST API is wired up.  */
+$ai_summary_url     = '';   // upstream POST URL that returns the summary JSON
+$ai_summary_auth    = [];   // ['type'=>'basic','user'=>'...','pass'=>'...']
+$ai_summary_timeout = 30;   // seconds
+$ai_summary_proxy   = '';   // optional HTTP proxy; empty = direct
