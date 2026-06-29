@@ -236,6 +236,11 @@ if (isset($_GET['rnid'])) {
     }
 
     // when doing splunk requests in the background, user needs to authenticate first
+    if (!$is_authenticated) {
+        // Stash the requested rnid so the auth callbacks can resume the action
+        $_SESSION['pending_rnid'] = $rnid;
+    }
+
     if ($is_authenticated) {
 
       $url = $api_base_url;
