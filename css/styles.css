@@ -849,11 +849,23 @@ body {
   color: var(--text);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
 }
 
 .paste-input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(0, 13, 110, 0.1);
+}
+
+.paste-input-textarea {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.paste-title-spaced {
+  margin-top: 1.75rem;
 }
 
 .paste-actions {

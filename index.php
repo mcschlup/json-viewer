@@ -434,7 +434,7 @@ if (isset($_GET['view'])) {
       </div>
 
 <?php else: ?>
-      <!-- Risk Notable ID form -->
+      <!-- Combined entry forms -->
       <div class="paste-wrap">
         <div class="paste-card">
           <h2 class="paste-title">Enter Risk Notable ID</h2>
@@ -456,13 +456,8 @@ if (isset($_GET['view'])) {
               <button type="submit" class="paste-submit">Show Risk Notable</button>
             </div>
           </form>
-        </div>
-      </div>
 
-      <!-- Paste form -->
-      <div class="paste-wrap">
-        <div class="paste-card">
-          <h2 class="paste-title">Paste JSON Data</h2>
+          <h2 class="paste-title paste-title-spaced">Enter JSON Data</h2>
 <?php if ($form_error): ?>
           <div class="paste-error">
             <strong>Invalid JSON:</strong> <?= htmlspecialchars($form_error) ?>
@@ -471,9 +466,9 @@ if (isset($_GET['view'])) {
           <form method="post" action="index.php">
             <textarea
               name="data"
-              class="paste-textarea"
+              class="paste-input paste-input-textarea"
               placeholder="Paste JSON here…"
-              rows="20"
+              rows="16"
               spellcheck="false"><?= htmlspecialchars($form_replay) ?></textarea>
             <div class="paste-actions">
               <button type="submit" class="paste-submit">Show Risk Notable</button>
