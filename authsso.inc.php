@@ -167,6 +167,13 @@ if ($_GET['sso'] === 'callback') {
     unset($_SESSION['sso_state'], $_SESSION['sso_nonce']);
 
     // Redirect to a clean URL (without ?sso=callback&code=...&state=...)
+    // If a rnid lookup was pending when the user started SSO, resume it now.
+    if (!empty($_SESSION['pending_rnid'])) {
+        $pending = $_SESSION['pending_rnid'];
+        unset($_SESSION['pending_rnid']);
+        header('Location: index.php?rnid=' . urlencode($pending));
+        exit;
+    }
     header('Location: index.php');
     exit;
 }

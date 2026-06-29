@@ -236,6 +236,11 @@ if (isset($_GET['rnid'])) {
     }
 
     // when doing splunk requests in the background, user needs to authenticate first
+    if (!$is_authenticated) {
+        // Stash the requested rnid so the auth callbacks can resume the action
+        $_SESSION['pending_rnid'] = $rnid;
+    }
+
     if ($is_authenticated) {
 
       $url = $api_base_url;
@@ -434,30 +439,44 @@ if (isset($_GET['view'])) {
       </div>
 
 <?php else: ?>
-      <!-- Paste form -->
+      <!-- Combined entry forms -->
       <div class="paste-wrap">
         <div class="paste-card">
-          <h2 class="paste-title">Paste JSON Data</h2>
-<?php if ($form_error): ?>
-          <div class="paste-error">
-            <strong>Invalid JSON:</strong> <?= htmlspecialchars($form_error) ?>
-          </div>
-<?php endif; ?>
+          <h2 class="paste-title">Enter Risk Notable ID</h2>
 <?php if (isset($_GET['rnid']) && !$is_authenticated): ?>
           <div class="paste-error">
             <strong>Authentication required</strong>
           </div>
 <?php endif; ?>
+          <form method="get" action="index.php">
+            <input
+              type="text"
+              name="rnid"
+              class="paste-input"
+              placeholder="Risk Notable ID"
+              autofocus
+              spellcheck="false"
+              value="<?= htmlspecialchars($_GET['rnid'] ?? '') ?>">
+            <div class="paste-actions">
+              <button type="submit" class="paste-submit">Show Risk Notable</button>
+            </div>
+          </form>
+
+          <h2 class="paste-title paste-title-spaced">Enter JSON Data</h2>
+<?php if ($form_error): ?>
+          <div class="paste-error">
+            <strong>Invalid JSON:</strong> <?= htmlspecialchars($form_error) ?>
+          </div>
+<?php endif; ?>
           <form method="post" action="index.php">
             <textarea
               name="data"
-              class="paste-textarea"
+              class="paste-input paste-input-textarea"
               placeholder="Paste JSON here…"
-              rows="20"
-              autofocus
+              rows="16"
               spellcheck="false"><?= htmlspecialchars($form_replay) ?></textarea>
             <div class="paste-actions">
-              <button type="submit" class="paste-submit">View JSON</button>
+              <button type="submit" class="paste-submit">Show Risk Notable</button>
             </div>
           </form>
         </div>
