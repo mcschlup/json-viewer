@@ -2,5 +2,10 @@
     "require": {
         "firebase/php-jwt": "^7.1",
         "aws/aws-sdk-php": "^3.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        }
     }
 }
