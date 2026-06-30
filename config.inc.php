@@ -62,10 +62,20 @@ $entra_allowed_groups = [];   // list of allowed group object IDs (GUIDs); empty
 $entra_proxy         = '';    // optional HTTP proxy for the outbound calls to
                               // login.microsoftonline.com; empty = direct
 
-/* ── AI Summary backend ──────────────────────────────────────────────────── */
-/* Consumed by aisummary.inc.php :: fetchAiSummary(). Currently the function  */
-/* returns a static stub; populate these once the real REST API is wired up.  */
-$ai_summary_url     = '';   // upstream POST URL that returns the summary JSON
-$ai_summary_auth    = [];   // ['type'=>'basic','user'=>'...','pass'=>'...']
-$ai_summary_timeout = 30;   // seconds
-$ai_summary_proxy   = '';   // optional HTTP proxy; empty = direct
+/* ── AI Summary (Amazon Bedrock InvokeModel) ─────────────────────────────── */
+/* Consumed by aisummary.inc.php :: fetchAiSummary(). Override the secrets in */
+/* config-local.inc.php.                                                      */
+$ai_summary_aws_region    = '';   // e.g. 'eu-central-1'
+$ai_summary_aws_key       = '';   // IAM access key (empty = use instance/role creds)
+$ai_summary_aws_secret    = '';   // IAM secret access key
+$ai_summary_model_id      = '';   // e.g. 'anthropic.claude-3-5-sonnet-20240620-v1:0'
+$ai_summary_system_prompt = <<<TXT
+TXT;
+$ai_summary_user_prompt   = <<<TXT
+TXT;
+$ai_summary_body_extras   = [     // merged into the InvokeModel JSON body
+    'max_tokens'  => 4096,
+    'temperature' => 0.3,
+];
+$ai_summary_timeout       = 60;   // seconds
+$ai_summary_proxy         = '';   // optional HTTP proxy; empty = direct

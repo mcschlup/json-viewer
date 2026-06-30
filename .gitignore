@@ -4,3 +4,5 @@ sample.json
 js/config-local.js
 config-local.inc.php
 img/
+vendor/
+composer.phar

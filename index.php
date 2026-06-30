@@ -353,7 +353,11 @@ if (isset($_GET['aisummary'])) {
         exit;
     }
 
-    echo json_encode(fetchAiSummary($_SESSION['json_store'][$id]));
+    $aiResult = fetchAiSummary($_SESSION['json_store'][$id]);
+    if (isset($aiResult['error'])) {
+        http_response_code(502);
+    }
+    echo json_encode($aiResult);
     exit;
 }
 

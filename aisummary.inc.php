@@ -2,51 +2,92 @@
 
 /*
  * include file: AI Summary fetch logic.
- * Exposes fetchAiSummary($jsonText) returning an associative array suitable
- * for json_encode. Currently returns a static stub. Replace the body once
- * the real upstream REST API is available; configuration lives in
- * $ai_summary_* variables in config.inc.php / config-local.inc.php.
+ * Exposes fetchAiSummary($jsonText) returning an associative array.
+ * On success: the parsed JSON object returned by the model.
+ * On failure: ['error' => '<message>'].
  *
- * The $jsonText argument is the raw notable JSON as stored in
- * $_SESSION['json_store'][...] — pass it through to the upstream API once
- * implemented.
+ * Configuration lives in $ai_summary_* variables in config.inc.php /
+ * config-local.inc.php. Uses the AWS SDK for PHP (Bedrock Runtime).
  */
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Aws\BedrockRuntime\BedrockRuntimeClient;
+use Aws\Exception\AwsException;
+
 function fetchAiSummary($jsonText) {
-    global $ai_summary_url, $ai_summary_auth, $ai_summary_timeout, $ai_summary_proxy;
+    global $ai_summary_aws_region, $ai_summary_aws_key, $ai_summary_aws_secret,
+           $ai_summary_model_id, $ai_summary_system_prompt, $ai_summary_user_prompt,
+           $ai_summary_body_extras, $ai_summary_timeout, $ai_summary_proxy;
 
-    // TODO: replace stub with real REST API call. Outline:
-    //   $ch = curl_init($ai_summary_url);
-    //   curl_setopt_array($ch, [
-    //       CURLOPT_RETURNTRANSFER => true,
-    //       CURLOPT_POST           => true,
-    //       CURLOPT_POSTFIELDS     => $jsonText,
-    //       CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    //       CURLOPT_TIMEOUT        => $ai_summary_timeout,
-    //   ]);
-    //   if (!empty($ai_summary_proxy)) curl_setopt($ch, CURLOPT_PROXY, $ai_summary_proxy);
-    //   if (!empty($ai_summary_auth['type']) && $ai_summary_auth['type'] === 'basic') {
-    //       curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    //       curl_setopt($ch, CURLOPT_USERPWD, $ai_summary_auth['user'] . ':' . $ai_summary_auth['pass']);
-    //   }
-    //   $resp = curl_exec($ch); curl_close($ch);
-    //   return json_decode($resp, true);
+    if (empty($ai_summary_model_id) || empty($ai_summary_aws_region)) {
+        return ['error' => 'AI Summary is not configured.'];
+    }
 
-    return [
-        'summary' => [
-            'finding'          => 'sample data',
-            'classification'   => 'TRUE POSITIVE',
-            'confidence_level' => 'HIGH',
-        ],
-        'key_decision_points' => [],
-        'immediate_actions'   => [],
-        'next_steps'          => [],
-        'risk_assessment' => [
-            'severity'                    => 'HIGH',
-            'attack_stage'                => 'Initial Access (MITRE ATT&CK T1566 - Phishing)',
-            'threat_actor_sophistication' => 'MEDIUM-HIGH (coordinated multi-user campaign, infrastructure preparation, evasion of email filters)',
-            'immediate_impact'            => 'Potential credential compromise, malware execution capability, lateral movement foundation',
-            'organizational_scope'        => 'Multi-regional (3 market units), multi-user (4+ Helvetia employees), suggesting targeted organizational attack',
-        ],
+    $clientArgs = [
+        'region'  => $ai_summary_aws_region,
+        'version' => 'latest',
     ];
+    if (!empty($ai_summary_aws_key) && !empty($ai_summary_aws_secret)) {
+        $clientArgs['credentials'] = [
+            'key'    => $ai_summary_aws_key,
+            'secret' => $ai_summary_aws_secret,
+        ];
+    }
+    $httpOpts = ['timeout' => $ai_summary_timeout ?: 60];
+    if (!empty($ai_summary_proxy)) {
+        $httpOpts['proxy'] = $ai_summary_proxy;
+    }
+    $clientArgs['http'] = $httpOpts;
+
+    try {
+        $client = new BedrockRuntimeClient($clientArgs);
+    } catch (Exception $e) {
+        error_log('Bedrock client init failed: ' . $e->getMessage());
+        return ['error' => 'Bedrock client init failed: ' . $e->getMessage()];
+    }
+
+    // Build the request body. Default shape targets Anthropic Claude on Bedrock;
+    // $ai_summary_body_extras (max_tokens, temperature, top_p, ...) is merged in.
+    $userPrompt = rtrim($ai_summary_user_prompt) . "\n\n" . $jsonText;
+    $body = array_merge([
+        'anthropic_version' => 'bedrock-2023-05-31',
+        'system'            => $ai_summary_system_prompt,
+        'messages'          => [
+            ['role' => 'user', 'content' => $userPrompt],
+        ],
+    ], is_array($ai_summary_body_extras) ? $ai_summary_body_extras : []);
+
+    try {
+        $result = $client->invokeModel([
+            'modelId'     => $ai_summary_model_id,
+            'contentType' => 'application/json',
+            'accept'      => 'application/json',
+            'body'        => json_encode($body),
+        ]);
+    } catch (AwsException $e) {
+        $msg = $e->getAwsErrorMessage() ?: $e->getMessage();
+        error_log('Bedrock invokeModel failed: ' . $msg);
+        return ['error' => 'Bedrock request failed: ' . $msg];
+    }
+
+    $respBody = (string) $result['body'];
+    $resp = json_decode($respBody, true);
+    if (!is_array($resp) || empty($resp['content'][0]['text'])) {
+        error_log('Bedrock response unexpected: ' . substr($respBody, 0, 1000));
+        return ['error' => 'Unexpected Bedrock response format.'];
+    }
+
+    $text = $resp['content'][0]['text'];
+    // The model usually wraps the JSON in a ```json ... ``` fence; strip it if present.
+    if (preg_match('/```(?:json)?\s*([\s\S]*?)\s*```/i', $text, $m)) {
+        $text = $m[1];
+    }
+
+    $parsed = json_decode(trim($text), true);
+    if (!is_array($parsed)) {
+        error_log('AI Summary text was not valid JSON: ' . substr($text, 0, 1000));
+        return ['error' => 'AI Summary response was not valid JSON.'];
+    }
+    return $parsed;
 }
