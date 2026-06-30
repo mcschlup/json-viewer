@@ -68,6 +68,7 @@ $entra_proxy         = '';    // optional HTTP proxy for the outbound calls to
 $ai_summary_aws_region    = '';   // e.g. 'eu-central-1'
 $ai_summary_aws_key       = '';   // IAM access key (empty = use instance/role creds)
 $ai_summary_aws_secret    = '';   // IAM secret access key
+$ai_summary_aws_token     = '';   // STS session token (only for temporary credentials)
 $ai_summary_model_id      = '';   // e.g. 'anthropic.claude-3-5-sonnet-20240620-v1:0'
 $ai_summary_system_prompt = <<<TXT
 TXT;

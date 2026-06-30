@@ -17,8 +17,9 @@ use Aws\Exception\AwsException;
 
 function fetchAiSummary($jsonText) {
     global $ai_summary_aws_region, $ai_summary_aws_key, $ai_summary_aws_secret,
-           $ai_summary_model_id, $ai_summary_system_prompt, $ai_summary_user_prompt,
-           $ai_summary_body_extras, $ai_summary_timeout, $ai_summary_proxy;
+           $ai_summary_aws_token, $ai_summary_model_id, $ai_summary_system_prompt,
+           $ai_summary_user_prompt, $ai_summary_body_extras, $ai_summary_timeout,
+           $ai_summary_proxy;
 
     if (empty($ai_summary_model_id) || empty($ai_summary_aws_region)) {
         return ['error' => 'AI Summary is not configured.'];
@@ -29,10 +30,14 @@ function fetchAiSummary($jsonText) {
         'version' => 'latest',
     ];
     if (!empty($ai_summary_aws_key) && !empty($ai_summary_aws_secret)) {
-        $clientArgs['credentials'] = [
+        $creds = [
             'key'    => $ai_summary_aws_key,
             'secret' => $ai_summary_aws_secret,
         ];
+        if (!empty($ai_summary_aws_token)) {
+            $creds['token'] = $ai_summary_aws_token;
+        }
+        $clientArgs['credentials'] = $creds;
     }
     $httpOpts = ['timeout' => $ai_summary_timeout ?: 60];
     if (!empty($ai_summary_proxy)) {
