@@ -3,10 +3,14 @@
 
 const CONFIG = {
   // Application version
-  appVersion: '2026063002',
+  appVersion: '2026063003',
 
   // URL parameter name containing the JSON data
   urlParam: 'data',
+
+  // Show the "AI Second Opinion" tab and fetch its content from the backend.
+  // When false, no extra tab is rendered and no backend call is made.
+  aiSecondOpinionEnabled: true,
 
   // Highlight rules based on a specific KEY + VALUE combination (checked first, most specific).
   // testKey(key) and testValue(value) must both return true for the rule to apply.
