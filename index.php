@@ -353,9 +353,20 @@ if (isset($_GET['aisummary'])) {
         exit;
     }
 
+    // Serve from per-session cache when available to avoid re-billing the model.
+    if (isset($_SESSION['ai_summary_store'][$id])) {
+        echo json_encode($_SESSION['ai_summary_store'][$id]);
+        exit;
+    }
+
     $aiResult = fetchAiSummary($_SESSION['json_store'][$id]);
     if (isset($aiResult['error'])) {
         http_response_code(502);
+    } else {
+        if (!isset($_SESSION['ai_summary_store'])) {
+            $_SESSION['ai_summary_store'] = [];
+        }
+        $_SESSION['ai_summary_store'][$id] = $aiResult;
     }
     echo json_encode($aiResult);
     exit;
